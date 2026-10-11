@@ -1,0 +1,25 @@
+name: Build and tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  verify:
+    name: Maven / ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+      - name: Compile and test
+        run: mvn --batch-mode --no-transfer-progress clean verify
