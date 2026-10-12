@@ -50,7 +50,9 @@ Referência: [issue #1](https://github.com/Nathan1227n/Nodewalker/issues/1). As 
 
 Ambiente desta execução: Fedora Linux, Eclipse Temurin **21.0.12.1** e Apache Maven **3.9.11**. Os relatórios ficam em `tsp-core/target/surefire-reports/` (3 testes) e `tsp-app/target/surefire-reports/` (4 testes), gerados localmente e excluídos do Git.
 
-`mvn -f tsp-app/pom.xml javafx:run` foi iniciado após a instalação e permaneceu em execução sem erro inicial no console. Isso, isoladamente, não comprova a aparência da janela nem a interação com os botões; a confirmação visual desta revisão permanece pendente.
+`mvn -f tsp-app/pom.xml javafx:run` e `mvn -f tsp-app/pom.xml javafx:run -Djavafx.args=--2d` foram iniciados após a instalação e permaneceram em execução sem erro inicial no console. Ambos foram encerrados com Ctrl+C (código 130), não por falha observada de JavaFX. Isso, isoladamente, não comprova a aparência da janela nem a interação com os botões; a confirmação visual desta revisão permanece pendente.
+
+O primeiro [CI de push](https://github.com/Nathan1227n/Nodewalker/actions/runs/38196497489), no commit `8f82fea`, passou em Ubuntu e Windows com 7 testes por sistema. A [execução separada da PR](https://github.com/Nathan1227n/Nodewalker/actions/runs/38196509084) passou no Windows, mas falhou no Ubuntu ao resolver `maven-clean-plugin:3.5.0` no Maven Central, antes de compilar. Os logs mostraram versões diferentes dos plugins implícitos entre os ambientes. Por isso, o POM pai agora fixa os plugins do ciclo de build nas versões já validadas localmente: clean 3.2.0, resources 3.3.1, jar 3.4.1 e install 3.1.2; compiler e surefire permanecem nas versões existentes. A nova execução após esse ajuste ainda precisa ser confirmada.
 
 As Actions v5 usam Node.js 24; a documentação de [checkout](https://github.com/actions/checkout/tree/v5) e [setup-java](https://github.com/actions/setup-java/tree/v5) foi consultada. `setup-java@v5` requer runner 2.327.1 ou posterior e o cache Maven considera os POMs do repositório por padrão. O workflow usa runners hospedados `ubuntu-latest` e `windows-latest`; a execução nova ainda precisa ser confirmada após a publicação.
 
