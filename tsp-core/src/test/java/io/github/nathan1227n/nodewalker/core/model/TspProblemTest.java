@@ -31,6 +31,37 @@ class TspProblemTest {
     }
 
     @Test
+    void manualInstanceHasNoGenerationSeed() {
+        assertTrue(new TspProblem(CITIES, triangleCosts()).seed().isEmpty());
+    }
+
+    @ParameterizedTest
+    @ValueSource(longs = {0, 1, -1, Long.MIN_VALUE, Long.MAX_VALUE})
+    void preservesGenerationSeedWithoutChangingCitiesOrCosts(long seed) {
+        TspProblem problem = new TspProblem(CITIES, triangleCosts(), seed);
+
+        assertEquals(seed, problem.seed().orElseThrow());
+        assertEquals(CITIES, problem.cities());
+        assertCostsEqual(triangleCosts(), problem);
+    }
+
+    @Test
+    void seededConstructorPreservesDefensiveCopiesAndValidation() {
+        List<City> cities = new ArrayList<>(CITIES);
+        long[][] matrix = triangleCosts();
+        TspProblem problem = new TspProblem(cities, matrix, 657L);
+
+        cities.clear();
+        matrix[0][1] = -1;
+        assertEquals(CITIES, problem.cities());
+        assertCostsEqual(triangleCosts(), problem);
+        assertThrows(UnsupportedOperationException.class, () -> problem.cities().clear());
+        assertThrows(IllegalArgumentException.class, () -> new TspProblem(CITIES, matrix, 657L));
+        assertThrows(NullPointerException.class, () -> new TspProblem(null, triangleCosts(), 657L));
+        assertThrows(IllegalArgumentException.class, () -> new TspProblem(List.of(), new long[0][0], 657L));
+    }
+
+    @Test
     void acceptsFourCityReferenceMatrixIndependentlyOfGeometry() {
         List<City> cities = new ArrayList<>(CITIES);
         cities.add(new City(3, 0, 0, 0));

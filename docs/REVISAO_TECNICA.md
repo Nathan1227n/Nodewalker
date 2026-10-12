@@ -22,7 +22,7 @@ Esta revisão **não altera** os documentos originais. Quando há detalhe imprec
 
 ## Pontos de atenção para implementação
 
-1. **Coordenadas:** o DOC 03 §3 menciona coordenadas `double` como representação geométrica; DOC 02 §12 e DOC 03 §18 especificam que o **gerador armazena inteiros** entre 0 e 1000. Na issue #2, `City` foi definido como record com coordenadas `int`, convertidas apenas para a geometria JavaFX. O modelo geral aceita todo o intervalo de `int`, inclusive coordenadas negativas; o intervalo [0, 1000], a separação mínima de 50 e a geração determinística serão responsabilidades do gerador da issue #3. Coordenadas coincidentes são válidas em uma instância manual; não se infere custo a partir delas.
+1. **Coordenadas:** o DOC 03 §3 menciona coordenadas `double` como representação geométrica; DOC 02 §12 e DOC 03 §18 especificam que o **gerador armazena inteiros** entre 0 e 1000. Na issue #2, `City` foi definido como record com coordenadas `int`, convertidas apenas para a geometria JavaFX. O modelo geral aceita todo o intervalo de `int`, inclusive coordenadas negativas; o intervalo [0, 1000], a separação mínima de 50 e a geração determinística pertencem ao gerador da issue #3, implementado e aguardando revisão. Coordenadas coincidentes são válidas em uma instância manual; não se infere custo a partir delas.
 2. **Overflow do custo:** matrizes manuais aceitam todo custo não negativo representável em `long`, inclusive `Long.MAX_VALUE`; a construção não calcula somas nem afirma que todas as rotas cabem em `long`. Na issue #2, `CostMath.addExact` usa `Math.addExact` e lança `ArithmeticException` com mensagem e causa quando a soma excede esse limite; operandos negativos são rejeitados com `IllegalArgumentException`. Não há saturação, truncamento nem uso de `Long.MAX_VALUE` como sentinela de infinito. Os futuros solvers deverão usar essa operação em todas as acumulações e tratar overflow como erro, sem declarar CONCLUÍDO ou ótimo.
 3. **Determinismo:** a regra estrita de empate e a ordem dos candidatos devem ser observadas por ambos os solvers. Testar não só custo ótimo como também a mesma **rota** em uma bateria de seeds.
 4. **Poda `>=`:** segura pelo caráter não negativo dos pesos. O teste precisa incluir custos zero, vários ótimos e subárvores inteiramente podadas. A contagem por profundidade deve considerar inclusive a poda de uma folha.
@@ -51,6 +51,52 @@ Os plugins Maven clean, resources, jar e install foram fixados no POM pai nas ve
 
 O construtor valida uma cópia das cidades e de cada linha da matriz. `cities()` retorna uma lista imutável de records imutáveis; nenhuma API expõe a matriz interna. `size()`, `cost(from, to)` e `originIndex()` completam o contrato. Entradas nulas falham com `NullPointerException`, violações de domínio com `IllegalArgumentException` e índices de acesso inválidos com `IndexOutOfBoundsException`, com mensagens de diagnóstico. Cópias defensivas protegem contra alterações posteriores; não se garante um snapshot atômico de entradas alteradas concorrentemente durante a construção.
 
-`mvn -pl tsp-core test` passou com 66 testes e `mvn clean verify` passou nos três módulos com 70 testes: 4 de City, 47 de TspProblem, 12 de CostMath e os 7 anteriores preservados. Esses números incluem as execuções de testes parametrizados; não houve falhas, erros ou testes ignorados. Isso valida o modelo e a aritmética, sem comprovar critérios de solução ótima dos solvers ainda não implementados. A [PR #19](https://github.com/Nathan1227n/Nodewalker/pull/19) foi mesclada na `main` em 12/10/2026. O ajuste do contrato de `Collection<City>` para `List<City>` está separado na branch `fix/g1-tsp-problem-list` e aguarda integração antes da issue #3; a issue #2 continua aberta. Gerador, custos euclidianos e algoritmos não fazem parte desta implementação.
+`mvn -pl tsp-core test` passou com 66 testes e `mvn clean verify` passou nos três módulos com 70 testes: 4 de City, 47 de TspProblem, 12 de CostMath e os 7 anteriores preservados. Esses números incluem as execuções de testes parametrizados; não houve falhas, erros ou testes ignorados. Isso valida o modelo e a aritmética, sem comprovar critérios de solução ótima dos solvers ainda não implementados. A [PR #19](https://github.com/Nathan1227n/Nodewalker/pull/19) e a correção de `Collection<City>` para `List<City>` na [PR #20](https://github.com/Nathan1227n/Nodewalker/pull/20) foram mescladas na `main` em 12/10/2026. A issue #2 foi encerrada após confirmação do merge, antes da publicação da issue #3. Gerador, custos euclidianos e algoritmos não faziam parte da entrega do modelo.
 
 Após o ajuste para `List<City>`, os dois comandos foram executados novamente no Fedora com Java 21 e mantiveram os mesmos 66/70 testes aprovados, sem falhas, erros ou testes ignorados. O teste com `LinkedHashSet` foi adaptado para verificar a ordem de uma lista; os demais cenários de validação e imutabilidade foram preservados. `git diff --check` passou, sem arquivos `target/` versionados ou dependências JavaFX no núcleo.
+
+## Gerador determinístico G1 — issue #3, 12/10/2026
+
+Fontes conferidas: DOC 02 §12 e DOC 03 §§3 e 18, extraídos dos `.docx` versionados. A API é `TspGenerator.generate(int n, long seed)`, no pacote `io.github.nathan1227n.nodewalker.core.generator`, exclusivamente no `tsp-core`. `n < 3` falha com `IllegalArgumentException`; não foi imposto um N máximo ou um limite de tentativas. O retorno é um `TspProblem` imutável, com índices 0 até N-1 na ordem de aceitação e origem fixa 0. A matriz continua validada e copiada pelo modelo existente.
+
+O DOC 02 §12 exige a seed armazenada na instância. Para cumprir esse requisito sem remover o construtor manual, `TspProblem` ganhou uma sobrecarga `(List<City>, long[][], long seed)` e `seed()` retorna `OptionalLong`. O construtor manual original retorna uma seed ausente; o gerador preserva qualquer seed `long`, inclusive valores negativos e extremos. Ambos os construtores compartilham as mesmas validações e cópias defensivas. A seed é metadado e não substitui a validação do problema.
+
+Cada geração cria exatamente um `new Random(seed)`. Cada tentativa executa `random.nextInt(0, 1001)` três vezes, em ordem **x, y, z**. Só depois dessas três chamadas o candidato é comparado às cidades já aceitas. Se qualquer distância ao quadrado for **menor que 2500**, o candidato é descartado e o próximo trio é sorteado pelo mesmo `Random`, sem reinicializar seu estado. A distância exatamente 50 é aceita. Não há arredondamento, embaralhamento ou fonte adicional de aleatoriedade nessa decisão.
+
+Para cada par não ordenado, o custo é `Math.round(Math.sqrt(dx*dx + dy*dy + dz*dz))`, armazenado em `long` e atribuído às duas posições simétricas. A diagonal permanece zero. As diferenças são calculadas em `long`; na faixa [0, 1000], cada módulo é no máximo 1000 e a soma dos quadrados é no máximo 3.000.000, sem overflow e exatamente representável em `double`. Os auxiliares geométricos internos se destinam a essa faixa, não ao intervalo completo de coordenadas das matrizes manuais. A renderização JavaFX não participa desses cálculos.
+
+A [documentação de Random no Java 21](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Random.html) garante a mesma sequência com a mesma seed e ordem de chamadas, com algoritmos definidos para portabilidade. [Math.sqrt e Math.round](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Math.html) especificam, respectivamente, raiz corretamente arredondada e conversão ao `long` mais próximo. Como os dados de entrada e as operações são os mesmos, coordenadas e custos são reproduzíveis entre plataformas.
+
+### Exemplo de referência com rejeição
+
+```java
+TspProblem problem = TspGenerator.generate(4, 657L);
+// problem.seed().orElseThrow() == 657L
+```
+
+| Índice | x | y | z |
+| --- | --- | --- | --- |
+| 0 | 930 | 591 | 463 |
+| 1 | 188 | 89 | 36 |
+| 2 | 284 | 169 | 46 |
+| 3 | 232 | 587 | 882 |
+
+Após as cidades 0 e 1, o trio **(936, 637, 445)** é sorteado e rejeitado: sua distância ao quadrado para a cidade 0 é **2476**, inferior a 2500. Arredondar essa distância produziria 50, portanto usar o custo arredondado na rejeição violaria o contrato. Os três sorteios dessa tentativa são consumidos; os dois trios seguintes são (284, 169, 46) e (232, 587, 882), aceitos nessa ordem.
+
+```text
+       0    1    2    3
+0      0  992  877  814
+1    992    0  125  983
+2    877  125    0  936
+3    814  983  936    0
+```
+
+Esses valores são literais em `TspGeneratorTest`, não resultados calculados pelo gerador durante o teste. As referências foram preparadas independentemente em Python, usando o LCG de 48 bits especificado para `Random` e raízes `Decimal` com 50 dígitos. O teste também confere o fluxo bruto de cinco trios do `Random`, sem replicar a seleção de cidades. Uma segunda referência usa N=3, seed=0: cidades (187,226,998), (632,39,35), (618,743,783), com custos 1077, 707 e 1027 para os pares (0,1), (0,2) e (1,2).
+
+### Validação e limites
+
+`mvn -pl tsp-core test`: **162 testes aprovados**. `mvn clean verify`: **BUILD SUCCESS** no pai, `tsp-core` e `tsp-app`, com **166 testes**, sem falhas, erros ou testes ignorados. Ambiente: Fedora 44, Temurin 21.0.12.1 e Maven 3.9.11. Todos os 70 testes anteriores foram preservados; foram acrescentados 89 casos do gerador e sete do metadado de seed. Contagens incluem parâmetros. O CI Ubuntu/Windows será registrado no [ROADMAP.md](ROADMAP.md) após a publicação.
+
+Os testes cobrem N mínimo/inválido; tamanhos 3, 4, 10 e 100; seeds 0, 1, -1, `Long.MIN_VALUE`, `Long.MAX_VALUE` e 657; repetições intercaladas e prefixos; extremos de coordenadas 0/1000; simetria, diagonal e separação; distância exatamente 50 e distâncias inferiores que arredondam para 50; exemplos 3-4-5 e sqrt(3); arredondamento abaixo/acima de 9,5; imutabilidade e seed. Os custos gerados são comparados também com um oráculo inteiro `BigInteger.sqrt()`, que decide o arredondamento comparando quadrados do ponto médio, sem usar `Math.sqrt` ou o cálculo do gerador.
+
+Para N muito alto, a separação mínima em um domínio finito pode impedir novas aceitações ou causar muitas rejeições; não há garantia de término em todos os N >= 3. A matriz e sua cópia defensiva exigem memória O(N²), e os cálculos por pares são O(N²), além das tentativas rejeitadas. Uma evolução a discutir é uma API separada com orçamento explícito/cancelamento da geração e erro diagnóstico ao esgotá-lo; isso não foi imposto silenciosamente ao algoritmo contratual. `Random` usa 48 bits de estado, portanto seeds `long` diferentes podem gerar a mesma sequência; reprodutibilidade não implica unicidade entre seeds. G1 continua em andamento e nenhum solver, benchmark ou componente de UI foi implementado nesta issue.

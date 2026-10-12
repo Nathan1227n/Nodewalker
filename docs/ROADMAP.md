@@ -5,7 +5,7 @@
 | Gate | Conteúdo | Critério de saída | Situação em 12/10 |
 | --- | --- | --- | --- |
 | G0 | Maven multimódulo, Java 21, JavaFX 21.0.12, JUnit 5.14.3, hello 3D/fallback | Compilação, testes e demonstração no Fedora; verificações gráficas complementares no Windows/sem Scene3D | Concluído — issue #1 encerrada e PR #16 mesclada; verificações complementares na issue #17 |
-| G1 | Modelo, gerador, custos, força bruta e CLI de benchmark | Correção e determinismo, testes sem UI | Em andamento — PR #19 do modelo mesclada; ajuste do contrato para List aguarda integração; gerador e solvers a iniciar |
+| G1 | Modelo, gerador, custos, força bruta e CLI de benchmark | Correção e determinismo, testes sem UI | Em andamento — modelo e ajuste para List mesclados; issue #2 encerrada; gerador da issue #3 implementado e aguardando revisão; solvers a iniciar |
 | G2 | Backtracking, poda, métricas, limites e cancelamento | Resultados iguais aos da força bruta e invariantes preservadas | Pendente |
 | G3 | UI JavaFX 3D/2D, câmera e execução assíncrona | UI responsiva e rota auditável | Pendente |
 | G4 | Modo Aula e recursos didáticos | Testes do MVP continuam passando | Posterior |
@@ -77,7 +77,7 @@ Esses itens são acompanhados pela [issue #17](https://github.com/Nathan1227n/No
 
 ## G1: modelo de domínio — issue #2
 
-Implementação da [issue #2](https://github.com/Nathan1227n/Nodewalker/issues/2) na branch `feat/g1-city-tsp-problem`, com a [PR #19](https://github.com/Nathan1227n/Nodewalker/pull/19) mesclada na `main` em 12/10/2026. O ajuste posterior de `Collection<City>` para `List<City>` está separado na branch `fix/g1-tsp-problem-list` e aguarda integração. A issue #2 permanece aberta; o G1 completo continua em andamento.
+Implementação da [issue #2](https://github.com/Nathan1227n/Nodewalker/issues/2) na branch `feat/g1-city-tsp-problem`, com a [PR #19](https://github.com/Nathan1227n/Nodewalker/pull/19) mesclada na `main` em 12/10/2026. O ajuste posterior de `Collection<City>` para `List<City>` foi integrado pela [PR #20](https://github.com/Nathan1227n/Nodewalker/pull/20), com [CI aprovado em Ubuntu e Windows](https://github.com/Nathan1227n/Nodewalker/actions/runs/38323819899). A issue #2 foi encerrada após confirmação do merge; o G1 completo continua em andamento.
 
 - [x] `City` imutável com índice não negativo e coordenadas inteiras; restrições de faixa e separação reservadas ao futuro gerador.
 - [x] `TspProblem` com N >= 3, lista de cidades ordenada por índice e origem fixa 0; validação integral de entradas nulas e da matriz manual quadrada, simétrica, não negativa e com diagonal zero.
@@ -87,7 +87,24 @@ Implementação da [issue #2](https://github.com/Nathan1227n/Nodewalker/issues/2
 - [x] `mvn clean verify`: pai, `tsp-core` e `tsp-app` com `SUCCESS`; 70 testes no total, sem falhas, erros ou testes ignorados.
 - [x] Sete testes anteriores preservados; 63 novos casos executados (4 de City, 47 de TspProblem e 12 de CostMath, incluindo parâmetros), independentes de JavaFX.
 - [x] PR #19 revisada e mesclada; CI aprovado em Ubuntu e Windows.
-- [ ] Integrar o ajuste para `List<City>` da branch `fix/g1-tsp-problem-list` antes de iniciar a issue #3.
-- [ ] Encerrar a issue #2 após confirmação.
+- [x] Ajuste para `List<City>` integrado na main pela PR #20 antes de criar a branch da issue #3.
+- [x] Issue #2 encerrada após confirmação do merge.
 
 Gerador aleatório, matriz euclidiana, força bruta e backtracking não foram implementados nesta issue. Os testes de domínio não comprovam os critérios de solução ótima e determinismo dos futuros solvers.
+
+## G1: gerador determinístico e custos 3D — issue #3
+
+Implementado na branch `feat/g1-deterministic-generator`, criada da `main` atualizada no commit de merge `51f036f` da PR #20. A entrega aguarda revisão e merge; a issue #3 permanece aberta. G1 não foi concluído.
+
+- [x] Documentos DOC 02 §12 e DOC 03 §§3 e 18 conferidos; API `TspGenerator.generate(int n, long seed)` no núcleo.
+- [x] N >= 3, um `Random(seed)` por geração, sorteios x/y/z nessa ordem e consumo integral das tentativas rejeitadas.
+- [x] Coordenadas inteiras em [0, 1000], índices sequenciais e separação euclidiana 3D >= 50, sem arredondar na rejeição.
+- [x] Matriz `long` com diagonal zero, custos por `Math.round(Math.sqrt(...))` e cálculo único por par não ordenado.
+- [x] Seed preservada como metadado imutável opcional em `TspProblem`, sem retirar o construtor de matriz manual.
+- [x] Referências explícitas para N=3/seed=0 e N=4/seed=657, incluindo um candidato rejeitado e a sequência posterior correta.
+- [x] `mvn -pl tsp-core test`: 162 testes aprovados; `mvn clean verify`: todos os módulos aprovados, 166 testes no total, sem falhas, erros ou testes ignorados.
+- [x] Todos os 70 testes anteriores preservados; 89 novos casos do gerador e sete do metadado de seed, sem inicialização de JavaFX.
+- [ ] Registrar os checks Ubuntu/Windows após publicar a branch e a PR.
+- [ ] Revisar e mesclar a PR antes de encerrar a issue #3.
+
+O exemplo reproduzível, a matriz completa, o critério de rejeição e os limites de memória/término estão em [REVISAO_TECNICA.md](REVISAO_TECNICA.md#gerador-determinístico-g1--issue-3-12102026). Força bruta, backtracking, benchmark e interface permanecem para as próximas tarefas.

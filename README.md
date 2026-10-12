@@ -4,7 +4,7 @@
 
 Aplicação desktop Java para comparar **força bruta** e **backtracking com poda**, com visualização JavaFX 3D e alternativa 2D.
 
-> **Estado atual — fundação G0:** o repositório contém uma demonstração gráfica ilustrativa e um cálculo inicial do espaço de busca. **Os solvers, o gerador de cidades, o mapa conectado ao TSP e o controle de execução ainda não estão implementados.** Não confundir a rota ilustrativa do G0 com um resultado ótimo.
+> **Estado atual — G0 e início de G1:** o repositório contém uma demonstração gráfica ilustrativa, o modelo TSP e o gerador determinístico de cidades/custos 3D da issue #3, que aguarda revisão. **Os solvers, o mapa conectado ao TSP e o controle de execução ainda não estão implementados.** Não confundir a rota ilustrativa do G0 com um resultado ótimo.
 
 ## Requisitos
 
@@ -20,7 +20,9 @@ Na raiz do repositório:
 mvn clean verify
 ```
 
-A suíte contém 70 execuções de testes, incluindo casos parametrizados: três cobrem `(N-1)!`, quatro cobrem a seleção inicial 3D/2D e 63 cobrem o modelo de domínio, a imutabilidade defensiva e a soma segura de custos. Todos são executados sem abrir uma janela JavaFX.
+A suíte contém 166 execuções de testes, incluindo casos parametrizados: três cobrem `(N-1)!`, quatro cobrem a seleção inicial 3D/2D, 70 cobrem o modelo de domínio, a seed, a imutabilidade defensiva e a soma segura de custos, e 89 cobrem o gerador. Todos são executados sem abrir uma janela JavaFX.
+
+Para reproduzir uma instância no núcleo, use `TspGenerator.generate(4, 657L)`. As coordenadas, a matriz de referência e a tentativa rejeitada estão documentadas em [REVISAO_TECNICA.md](docs/REVISAO_TECNICA.md#gerador-determinístico-g1--issue-3-12102026).
 
 ## Executar a demonstração do G0
 
