@@ -12,6 +12,12 @@
     <name>NodeWalker | Desktop App</name>
     <dependencies>
         <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>io.github.nathan1227n</groupId>
             <artifactId>tsp-core</artifactId>
             <version>${project.version}</version>

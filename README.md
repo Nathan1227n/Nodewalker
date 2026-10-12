@@ -20,7 +20,7 @@ Na raiz do repositório:
 mvn clean verify
 ```
 
-O teste automatizado inicial cobre `(N-1)!`, inclusive valores maiores que `long`.
+A suíte contém sete testes: três cobrem `(N-1)!`, inclusive valores maiores que `long`, e quatro cobrem a seleção inicial 3D/2D, sem abrir uma janela JavaFX.
 
 ## Executar a demonstração do G0
 
@@ -32,6 +32,12 @@ mvn -f tsp-app/pom.xml javafx:run
 ```
 
 Clique em **Alternativa 2D** para verificar a versão bidimensional mesmo se a placa de vídeo suportar Scene3D. Se não suportar, o app inicia automaticamente em 2D. O G0 apenas detecta a capacidade; não substitui os testes manuais no Fedora e no Windows.
+
+Para iniciar explicitamente em 2D:
+
+```bash
+mvn -f tsp-app/pom.xml javafx:run -Djavafx.args="--2d"
+```
 
 > Em máquinas Fedora sem bibliotecas gráficas e drivers configurados, o JavaFX pode não conseguir abrir janela. Isso é um requisito do ambiente, não do algoritmo TSP.
 
@@ -49,7 +55,7 @@ NodeWalker/
 
 ## Roadmap e aceite
 
-- **G0:** Maven multimódulo, Java 21, JavaFX 21.0.12, JUnit 5.14.3, hello 3D + fallback 2D. **Arquivos preparados; verificação completa pendente em Fedora/Windows.**
+- **G0:** Maven multimódulo, Java 21, JavaFX 21.0.12, JUnit 5.14.3, hello 3D + fallback 2D. **Compilação corrigida e sete testes aprovados; demonstração original validada no Fedora. Evidências e pendências finais de CI/interface: [roadmap](docs/ROADMAP.md).**
 - **G1:** modelo do grafo completo, custos, geração por seed, força bruta, testes e CLI de benchmark.
 - **G2:** backtracking com poda exata, métricas, limites, cancelamento, teste diferencial.
 - **G3:** MVP visual funcional, com solvers conectados à UI em thread separada.

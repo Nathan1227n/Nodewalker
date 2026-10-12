@@ -39,4 +39,8 @@ Esta revisão **não altera** os documentos originais. Quando há detalhe imprec
 
 ## Status desta entrega
 
-Arquivos de G0 preparados para copiar ao repositório. Há um utilitário inicial `SearchSpace` e testes JUnit correspondentes, mas **a integração Maven/JavaFX ainda não foi validada neste ambiente** por ausência de Maven e acesso ao Maven Central. A comprovação de G0 depende dos comandos e verificações do `docs/ROADMAP.md`.
+O G0 já foi publicado e sua demonstração 3D/2D original foi validada pelo desenvolvedor no Fedora. Na correção da issue #1, a chave ausente em `NodeWalkerApp.setPreview` foi restaurada e a seleção inicial foi integrada a `PreviewModeSelector`, uma função independente de JavaFX. Os três testes de `SearchSpaceTest` e os quatro testes de seleção passaram com Java 21 em `mvn clean verify` e `mvn clean install`, incluindo verificação sem variáveis de display.
+
+As Actions v5 foram preservadas com Temurin 21 e matriz Ubuntu/Windows. A execução atual do CI e as evidências gráficas finais são acompanhadas em [ROADMAP.md](ROADMAP.md). Testar a decisão com suporte 3D indicado como indisponível não comprova renderização real nesse ambiente; CI também não comprova abertura da janela no Windows. Nenhum solver de G1/G2 foi implementado.
+
+Os plugins Maven clean, resources, jar e install foram fixados no POM pai nas versões validadas no Fedora, após uma falha real de resolução do plugin clean no CI da PR. Isso evita que instalações Maven diferentes escolham versões implícitas diferentes; a configuração Java 21 e as versões de compiler/surefire foram preservadas.
