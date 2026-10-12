@@ -2,9 +2,9 @@
 
 **Entrega planejada:** 19/10/2026. **Escopo do MVP oficial:** G0–G3. Não tratar G1 ou G2 isoladamente como MVP visual.
 
-| Gate | Conteúdo | Critério de saída | Situação em 11/10 |
+| Gate | Conteúdo | Critério de saída | Situação em 12/10 |
 | --- | --- | --- | --- |
-| G0 | Maven multimódulo, Java 21, JavaFX 21.0.12, JUnit 5.14.3, hello 3D/fallback | Compilação, testes e demonstração no Fedora/Windows | Compilação corrigida; 7 testes e CI Ubuntu/Windows aprovados; validações gráficas finais pendentes |
+| G0 | Maven multimódulo, Java 21, JavaFX 21.0.12, JUnit 5.14.3, hello 3D/fallback | Compilação, testes e demonstração no Fedora; verificações gráficas complementares no Windows/sem Scene3D | Concluído — issue #1 encerrada e PR #16 mesclada; verificações complementares na issue #17 |
 | G1 | Modelo, gerador, custos, força bruta e CLI de benchmark | Correção e determinismo, testes sem UI | A iniciar |
 | G2 | Backtracking, poda, métricas, limites e cancelamento | Resultados iguais aos da força bruta e invariantes preservadas | Pendente |
 | G3 | UI JavaFX 3D/2D, câmera e execução assíncrona | UI responsiva e rota auditável | Pendente |
@@ -23,9 +23,11 @@
 - **18/10:** revisão, documentação e teste em clone limpo.
 - **19/10:** demonstração/entrega; sem novas funcionalidades de risco.
 
-## G0: evidências e pendências — issue #1
+## G0: concluído — evidências e verificações complementares
 
-Referência: [issue #1](https://github.com/Nathan1227n/Nodewalker/issues/1). As evidências anteriores abaixo foram informadas pelo desenvolvedor; as verificações desta correção foram executadas em 11/10/2026 (America/Fortaleza).
+O G0 foi concluído: a [issue #1](https://github.com/Nathan1227n/Nodewalker/issues/1) foi encerrada e a [PR #16](https://github.com/Nathan1227n/Nodewalker/pull/16) foi mesclada na `main` em 12/10/2026 (America/Fortaleza). Compilação Maven, sete testes JUnit, CI Ubuntu/Windows e execução gráfica no Fedora foram comprovados. As validações gráficas em Windows real e em ambiente sem Scene3D permanecem abertas na [issue #17](https://github.com/Nathan1227n/Nodewalker/issues/17), como verificações complementares que não bloqueiam o início do G1.
+
+As evidências anteriores abaixo foram informadas pelo desenvolvedor; as verificações da correção foram executadas em 11/10/2026 (America/Fortaleza). A confirmação visual posterior no Fedora foi fornecida pelo desenvolvedor e está registrada no [comentário de encerramento da issue #1](https://github.com/Nathan1227n/Nodewalker/issues/1#issuecomment-6117014785) e no checklist abaixo.
 
 ### Já validado pelo desenvolvedor antes desta correção
 
@@ -50,18 +52,25 @@ Referência: [issue #1](https://github.com/Nathan1227n/Nodewalker/issues/1). As 
 
 Ambiente desta execução: Fedora Linux, Eclipse Temurin **21.0.12.1** e Apache Maven **3.9.11**. Os relatórios ficam em `tsp-core/target/surefire-reports/` (3 testes) e `tsp-app/target/surefire-reports/` (4 testes), gerados localmente e excluídos do Git.
 
-`mvn -f tsp-app/pom.xml javafx:run` e `mvn -f tsp-app/pom.xml javafx:run -Djavafx.args=--2d` foram iniciados após a instalação e permaneceram em execução sem erro inicial no console. Ambos foram encerrados com Ctrl+C (código 130), não por falha observada de JavaFX. Isso, isoladamente, não comprova a aparência da janela nem a interação com os botões; a confirmação visual desta revisão permanece pendente.
+Durante a correção, `mvn -f tsp-app/pom.xml javafx:run` e `mvn -f tsp-app/pom.xml javafx:run -Djavafx.args=--2d` foram iniciados após a instalação e permaneceram em execução sem erro inicial no console. Ambos foram encerrados com Ctrl+C (código 130), não por falha observada de JavaFX. Essa observação de processo, isoladamente, não comprova a aparência da janela nem a interação com os botões. Posteriormente, o desenvolvedor confirmou visualmente no Fedora a inicialização 3D, a alternância manual 2D/3D e a inicialização forçada com `--2d`.
 
 O primeiro [CI de push](https://github.com/Nathan1227n/Nodewalker/actions/runs/38196497489), no commit `8f82fea`, passou em Ubuntu e Windows com 7 testes por sistema. A [execução separada da PR](https://github.com/Nathan1227n/Nodewalker/actions/runs/38196509084) passou no Windows, mas falhou no Ubuntu ao resolver `maven-clean-plugin:3.5.0` no Maven Central, antes de compilar. Os logs mostraram versões diferentes dos plugins implícitos entre os ambientes. Por isso, o POM pai agora fixa os plugins do ciclo de build nas versões já validadas localmente: clean 3.2.0, resources 3.3.1, jar 3.4.1 e install 3.1.2; compiler e surefire permanecem nas versões existentes. Após o ajuste (`426edd4`), `mvn clean verify` e `mvn clean install` passaram novamente no Fedora. O [CI de push](https://github.com/Nathan1227n/Nodewalker/actions/runs/38196725604) e o [CI da PR](https://github.com/Nathan1227n/Nodewalker/actions/runs/38196728956) passaram em Ubuntu e Windows; os logs da PR confirmam as versões fixadas e 7 testes por sistema, sem falhas, erros ou testes ignorados.
 
 As Actions v5 usam Node.js 24; a documentação de [checkout](https://github.com/actions/checkout/tree/v5) e [setup-java](https://github.com/actions/setup-java/tree/v5) foi consultada. `setup-java@v5` requer runner 2.327.1 ou posterior e o cache Maven considera os POMs do repositório por padrão. O workflow usa runners hospedados `ubuntu-latest` e `windows-latest`; a compatibilidade foi confirmada nas execuções aprovadas acima (runner 2.337.0).
 
-### Situação do aceite final
+### Encerramento do G0
 
 - [x] Nova execução do workflow com Actions v5 aprovada em Ubuntu e Windows, com links registrados acima.
-- [x] [PR #16](https://github.com/Nathan1227n/Nodewalker/pull/16) publicada para `main` com `Refs #1`, sem encerrar a issue.
-- [ ] Reconfirmar visualmente esta revisão no Fedora: início 3D quando disponível, troca para 2D, retorno ao 3D, textos e início com `--2d`.
-- [ ] Validar renderização e legibilidade do fallback automático em ambiente real sem Scene3D, incluindo botão 3D desabilitado.
-- [ ] Validar abertura e uso da janela JavaFX no Windows; não houve acesso a um desktop Windows nesta tarefa.
+- [x] [PR #16](https://github.com/Nathan1227n/Nodewalker/pull/16) mesclada na `main`.
+- [x] Desenvolvedor confirmou visualmente esta revisão no Fedora: início 3D quando disponível, troca para 2D, retorno ao 3D e início com `--2d`.
+- [x] [Issue #1](https://github.com/Nathan1227n/Nodewalker/issues/1) encerrada; verificações gráficas restantes registradas na issue #17.
 
-**Limites das evidências:** os testes unitários comprovam a decisão de seleção, mas não a renderização sem Scene3D. Não foi adicionado teste de integração gráfico à suíte headless. O CI no Windows comprova compilação e testes, não a abertura real da janela. Manter a issue #1 aberta e usar `Refs #1` na PR enquanto o aceite gráfico obrigatório não estiver comprovado; G1 continua fora desta correção.
+### Verificações complementares pendentes — issue #17
+
+- [ ] Validar renderização e legibilidade do fallback automático em ambiente real sem Scene3D, incluindo botão 3D desabilitado.
+- [ ] Validar abertura e uso da janela JavaFX no Windows real, incluindo 3D quando suportado e alternativa 2D.
+- [ ] Registrar resultados, capturas de tela e limitações dessas verificações na documentação.
+
+Esses itens são acompanhados pela [issue #17](https://github.com/Nathan1227n/Nodewalker/issues/17), que permanece aberta. Não foram marcados como realizados nem impedem o início do G1.
+
+**Limites das evidências:** os testes unitários comprovam a decisão de seleção, mas não a renderização sem Scene3D. Não foi adicionado teste de integração gráfico à suíte headless. O CI no Windows comprova compilação e testes, não a abertura real da janela. A validação visual confirmada refere-se ao Fedora; a conclusão do G0 mantém explícitas as verificações complementares da issue #17. Nenhum solver de G1/G2 foi implementado nesta correção.
