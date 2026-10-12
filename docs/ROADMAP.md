@@ -5,7 +5,7 @@
 | Gate | Conteúdo | Critério de saída | Situação em 12/10 |
 | --- | --- | --- | --- |
 | G0 | Maven multimódulo, Java 21, JavaFX 21.0.12, JUnit 5.14.3, hello 3D/fallback | Compilação, testes e demonstração no Fedora; verificações gráficas complementares no Windows/sem Scene3D | Concluído — issue #1 encerrada e PR #16 mesclada; verificações complementares na issue #17 |
-| G1 | Modelo, gerador, custos, força bruta e CLI de benchmark | Correção e determinismo, testes sem UI | A iniciar |
+| G1 | Modelo, gerador, custos, força bruta e CLI de benchmark | Correção e determinismo, testes sem UI | Em andamento — modelo da issue #2 implementado e testado, aguardando revisão; gerador e solvers a iniciar |
 | G2 | Backtracking, poda, métricas, limites e cancelamento | Resultados iguais aos da força bruta e invariantes preservadas | Pendente |
 | G3 | UI JavaFX 3D/2D, câmera e execução assíncrona | UI responsiva e rota auditável | Pendente |
 | G4 | Modo Aula e recursos didáticos | Testes do MVP continuam passando | Posterior |
@@ -74,3 +74,18 @@ As Actions v5 usam Node.js 24; a documentação de [checkout](https://github.com
 Esses itens são acompanhados pela [issue #17](https://github.com/Nathan1227n/Nodewalker/issues/17), que permanece aberta. Não foram marcados como realizados nem impedem o início do G1.
 
 **Limites das evidências:** os testes unitários comprovam a decisão de seleção, mas não a renderização sem Scene3D. Não foi adicionado teste de integração gráfico à suíte headless. O CI no Windows comprova compilação e testes, não a abertura real da janela. A validação visual confirmada refere-se ao Fedora; a conclusão do G0 mantém explícitas as verificações complementares da issue #17. Nenhum solver de G1/G2 foi implementado nesta correção.
+
+## G1: modelo de domínio — issue #2
+
+Implementação da [issue #2](https://github.com/Nathan1227n/Nodewalker/issues/2) na branch `feat/g1-city-tsp-problem`, em 12/10/2026; revisão e merge ainda pendentes. O G1 completo continua em andamento.
+
+- [x] `City` imutável com índice não negativo e coordenadas inteiras; restrições de faixa e separação reservadas ao futuro gerador.
+- [x] `TspProblem` com N >= 3, cidades na ordem dos índices e origem fixa 0; validação integral de entradas nulas e da matriz manual quadrada, simétrica, não negativa e com diagonal zero.
+- [x] Cópias defensivas da coleção e das linhas da matriz; lista retornada imutável, matriz interna não exposta e índices de acesso verificados.
+- [x] `CostMath.addExact` detecta overflow com exceção explícita; nenhum custo é truncado ou saturado. Decisões registradas em [REVISAO_TECNICA.md](REVISAO_TECNICA.md).
+- [x] `mvn -pl tsp-core test`: `BUILD SUCCESS`, 66 testes, sem falhas, erros ou testes ignorados.
+- [x] `mvn clean verify`: pai, `tsp-core` e `tsp-app` com `SUCCESS`; 70 testes no total, sem falhas, erros ou testes ignorados.
+- [x] Sete testes anteriores preservados; 63 novos casos executados (4 de City, 47 de TspProblem e 12 de CostMath, incluindo parâmetros), independentes de JavaFX.
+- [ ] Revisar e mesclar a PR do modelo antes de encerrar a issue #2.
+
+Gerador aleatório, matriz euclidiana, força bruta e backtracking não foram implementados nesta issue. Os testes de domínio não comprovam os critérios de solução ótima e determinismo dos futuros solvers.

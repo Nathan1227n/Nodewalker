@@ -20,7 +20,7 @@ Na raiz do repositório:
 mvn clean verify
 ```
 
-A suíte contém sete testes: três cobrem `(N-1)!`, inclusive valores maiores que `long`, e quatro cobrem a seleção inicial 3D/2D, sem abrir uma janela JavaFX.
+A suíte contém 70 execuções de testes, incluindo casos parametrizados: três cobrem `(N-1)!`, quatro cobrem a seleção inicial 3D/2D e 63 cobrem o modelo de domínio, a imutabilidade defensiva e a soma segura de custos. Todos são executados sem abrir uma janela JavaFX.
 
 ## Executar a demonstração do G0
 
