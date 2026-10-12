@@ -1,7 +1,6 @@
 package io.github.nathan1227n.nodewalker.core.model;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
@@ -17,20 +16,20 @@ public final class TspProblem {
 
     /**
      * Valida e copia cidades e custos, sem reter referências mutáveis do chamador.
-     * A ordem de iteração das cidades deve corresponder aos índices 0 até N-1.
+     * As posições na lista de cidades devem corresponder aos índices 0 até N-1.
      *
-     * @param cities coleção ordenada com pelo menos três cidades
+     * @param cities lista ordenada por índice com pelo menos três cidades
      * @param costs matriz N por N, simétrica, não negativa e com diagonal zero
-     * @throws NullPointerException se a coleção, uma cidade, a matriz ou uma linha for nula
+     * @throws NullPointerException se a lista, uma cidade, a matriz ou uma linha for nula
      * @throws IllegalArgumentException se quantidade, índices ou custos violarem o contrato
      */
-    public TspProblem(Collection<City> cities, long[][] costs) {
+    public TspProblem(List<City> cities, long[][] costs) {
         this.cities = copyCities(cities);
         this.costs = copyCosts(costs, this.cities.size());
     }
 
-    private static List<City> copyCities(Collection<City> source) {
-        Objects.requireNonNull(source, "A coleção de cidades não pode ser nula.");
+    private static List<City> copyCities(List<City> source) {
+        Objects.requireNonNull(source, "A lista de cidades não pode ser nula.");
         List<City> snapshot = new ArrayList<>(source);
         if (snapshot.size() < 3) {
             throw new IllegalArgumentException("Uma instância TSP deve ter N >= 3: " + snapshot.size());
