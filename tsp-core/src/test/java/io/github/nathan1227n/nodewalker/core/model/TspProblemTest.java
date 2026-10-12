@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
@@ -50,8 +49,8 @@ class TspProblemTest {
     }
 
     @Test
-    void preservesIterationOrderOfAnOrderedCollection() {
-        TspProblem problem = new TspProblem(new LinkedHashSet<>(CITIES), triangleCosts());
+    void preservesListOrder() {
+        TspProblem problem = new TspProblem(new ArrayList<>(CITIES), triangleCosts());
 
         assertEquals(CITIES, problem.cities());
     }
@@ -106,11 +105,11 @@ class TspProblemTest {
     }
 
     @Test
-    void rejectsNullCityCollection() {
+    void rejectsNullCityList() {
         NullPointerException error = assertThrows(NullPointerException.class,
                 () -> new TspProblem(null, triangleCosts()));
 
-        assertTrue(error.getMessage().contains("coleção de cidades"));
+        assertTrue(error.getMessage().contains("lista de cidades"));
     }
 
     @ParameterizedTest
