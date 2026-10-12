@@ -94,7 +94,7 @@ Gerador aleatório, matriz euclidiana, força bruta e backtracking não foram im
 
 ## G1: gerador determinístico e custos 3D — issue #3
 
-Implementado na branch `feat/g1-deterministic-generator`, criada da `main` atualizada no commit de merge `51f036f` da PR #20. A entrega aguarda revisão e merge; a issue #3 permanece aberta. G1 não foi concluído.
+Implementado na branch `feat/g1-deterministic-generator`, criada da `main` atualizada no commit de merge `51f036f` da PR #20. A [PR #21](https://github.com/Nathan1227n/Nodewalker/pull/21) aguarda revisão e merge; a issue #3 permanece aberta. G1 não foi concluído.
 
 - [x] Documentos DOC 02 §12 e DOC 03 §§3 e 18 conferidos; API `TspGenerator.generate(int n, long seed)` no núcleo.
 - [x] N >= 3, um `Random(seed)` por geração, sorteios x/y/z nessa ordem e consumo integral das tentativas rejeitadas.
@@ -104,7 +104,8 @@ Implementado na branch `feat/g1-deterministic-generator`, criada da `main` atual
 - [x] Referências explícitas para N=3/seed=0 e N=4/seed=657, incluindo um candidato rejeitado e a sequência posterior correta.
 - [x] `mvn -pl tsp-core test`: 162 testes aprovados; `mvn clean verify`: todos os módulos aprovados, 166 testes no total, sem falhas, erros ou testes ignorados.
 - [x] Todos os 70 testes anteriores preservados; 89 novos casos do gerador e sete do metadado de seed, sem inicialização de JavaFX.
-- [ ] Registrar os checks Ubuntu/Windows após publicar a branch e a PR.
+- [x] `git diff --check` aprovado; sem arquivos `target/` versionados ou dependências gráficas no núcleo.
+- [x] [CI de push](https://github.com/Nathan1227n/Nodewalker/actions/runs/38324700957) e [CI da PR #21](https://github.com/Nathan1227n/Nodewalker/actions/runs/38324707032) aprovados em Ubuntu e Windows no commit `6729d08`; logs da PR confirmam 166 testes por sistema e todos os módulos aprovados.
 - [ ] Revisar e mesclar a PR antes de encerrar a issue #3.
 
 O exemplo reproduzível, a matriz completa, o critério de rejeição e os limites de memória/término estão em [REVISAO_TECNICA.md](REVISAO_TECNICA.md#gerador-determinístico-g1--issue-3-12102026). Força bruta, backtracking, benchmark e interface permanecem para as próximas tarefas.
