@@ -4,7 +4,7 @@
 
 | Gate | Conteúdo | Critério de saída | Situação em 11/10 |
 | --- | --- | --- | --- |
-| G0 | Maven multimódulo, Java 21, JavaFX 21.0.12, JUnit 5.14.3, hello 3D/fallback | Compilação, testes e demonstração no Fedora/Windows | Compilação corrigida; 7 testes aprovados; nova execução do CI e validações gráficas finais pendentes |
+| G0 | Maven multimódulo, Java 21, JavaFX 21.0.12, JUnit 5.14.3, hello 3D/fallback | Compilação, testes e demonstração no Fedora/Windows | Compilação corrigida; 7 testes e CI Ubuntu/Windows aprovados; validações gráficas finais pendentes |
 | G1 | Modelo, gerador, custos, força bruta e CLI de benchmark | Correção e determinismo, testes sem UI | A iniciar |
 | G2 | Backtracking, poda, métricas, limites e cancelamento | Resultados iguais aos da força bruta e invariantes preservadas | Pendente |
 | G3 | UI JavaFX 3D/2D, câmera e execução assíncrona | UI responsiva e rota auditável | Pendente |
@@ -52,13 +52,14 @@ Ambiente desta execução: Fedora Linux, Eclipse Temurin **21.0.12.1** e Apache 
 
 `mvn -f tsp-app/pom.xml javafx:run` e `mvn -f tsp-app/pom.xml javafx:run -Djavafx.args=--2d` foram iniciados após a instalação e permaneceram em execução sem erro inicial no console. Ambos foram encerrados com Ctrl+C (código 130), não por falha observada de JavaFX. Isso, isoladamente, não comprova a aparência da janela nem a interação com os botões; a confirmação visual desta revisão permanece pendente.
 
-O primeiro [CI de push](https://github.com/Nathan1227n/Nodewalker/actions/runs/38196497489), no commit `8f82fea`, passou em Ubuntu e Windows com 7 testes por sistema. A [execução separada da PR](https://github.com/Nathan1227n/Nodewalker/actions/runs/38196509084) passou no Windows, mas falhou no Ubuntu ao resolver `maven-clean-plugin:3.5.0` no Maven Central, antes de compilar. Os logs mostraram versões diferentes dos plugins implícitos entre os ambientes. Por isso, o POM pai agora fixa os plugins do ciclo de build nas versões já validadas localmente: clean 3.2.0, resources 3.3.1, jar 3.4.1 e install 3.1.2; compiler e surefire permanecem nas versões existentes. A nova execução após esse ajuste ainda precisa ser confirmada.
+O primeiro [CI de push](https://github.com/Nathan1227n/Nodewalker/actions/runs/38196497489), no commit `8f82fea`, passou em Ubuntu e Windows com 7 testes por sistema. A [execução separada da PR](https://github.com/Nathan1227n/Nodewalker/actions/runs/38196509084) passou no Windows, mas falhou no Ubuntu ao resolver `maven-clean-plugin:3.5.0` no Maven Central, antes de compilar. Os logs mostraram versões diferentes dos plugins implícitos entre os ambientes. Por isso, o POM pai agora fixa os plugins do ciclo de build nas versões já validadas localmente: clean 3.2.0, resources 3.3.1, jar 3.4.1 e install 3.1.2; compiler e surefire permanecem nas versões existentes. Após o ajuste (`426edd4`), `mvn clean verify` e `mvn clean install` passaram novamente no Fedora. O [CI de push](https://github.com/Nathan1227n/Nodewalker/actions/runs/38196725604) e o [CI da PR](https://github.com/Nathan1227n/Nodewalker/actions/runs/38196728956) passaram em Ubuntu e Windows; os logs da PR confirmam as versões fixadas e 7 testes por sistema, sem falhas, erros ou testes ignorados.
 
-As Actions v5 usam Node.js 24; a documentação de [checkout](https://github.com/actions/checkout/tree/v5) e [setup-java](https://github.com/actions/setup-java/tree/v5) foi consultada. `setup-java@v5` requer runner 2.327.1 ou posterior e o cache Maven considera os POMs do repositório por padrão. O workflow usa runners hospedados `ubuntu-latest` e `windows-latest`; a execução nova ainda precisa ser confirmada após a publicação.
+As Actions v5 usam Node.js 24; a documentação de [checkout](https://github.com/actions/checkout/tree/v5) e [setup-java](https://github.com/actions/setup-java/tree/v5) foi consultada. `setup-java@v5` requer runner 2.327.1 ou posterior e o cache Maven considera os POMs do repositório por padrão. O workflow usa runners hospedados `ubuntu-latest` e `windows-latest`; a compatibilidade foi confirmada nas execuções aprovadas acima (runner 2.337.0).
 
-### Pendências para o aceite final
+### Situação do aceite final
 
-- [ ] Confirmar a nova execução do workflow com Actions v5 em Ubuntu e Windows e registrar o link da execução.
+- [x] Nova execução do workflow com Actions v5 aprovada em Ubuntu e Windows, com links registrados acima.
+- [x] [PR #16](https://github.com/Nathan1227n/Nodewalker/pull/16) publicada para `main` com `Refs #1`, sem encerrar a issue.
 - [ ] Reconfirmar visualmente esta revisão no Fedora: início 3D quando disponível, troca para 2D, retorno ao 3D, textos e início com `--2d`.
 - [ ] Validar renderização e legibilidade do fallback automático em ambiente real sem Scene3D, incluindo botão 3D desabilitado.
 - [ ] Validar abertura e uso da janela JavaFX no Windows; não houve acesso a um desktop Windows nesta tarefa.
