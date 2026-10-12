@@ -4,7 +4,7 @@
 
 | Gate | Conteúdo | Critério de saída | Situação em 11/10 |
 | --- | --- | --- | --- |
-| G0 | Maven multimódulo, Java 21, JavaFX 21.0.12, JUnit 5.14.3, hello 3D/fallback | Compilação, testes e demonstração no Fedora/Windows | Scaffold preparado, validação pendente |
+| G0 | Maven multimódulo, Java 21, JavaFX 21.0.12, JUnit 5.14.3, hello 3D/fallback | Compilação, testes e demonstração no Fedora/Windows | Compilação corrigida; 7 testes aprovados; nova execução do CI e validações gráficas finais pendentes |
 | G1 | Modelo, gerador, custos, força bruta e CLI de benchmark | Correção e determinismo, testes sem UI | A iniciar |
 | G2 | Backtracking, poda, métricas, limites e cancelamento | Resultados iguais aos da força bruta e invariantes preservadas | Pendente |
 | G3 | UI JavaFX 3D/2D, câmera e execução assíncrona | UI responsiva e rota auditável | Pendente |
@@ -23,15 +23,42 @@
 - **18/10:** revisão, documentação e teste em clone limpo.
 - **19/10:** demonstração/entrega; sem novas funcionalidades de risco.
 
-## G0: checklist de verificação local
+## G0: evidências e pendências — issue #1
 
-- [ ] `java -version` indica JDK 21.
-- [ ] `mvn -version` indica Maven e Java 21.
-- [ ] `mvn clean verify` funciona em Fedora.
-- [ ] `mvn -f tsp-app/pom.xml javafx:run` abre a janela depois de `mvn clean install`.
-- [ ] A visualização 3D aparece no hardware com suporte.
-- [ ] Clicar em “Alternativa 2D” exibe o mapa bidimensional.
-- [ ] Build/teste passa no Windows.
-- [ ] Fallback 2D é testado quando Scene3D não está disponível, não apenas pelo botão manual.
+Referência: [issue #1](https://github.com/Nathan1227n/Nodewalker/issues/1). As evidências anteriores abaixo foram informadas pelo desenvolvedor; as verificações desta correção foram executadas em 11/10/2026 (America/Fortaleza).
 
-**Nota:** CI de GitHub Actions compila/testa em Ubuntu e Windows, mas não comprova renderização Scene3D. Testes em Fedora e fallback real continuam necessários.
+### Já validado pelo desenvolvedor antes desta correção
+
+- [x] Java 21 e Maven disponíveis no Fedora.
+- [x] Compilação original com `mvn clean verify` e 3 testes JUnit aprovados em `SearchSpaceTest`.
+- [x] Janela JavaFX iniciando no Fedora, com visualização 3D no hardware disponível.
+- [x] Botão “Alternativa 2D” exibindo o mapa bidimensional.
+- [x] Código inicial publicado na `main` do GitHub.
+- [x] Workflow anterior aprovado em Ubuntu e Windows.
+
+### Verificado nesta correção
+
+- [x] Alterações locais preservadas na branch `fix/g0-fallback-validation`, incluindo Actions v5, dependência JUnit, seletor e quatro testes.
+- [x] Erro de compilação reproduzido e corrigido: faltava `{` após `private void setPreview(Node content, String mode)`. Os erros sobre classes sem nome/preview eram consequências da sintaxe; não foi habilitado `--enable-preview`.
+- [x] Seleção inicial isolada em `PreviewModeSelector`, sem dependência de JavaFX: `supports3d && !force2d`.
+- [x] Quatro combinações testadas com JUnit: suporte sem `--2d` → 3D; suporte com `--2d` → 2D; ausência de suporte com ou sem `--2d` → 2D.
+- [x] Integração revisada no código: detecção por `Platform.isSupported(ConditionalFeature.SCENE3D)`, argumento `--2d`, textos de modalidade, alternância manual e botão 3D desabilitado sem suporte preservados. `DemoPreview` e os três testes de `SearchSpaceTest` não foram alterados; nenhum solver foi implementado.
+- [x] `mvn clean verify`: pai, `tsp-core` e `tsp-app` com `SUCCESS`; 7 testes, 0 falhas, 0 erros e 0 ignorados.
+- [x] `mvn clean install`: os três módulos com `SUCCESS`, os mesmos 7 testes aprovados e artefatos instalados no repositório Maven local.
+- [x] `env -u DISPLAY -u WAYLAND_DISPLAY mvn --batch-mode --no-transfer-progress clean verify`: `BUILD SUCCESS`, com os mesmos 7 testes, demonstrando execução sem conexão com o desktop.
+- [x] Workflow revisado: `actions/checkout@v5`, `actions/setup-java@v5`, Temurin 21, `cache: maven`, matriz Ubuntu/Windows e `mvn --batch-mode --no-transfer-progress clean verify` preservados.
+
+Ambiente desta execução: Fedora Linux, Eclipse Temurin **21.0.12.1** e Apache Maven **3.9.11**. Os relatórios ficam em `tsp-core/target/surefire-reports/` (3 testes) e `tsp-app/target/surefire-reports/` (4 testes), gerados localmente e excluídos do Git.
+
+`mvn -f tsp-app/pom.xml javafx:run` foi iniciado após a instalação e permaneceu em execução sem erro inicial no console. Isso, isoladamente, não comprova a aparência da janela nem a interação com os botões; a confirmação visual desta revisão permanece pendente.
+
+As Actions v5 usam Node.js 24; a documentação de [checkout](https://github.com/actions/checkout/tree/v5) e [setup-java](https://github.com/actions/setup-java/tree/v5) foi consultada. `setup-java@v5` requer runner 2.327.1 ou posterior e o cache Maven considera os POMs do repositório por padrão. O workflow usa runners hospedados `ubuntu-latest` e `windows-latest`; a execução nova ainda precisa ser confirmada após a publicação.
+
+### Pendências para o aceite final
+
+- [ ] Confirmar a nova execução do workflow com Actions v5 em Ubuntu e Windows e registrar o link da execução.
+- [ ] Reconfirmar visualmente esta revisão no Fedora: início 3D quando disponível, troca para 2D, retorno ao 3D, textos e início com `--2d`.
+- [ ] Validar renderização e legibilidade do fallback automático em ambiente real sem Scene3D, incluindo botão 3D desabilitado.
+- [ ] Validar abertura e uso da janela JavaFX no Windows; não houve acesso a um desktop Windows nesta tarefa.
+
+**Limites das evidências:** os testes unitários comprovam a decisão de seleção, mas não a renderização sem Scene3D. Não foi adicionado teste de integração gráfico à suíte headless. O CI no Windows comprova compilação e testes, não a abertura real da janela. Manter a issue #1 aberta e usar `Refs #1` na PR enquanto o aceite gráfico obrigatório não estiver comprovado; G1 continua fora desta correção.

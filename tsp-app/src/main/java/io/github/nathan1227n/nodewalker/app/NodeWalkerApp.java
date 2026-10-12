@@ -91,7 +91,7 @@ public final class NodeWalkerApp extends Application {
         stage.setMinHeight(560);
         stage.show();
 
-        if (supports3d && !force2d) {
+        if (PreviewModeSelector.use3d(supports3d, force2d)) {
             setPreview(DemoPreview.create3d(), "3D — recurso disponível");
         } else {
             setPreview(DemoPreview.create2d(), supports3d
