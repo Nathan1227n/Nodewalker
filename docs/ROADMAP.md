@@ -2,12 +2,12 @@
 
 **Entrega planejada:** 19/10/2026. **Escopo do MVP oficial:** G0–G3. Não tratar G1 ou G2 isoladamente como MVP visual.
 
-| Gate | Conteúdo | Critério de saída | Situação em 12/10 |
+| Gate | Conteúdo | Critério de saída | Situação em 12/10 (atualizada) |
 | --- | --- | --- | --- |
 | G0 | Maven multimódulo, Java 21, JavaFX 21.0.12, JUnit 5.14.3, hello 3D/fallback | Compilação, testes e demonstração no Fedora; verificações gráficas complementares no Windows/sem Scene3D | Concluído — issue #1 encerrada e PR #16 mesclada; verificações complementares na issue #17 |
-| G1 | Modelo, gerador, custos, força bruta e CLI de benchmark | Correção e determinismo, testes sem UI | Em andamento — modelo e gerador mesclados; contratos da issue #4 implementados e aguardando revisão; solvers a iniciar |
+| G1 | Modelo, gerador, contratos, custos, força bruta e CLI de benchmark | Correção e determinismo, testes sem UI | Em andamento — modelo, gerador e contratos integrados (PRs #19–#22); força bruta pendente; proteção da geração autorizada em etapa separada |
 | G2 | Backtracking, poda, métricas, limites e cancelamento | Resultados iguais aos da força bruta e invariantes preservadas | Pendente |
-| G3 | UI JavaFX 3D/2D, câmera e execução assíncrona | UI responsiva e rota auditável | Pendente |
+| G3 | Mapa 3D pós-apocalíptico (refúgios, relevo e ruínas), 2D seguro, câmera, HUD e execução assíncrona | UI responsiva, visual marcante e rota auditável; renderizador definido após spike #23 | Pendente — direção visual documentada, tecnologia 3D em avaliação |
 | G4 | Modo Aula e recursos didáticos | Testes do MVP continuam passando | Posterior |
 | G5 | Efeitos opcionais | Não interferem no TSP | Opcional |
 
@@ -94,7 +94,7 @@ Gerador aleatório, matriz euclidiana, força bruta e backtracking não foram im
 
 ## G1: gerador determinístico e custos 3D — issue #3
 
-Implementado na branch `feat/g1-deterministic-generator`, criada da `main` atualizada no commit de merge `51f036f` da PR #20. A [PR #21](https://github.com/Nathan1227n/Nodewalker/pull/21) foi mesclada em 12/10/2026 (America/Fortaleza), no commit `02eae42`; a issue #3 permanece aberta. G1 não foi concluído.
+Implementado na branch `feat/g1-deterministic-generator`, criada da `main` atualizada no commit de merge `51f036f` da PR #20. A [PR #21](https://github.com/Nathan1227n/Nodewalker/pull/21) foi mesclada em 12/10/2026 (America/Fortaleza), no commit `02eae42`; a issue #3 foi encerrada após validação do gerador e revisão dos testes. G1 não foi concluído.
 
 - [x] Documentos DOC 02 §12 e DOC 03 §§3 e 18 conferidos; API `TspGenerator.generate(int n, long seed)` no núcleo.
 - [x] N >= 3, um `Random(seed)` por geração, sorteios x/y/z nessa ordem e consumo integral das tentativas rejeitadas.
@@ -107,13 +107,13 @@ Implementado na branch `feat/g1-deterministic-generator`, criada da `main` atual
 - [x] `git diff --check` aprovado; sem arquivos `target/` versionados ou dependências gráficas no núcleo.
 - [x] [CI de push](https://github.com/Nathan1227n/Nodewalker/actions/runs/38324700957) e [CI da PR #21](https://github.com/Nathan1227n/Nodewalker/actions/runs/38324707032) aprovados em Ubuntu e Windows no commit `6729d08`; logs da PR confirmam 166 testes por sistema e todos os módulos aprovados.
 - [x] PR #21 revisada e mesclada antes de iniciar os contratos da issue #4.
-- [ ] Encerramento da issue #3 permanece pendente.
+- [x] Issue #3 encerrada após o merge da PR #21; critérios de aceite marcados e evidências registradas.
 
 O exemplo reproduzível, a matriz completa, o critério de rejeição e os limites de memória/término estão em [REVISAO_TECNICA.md](REVISAO_TECNICA.md#gerador-determinístico-g1--issue-3-12102026). Força bruta, backtracking, benchmark e interface permanecem para as próximas tarefas.
 
 ## G1: contratos de rota, resultado, solver e validação — issue #4
 
-Implementado na branch `feat/g1-route-solver-contracts`, criada da `main` atualizada no merge `02eae42` da PR #21. A [PR #22](https://github.com/Nathan1227n/Nodewalker/pull/22) aguarda revisão e merge; a issue #4 permanece aberta. G1 não foi concluído.
+Implementado na branch `feat/g1-route-solver-contracts`, criada da `main` atualizada no merge `02eae42` da PR #21. A [PR #22](https://github.com/Nathan1227n/Nodewalker/pull/22) foi mesclada na `main` em 12/10/2026 (horário de Fortaleza), commit `83996e3`; a issue #4 foi encerrada após validação. G1 não foi concluído.
 
 - [x] `TspRoute` imutável com cópia defensiva, ciclo incluindo zero final, índices válidos e cobertura integral.
 - [x] `RouteValidator.validateAndCost` verifica compatibilidade e soma todas as arestas da matriz, inclusive retorno, com `CostMath.addExact`.
@@ -125,8 +125,39 @@ Implementado na branch `feat/g1-route-solver-contracts`, criada da `main` atuali
 - [x] Todos os 166 testes anteriores preservados; 120 novos casos sem inicialização de JavaFX. UI, gerador e modelos existentes preservados.
 - [x] `git diff --check` aprovado; sem arquivos gerados ou credenciais no commit e sem dependências gráficas adicionadas ao núcleo.
 - [x] [CI de push](https://github.com/Nathan1227n/Nodewalker/actions/runs/38327896033) e [CI da PR #22](https://github.com/Nathan1227n/Nodewalker/actions/runs/38327899814) aprovados em Ubuntu e Windows no commit `48e9c4e`, com 286 testes por sistema e todos os módulos aprovados.
-- [ ] Revisar e mesclar a PR; não encerrar a issue #4 automaticamente.
+- [x] PR #22 revisada e mesclada; issue #4 encerrada com critérios de aceite completos.
 
 Contratos, responsabilidades e limitações estão em [REVISAO_TECNICA.md](REVISAO_TECNICA.md#contratos-de-rota-resultado-e-solver--issue-4-12102026). Validar um ciclo e seu custo não prova ótimo global. Nenhum algoritmo, benchmark, controle completo de execução ou componente de UI foi implementado nesta entrega.
 
-A Etapa B de segurança do gerador não foi iniciada e terá issue/branch/PR próprias somente após autorização expressa e merge da Etapa A. Seus limites são distintos do controle de execução de solvers da issue #9.
+A Etapa B de segurança do gerador foi **autorizada após o merge da PR #22** e está sendo trabalhada separadamente pelo Codex; ainda não há merge de sua implementação confirmado neste documento. Seus limites são distintos do controle de execução dos solvers da issue #9. Esta revisão documental não altera nem interfere na branch da Etapa B.
+
+
+## G3: direção visual pós-apocalíptica — planejamento atualizado
+
+**Visão:** explorar rotas ótimas entre os últimos refúgios seguros de um mundo montanhoso em colapso, com identidade própria inspirada na atmosfera de travessia e isolamento da ficção científica. Não é um jogo nem altera a matemática do TSP.
+
+**Documentos oficiais de planejamento:** [DIRECAO_VISUAL.md](DIRECAO_VISUAL.md), que registra atmosfera, cores, refúgios, malha/terreno, ruínas, rota, HUD, assets, precisão matemática e fases; e [ADR 0001 — Renderizador 3D](ADR/0001-renderizador-3d.md), mantida com status **PROPOSTA** até o teste técnico.
+
+**Decisão de tecnologia:** [spike #23](https://github.com/Nathan1227n/Nodewalker/issues/23) comparará rapidamente **JavaFX 3D** (base atual) e **jMonkeyEngine** (candidato Java). Avaliar terrain/heightmap, iluminação/névoa, órbita, câmera, glTF, FPS real no Fedora, controle do HUD, Maven/Java 21, risco de integração e fallback 2D. Não migrar o app nem alterar o `tsp-core` antes de obter evidências e aceitar a ADR. Timebox inicial: cerca de quatro horas; se arriscar a entrega, usar JavaFX 3D estilizado.
+
+### Escopo visual obrigatório para o MVP (G3)
+
+- **Issue #11:** terreno montanhoso estilizado e leve, vales/platôs, alguns props abandonados, refúgios luminosos nos índices reais, origem 0 distinta, câmera orbital/zoom/reset e rota ótima claramente desenhada e auditável.
+- **Issue #12:** HUD escuro com estados e métricas reais; preflight, geração segura (Etapa B) e busca em threads apropriadas; cancelamento da geração separado do cancelamento dos solvers.
+- **Issue #13:** validar cena no Fedora, fallback 2D, relação exata entre `TspProblem`, rota e visualização, build limpo, licenças dos assets e desempenho adequado para a demonstração.
+- **Issue #17:** manter verificação gráfica real no Windows e de fallback automático sem Scene3D (CI headless não comprova visual).
+
+**Regra matemática:** o custo continua sendo a distância **euclidiana 3D direta** de `TspProblem`, não o comprimento de um caminho que sobe/desce montanhas. Ajustes de cenário são somente visuais; não mover as cidades lógicas nem alterar a matriz. Em resultados interrompidos, exibir incumbente como **não ótima comprovada**.
+
+### Polimento opcional (G5)
+
+A [issue #15](https://github.com/Nathan1227n/Nodewalker/issues/15) fica reservada a flyover cinematográfico, pulsos, chuva, partículas, névoa avançada e animações sofisticadas. Reduzir ou dispensar esses efeitos se ameaçarem responsividade, compatibilidade, prazo ou correção dos algoritmos. Não usar assets copiados de jogos: preferir modelos próprios em Blender e recursos com licença confirmada (por exemplo, CC0).
+
+### Sequência recomendada e corte de riscos
+
+1. Concluir segurança do gerador na Etapa B e solvers exatos das issues #5–#10; seguir um PR funcional por vez.
+2. Validar a spike #23 sem bloquear algoritmos; decidir engine por ADR antes de mudar a #11 para um motor definitivo.
+3. Implementar #11–#12 com mapa/HUD úteis e fallback 2D; reservar tempo para testes manuais de renderização.
+4. Fechar #13 e entregar até 19/10/2026; se necessário, reduzir detalhes do terreno/ruínas/efeitos, **nunca** correção do TSP, legibilidade, cancelamento ou fallback.
+
+**Controle de mudanças:** a presente direção artística é evolução de apresentação, não alteração das especificações normativas DOC 01–03. Custos por caminhos topográficos ou jogabilidade exigiriam especificação futura própria.
