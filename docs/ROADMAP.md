@@ -113,7 +113,7 @@ O exemplo reproduzível, a matriz completa, o critério de rejeição e os limit
 
 ## G1: contratos de rota, resultado, solver e validação — issue #4
 
-Implementado na branch `feat/g1-route-solver-contracts`, criada da `main` atualizada no merge `02eae42` da PR #21. A entrega aguarda revisão e merge; a issue #4 permanece aberta. G1 não foi concluído.
+Implementado na branch `feat/g1-route-solver-contracts`, criada da `main` atualizada no merge `02eae42` da PR #21. A [PR #22](https://github.com/Nathan1227n/Nodewalker/pull/22) aguarda revisão e merge; a issue #4 permanece aberta. G1 não foi concluído.
 
 - [x] `TspRoute` imutável com cópia defensiva, ciclo incluindo zero final, índices válidos e cobertura integral.
 - [x] `RouteValidator.validateAndCost` verifica compatibilidade e soma todas as arestas da matriz, inclusive retorno, com `CostMath.addExact`.
@@ -124,7 +124,7 @@ Implementado na branch `feat/g1-route-solver-contracts`, criada da `main` atuali
 - [x] `mvn -pl tsp-core test`: 282 testes aprovados; `mvn clean verify`: três módulos aprovados, 286 testes totais, sem falhas, erros ou testes ignorados.
 - [x] Todos os 166 testes anteriores preservados; 120 novos casos sem inicialização de JavaFX. UI, gerador e modelos existentes preservados.
 - [x] `git diff --check` aprovado; sem arquivos gerados ou credenciais no commit e sem dependências gráficas adicionadas ao núcleo.
-- [ ] Registrar os checks Ubuntu/Windows após publicar a branch e a PR.
+- [x] [CI de push](https://github.com/Nathan1227n/Nodewalker/actions/runs/38327896033) e [CI da PR #22](https://github.com/Nathan1227n/Nodewalker/actions/runs/38327899814) aprovados em Ubuntu e Windows no commit `48e9c4e`, com 286 testes por sistema e todos os módulos aprovados.
 - [ ] Revisar e mesclar a PR; não encerrar a issue #4 automaticamente.
 
 Contratos, responsabilidades e limitações estão em [REVISAO_TECNICA.md](REVISAO_TECNICA.md#contratos-de-rota-resultado-e-solver--issue-4-12102026). Validar um ciclo e seu custo não prova ótimo global. Nenhum algoritmo, benchmark, controle completo de execução ou componente de UI foi implementado nesta entrega.
