@@ -93,4 +93,6 @@ Validação local em Fedora 44, Temurin 21.0.12.1 e Maven 3.9.11:
 - Cobertura de N=3/4/10/100; seeds 0/1/-1/extremos/657; referências explícitas com rejeição; limite inclusivo; preflight de tamanhos extremos sem entrar na geração; cancelamento antes/durante sorteio, alocação, custos, cópia/validação e devolução final.
 - Cancelamento entre threads usa barreiras `CountDownLatch`, tanto para token quanto para interrupção, sem depender de sleeps. Os contadores, ausência de retorno parcial e preservação da interrupção são verificados.
 
-Os resultados de Ubuntu e Windows serão registrados após os checks da PR. Não foi alterada a documentação visual da PR #24; a atualização desta etapa se limita a este documento e à revisão técnica.
+O [CI de push](https://github.com/Nathan1227n/Nodewalker/actions/runs/38334456772) e o [CI da PR #26](https://github.com/Nathan1227n/Nodewalker/actions/runs/38334513100) passaram em Ubuntu e Windows no commit de implementação `06c26e6`. Os logs da PR confirmam 357 testes do núcleo e quatro da aplicação por sistema, sem falhas, erros ou ignorados, com BUILD SUCCESS em todos os módulos. `git diff --check` passou; não há arquivos `target/` versionados, remoção de testes anteriores ou dependências gráficas no núcleo.
+
+A [PR #26](https://github.com/Nathan1227n/Nodewalker/pull/26) está aberta para revisão, sem merge automático ou encerramento da issue #25. Não foi alterada a documentação visual da PR #24; a atualização desta etapa se limita a este documento e à revisão técnica. A issue #5 não foi iniciada.
