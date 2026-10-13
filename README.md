@@ -4,7 +4,7 @@
 
 Aplicação desktop Java para comparar **força bruta** e **backtracking com poda**, com visualização JavaFX 3D e alternativa 2D.
 
-> **Estado atual — G0 e início de G1:** o repositório contém uma demonstração gráfica ilustrativa, o modelo TSP e o gerador determinístico de cidades/custos 3D da issue #3, que aguarda revisão. **Os solvers, o mapa conectado ao TSP e o controle de execução ainda não estão implementados.** Não confundir a rota ilustrativa do G0 com um resultado ótimo.
+> **Estado atual — G0 e início de G1:** o repositório contém uma demonstração gráfica ilustrativa, o modelo TSP e o gerador determinístico de cidades/custos 3D já integrados. Os contratos de rota, validação, resultado e solver da issue #4 estão implementados e aguardam revisão. **Os solvers, o mapa conectado ao TSP e o controle de execução ainda não estão implementados.** Não confundir a rota ilustrativa do G0 com um resultado ótimo.
 
 ## Requisitos
 
@@ -20,9 +20,11 @@ Na raiz do repositório:
 mvn clean verify
 ```
 
-A suíte contém 166 execuções de testes, incluindo casos parametrizados: três cobrem `(N-1)!`, quatro cobrem a seleção inicial 3D/2D, 70 cobrem o modelo de domínio, a seed, a imutabilidade defensiva e a soma segura de custos, e 89 cobrem o gerador. Todos são executados sem abrir uma janela JavaFX.
+A suíte contém 286 execuções de testes, incluindo casos parametrizados: três cobrem `(N-1)!`, quatro cobrem a seleção inicial 3D/2D, 70 cobrem o modelo de domínio, a seed, a imutabilidade defensiva e a soma segura de custos, 89 cobrem o gerador e 120 cobrem os novos contratos. Todos são executados sem abrir uma janela JavaFX.
 
 Para reproduzir uma instância no núcleo, use `TspGenerator.generate(4, 657L)`. As coordenadas, a matriz de referência e a tentativa rejeitada estão documentadas em [REVISAO_TECNICA.md](docs/REVISAO_TECNICA.md#gerador-determinístico-g1--issue-3-12102026).
+
+`TspRoute` representa o ciclo incluindo o zero final; `RouteValidator.validateAndCost(problem, route)` valida sua compatibilidade e soma a matriz com retorno à origem e detecção de overflow. Resultados concluídos exigem orientação canônica e custo consistente; a prova de ótimo pertence aos futuros solvers. APIs e resultados interrompidos estão documentados em [REVISAO_TECNICA.md](docs/REVISAO_TECNICA.md#contratos-de-rota-resultado-e-solver--issue-4-12102026).
 
 ## Executar a demonstração do G0
 

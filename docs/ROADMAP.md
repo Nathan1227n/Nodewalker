@@ -5,7 +5,7 @@
 | Gate | Conteúdo | Critério de saída | Situação em 12/10 |
 | --- | --- | --- | --- |
 | G0 | Maven multimódulo, Java 21, JavaFX 21.0.12, JUnit 5.14.3, hello 3D/fallback | Compilação, testes e demonstração no Fedora; verificações gráficas complementares no Windows/sem Scene3D | Concluído — issue #1 encerrada e PR #16 mesclada; verificações complementares na issue #17 |
-| G1 | Modelo, gerador, custos, força bruta e CLI de benchmark | Correção e determinismo, testes sem UI | Em andamento — modelo e ajuste para List mesclados; issue #2 encerrada; gerador da issue #3 implementado e aguardando revisão; solvers a iniciar |
+| G1 | Modelo, gerador, custos, força bruta e CLI de benchmark | Correção e determinismo, testes sem UI | Em andamento — modelo e gerador mesclados; contratos da issue #4 implementados e aguardando revisão; solvers a iniciar |
 | G2 | Backtracking, poda, métricas, limites e cancelamento | Resultados iguais aos da força bruta e invariantes preservadas | Pendente |
 | G3 | UI JavaFX 3D/2D, câmera e execução assíncrona | UI responsiva e rota auditável | Pendente |
 | G4 | Modo Aula e recursos didáticos | Testes do MVP continuam passando | Posterior |
@@ -94,7 +94,7 @@ Gerador aleatório, matriz euclidiana, força bruta e backtracking não foram im
 
 ## G1: gerador determinístico e custos 3D — issue #3
 
-Implementado na branch `feat/g1-deterministic-generator`, criada da `main` atualizada no commit de merge `51f036f` da PR #20. A [PR #21](https://github.com/Nathan1227n/Nodewalker/pull/21) aguarda revisão e merge; a issue #3 permanece aberta. G1 não foi concluído.
+Implementado na branch `feat/g1-deterministic-generator`, criada da `main` atualizada no commit de merge `51f036f` da PR #20. A [PR #21](https://github.com/Nathan1227n/Nodewalker/pull/21) foi mesclada em 12/10/2026 (America/Fortaleza), no commit `02eae42`; a issue #3 permanece aberta. G1 não foi concluído.
 
 - [x] Documentos DOC 02 §12 e DOC 03 §§3 e 18 conferidos; API `TspGenerator.generate(int n, long seed)` no núcleo.
 - [x] N >= 3, um `Random(seed)` por geração, sorteios x/y/z nessa ordem e consumo integral das tentativas rejeitadas.
@@ -106,6 +106,27 @@ Implementado na branch `feat/g1-deterministic-generator`, criada da `main` atual
 - [x] Todos os 70 testes anteriores preservados; 89 novos casos do gerador e sete do metadado de seed, sem inicialização de JavaFX.
 - [x] `git diff --check` aprovado; sem arquivos `target/` versionados ou dependências gráficas no núcleo.
 - [x] [CI de push](https://github.com/Nathan1227n/Nodewalker/actions/runs/38324700957) e [CI da PR #21](https://github.com/Nathan1227n/Nodewalker/actions/runs/38324707032) aprovados em Ubuntu e Windows no commit `6729d08`; logs da PR confirmam 166 testes por sistema e todos os módulos aprovados.
-- [ ] Revisar e mesclar a PR antes de encerrar a issue #3.
+- [x] PR #21 revisada e mesclada antes de iniciar os contratos da issue #4.
+- [ ] Encerramento da issue #3 permanece pendente.
 
 O exemplo reproduzível, a matriz completa, o critério de rejeição e os limites de memória/término estão em [REVISAO_TECNICA.md](REVISAO_TECNICA.md#gerador-determinístico-g1--issue-3-12102026). Força bruta, backtracking, benchmark e interface permanecem para as próximas tarefas.
+
+## G1: contratos de rota, resultado, solver e validação — issue #4
+
+Implementado na branch `feat/g1-route-solver-contracts`, criada da `main` atualizada no merge `02eae42` da PR #21. A entrega aguarda revisão e merge; a issue #4 permanece aberta. G1 não foi concluído.
+
+- [x] `TspRoute` imutável com cópia defensiva, ciclo incluindo zero final, índices válidos e cobertura integral.
+- [x] `RouteValidator.validateAndCost` verifica compatibilidade e soma todas as arestas da matriz, inclusive retorno, com `CostMath.addExact`.
+- [x] Validade aceita ambas as orientações; canonicidade é explícita e resultados concluídos exigem `route[1] < route[N-1]`.
+- [x] `SolverStatus` separa estados do solver do playback; `TspResult` admite somente resultados terminais com incumbente/custo consistentes, motivo e garantia de ótimo declarada somente em CONCLUIDO.
+- [x] `SolverMetrics` distingue valor ausente de zero medido, com contadores observados `long` e folhas descartadas `BigInteger`; instrumentação fica para a issue #8.
+- [x] Interface `TspSolver.solve(TspProblem)` compartilhável pelos futuros algoritmos; controle/listeners ficam para a issue #9.
+- [x] `mvn -pl tsp-core test`: 282 testes aprovados; `mvn clean verify`: três módulos aprovados, 286 testes totais, sem falhas, erros ou testes ignorados.
+- [x] Todos os 166 testes anteriores preservados; 120 novos casos sem inicialização de JavaFX. UI, gerador e modelos existentes preservados.
+- [x] `git diff --check` aprovado; sem arquivos gerados ou credenciais no commit e sem dependências gráficas adicionadas ao núcleo.
+- [ ] Registrar os checks Ubuntu/Windows após publicar a branch e a PR.
+- [ ] Revisar e mesclar a PR; não encerrar a issue #4 automaticamente.
+
+Contratos, responsabilidades e limitações estão em [REVISAO_TECNICA.md](REVISAO_TECNICA.md#contratos-de-rota-resultado-e-solver--issue-4-12102026). Validar um ciclo e seu custo não prova ótimo global. Nenhum algoritmo, benchmark, controle completo de execução ou componente de UI foi implementado nesta entrega.
+
+A Etapa B de segurança do gerador não foi iniciada e terá issue/branch/PR próprias somente após autorização expressa e merge da Etapa A. Seus limites são distintos do controle de execução de solvers da issue #9.

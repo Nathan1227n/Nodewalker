@@ -59,6 +59,8 @@ Após o ajuste para `List<City>`, os dois comandos foram executados novamente no
 
 Fontes conferidas: DOC 02 §12 e DOC 03 §§3 e 18, extraídos dos `.docx` versionados. A API é `TspGenerator.generate(int n, long seed)`, no pacote `io.github.nathan1227n.nodewalker.core.generator`, exclusivamente no `tsp-core`. `n < 3` falha com `IllegalArgumentException`; não foi imposto um N máximo ou um limite de tentativas. O retorno é um `TspProblem` imutável, com índices 0 até N-1 na ordem de aceitação e origem fixa 0. A matriz continua validada e copiada pelo modelo existente.
 
+A [PR #21](https://github.com/Nathan1227n/Nodewalker/pull/21) foi mesclada na `main` em 12/10/2026 (America/Fortaleza), no commit `02eae42`; a issue #3 permanece aberta. Essa integração é o pré-requisito da entrega de contratos abaixo.
+
 O DOC 02 §12 exige a seed armazenada na instância. Para cumprir esse requisito sem remover o construtor manual, `TspProblem` ganhou uma sobrecarga `(List<City>, long[][], long seed)` e `seed()` retorna `OptionalLong`. O construtor manual original retorna uma seed ausente; o gerador preserva qualquer seed `long`, inclusive valores negativos e extremos. Ambos os construtores compartilham as mesmas validações e cópias defensivas. A seed é metadado e não substitui a validação do problema.
 
 Cada geração cria exatamente um `new Random(seed)`. Cada tentativa executa `random.nextInt(0, 1001)` três vezes, em ordem **x, y, z**. Só depois dessas três chamadas o candidato é comparado às cidades já aceitas. Se qualquer distância ao quadrado for **menor que 2500**, o candidato é descartado e o próximo trio é sorteado pelo mesmo `Random`, sem reinicializar seu estado. A distância exatamente 50 é aceita. Não há arredondamento, embaralhamento ou fonte adicional de aleatoriedade nessa decisão.
@@ -100,3 +102,57 @@ Esses valores são literais em `TspGeneratorTest`, não resultados calculados pe
 Os testes cobrem N mínimo/inválido; tamanhos 3, 4, 10 e 100; seeds 0, 1, -1, `Long.MIN_VALUE`, `Long.MAX_VALUE` e 657; repetições intercaladas e prefixos; extremos de coordenadas 0/1000; simetria, diagonal e separação; distância exatamente 50 e distâncias inferiores que arredondam para 50; exemplos 3-4-5 e sqrt(3); arredondamento abaixo/acima de 9,5; imutabilidade e seed. Os custos gerados são comparados também com um oráculo inteiro `BigInteger.sqrt()`, que decide o arredondamento comparando quadrados do ponto médio, sem usar `Math.sqrt` ou o cálculo do gerador.
 
 Para N muito alto, a separação mínima em um domínio finito pode impedir novas aceitações ou causar muitas rejeições; não há garantia de término em todos os N >= 3. A matriz e sua cópia defensiva exigem memória O(N²), e os cálculos por pares são O(N²), além das tentativas rejeitadas. Uma evolução a discutir é uma API separada com orçamento explícito/cancelamento da geração e erro diagnóstico ao esgotá-lo; isso não foi imposto silenciosamente ao algoritmo contratual. `Random` usa 48 bits de estado, portanto seeds `long` diferentes podem gerar a mesma sequência; reprodutibilidade não implica unicidade entre seeds. G1 continua em andamento e nenhum solver, benchmark ou componente de UI foi implementado nesta issue.
+
+## Contratos de rota, resultado e solver — issue #4, 12/10/2026
+
+Entrega exclusivamente no `tsp-core`, criada da `main` com a PR #21 mesclada. Fontes: DOC 02 §§7–8, DOC 03 §§1–2, 4, 6–7, 11–12 e 19, texto da issue #4 e contratos futuros das issues #5, #8 e #9. O DOC 03 usa os nomes `Route` e `SearchResult`; esta entrega adota `TspRoute` e `TspResult`, permitidos pela issue #4. O DOC 02 descreve sete estados de solver e a issue #4 exige pelo menos os quatro terminais; o enum inclui os sete, sem implementar uma máquina de estados. Essas decisões preservam as regras normativas.
+
+### Ciclo, custo e canonicidade
+
+`core.model.TspRoute(List<Integer> indices)` é um record imutável que inclui o zero final: `[0, 1, 2, 0]` tem três cidades e quatro posições. `cityCount()` infere N como comprimento menos um. O construtor copia a entrada e exige N >= 3, origem 0 nas extremidades, índices interiores em [1, N), sem repetições ou ausências. A lista retornada por `indices()` é imutável e a igualdade compara a sequência armazenada. Um ciclo de três cidades é estruturalmente válido, mas incompatível com um problema de quatro cidades; essa compatibilidade é responsabilidade do validador.
+
+`core.validation.RouteValidator.validateAndCost(TspProblem problem, TspRoute route)` confirma N e soma todas as N transições da matriz, incluindo a última aresta de retorno. Todas as acumulações usam `CostMath.addExact`; coordenadas e geometria não participam. Para custos 0–1=10, 1–2=15 e 2–0=20, `[0,1,2,0]` custa **45**, não 25. Custos zero e `Long.MAX_VALUE` são aceitos quando a soma completa é representável. Overflow, inclusive somente na última aresta, lança `ArithmeticException` com a causa original; não há saturação ou sentinela de infinito.
+
+Ambas as orientações são ciclos válidos. `isCanonical()` verifica `route[1] < route[N-1]`; `canonical()` devolve a mesma orientação se já canônica ou inverte a sequência, mantendo zeros nas extremidades e a rota original intacta. Não ordena cidades nem escolhe entre ciclos distintos. Por exemplo, `[0,2,3,1,0]` vira `[0,1,3,2,0]`, não `[0,1,2,3,0]`. Em matriz simétrica, os custos de um ciclo e seu inverso são iguais.
+
+A canonicidade não substitui a política de busca. Os futuros solvers deverão explorar índices em ordem lexicográfica e atualizar o incumbente apenas com custo estritamente menor. A força bruta da issue #5 deverá continuar avaliando todas as `(N-1)!` permutações, inclusive as orientações inversas, sem deduplicação. Validar um ciclo ou obter sua orientação canônica não prova ótimo global nem seleciona a primeira ótima entre ciclos distintos.
+
+### Resultado e estados
+
+`core.solver.SolverStatus` contém `PRONTO`, `EXECUTANDO`, `CANCELANDO`, `CONCLUIDO`, `CANCELADO`, `LIMITE_ATINGIDO` e `ERRO`. `isTerminal()` retorna verdadeiro somente para os quatro últimos. Estados e comandos de playback não pertencem a esse enum.
+
+`TspResult` é uma classe final com construtor privado; somente estas fábricas públicas podem construir resultados:
+
+```java
+TspResult.completed(problem, route, declaredCost, metrics)
+TspResult.interrupted(problem, status, optionalRoute, optionalCost, metrics, reason)
+```
+
+As fábricas recebem um `TspProblem` não nulo e validam o custo contra sua matriz. `status()`, `route()`, `cost()`, `metrics()`, `reason()` e `optimalityGuaranteed()` expõem os dados imutáveis.
+
+| Estado | Rota e custo | Orientação | Motivo | Garantia declarada de ótimo |
+| --- | --- | --- | --- | --- |
+| CONCLUIDO | Obrigatórios e consistentes | Canônica obrigatória | Ausente | Sim, sob responsabilidade do solver |
+| CANCELADO | Ambos presentes ou ambos ausentes | Qualquer orientação válida | Texto não vazio obrigatório | Não |
+| LIMITE_ATINGIDO | Ambos presentes ou ambos ausentes | Qualquer orientação válida | Texto não vazio obrigatório | Não |
+| ERRO | Ambos presentes ou ambos ausentes | Qualquer orientação válida | Texto não vazio obrigatório | Não |
+
+Uma rota presente em execução interrompida é um **ciclo completo incumbente**, não um caminho incompleto. Seu custo sempre é recalculado e validado. O valor zero e `Long.MAX_VALUE` não significam ausência; usam-se `Optional<TspRoute>` e `OptionalLong`. Estados transitórios não podem construir `TspResult`. O motivo é uma `String` imutável, sem armazenar um `Throwable` mutável.
+
+A fábrica `completed` rejeita orientação invertida, sem normalização automática; o chamador pode obter `route.canonical()` explicitamente. Ela valida viabilidade, orientação e custo, mas **não executa uma prova independente de ótimo**. Chamá-la declara que o solver concluiu a busca corretamente. `optimalityGuaranteed()` expressa essa declaração apenas em CONCLUIDO. Os futuros solvers devem transformar falhas de execução, inclusive overflow, em ERRO com diagnóstico, preservando somente um incumbente anterior válido, se houver. As fábricas propagam overflow ao validar um incumbente inválido, sem fabricar sucesso ou aceitar custo truncado.
+
+Nulos falham com `NullPointerException`; violações de domínio, estado, custo ou motivo com `IllegalArgumentException`; overflow com `ArithmeticException`. Mensagens incluem posição/índice inválido, tamanho esperado ou custos declarado/recalculado, conforme o caso.
+
+### Métricas e evolução do solver
+
+`SolverMetrics` é um record imutável com `OptionalLong elapsedNanos`, `OptionalLong completeRoutesEvaluated`, `OptionalLong visitedNodes` e `Optional<BigInteger> discardedRoutes`. Valores presentes devem ser não negativos. `empty()` indica que nenhuma métrica foi reportada; ausência é diferente de zero medido, e cada campo pode ser reportado independentemente. Tempo usa nanossegundos; avaliações contam folhas efetivamente calculadas; nós contam estados efetivamente processados; folhas descartadas contam ciclos completos eliminados por poda, não chamadas de poda. A representação não instrumenta algoritmos nem inventa medições.
+
+Contadores observados permanecem `long` sob limites operacionais representáveis. `discardedRoutes` aceita contagens acima de `long`; o espaço teórico permanece em `SearchSpace.completeRoutes`. A instrumentação, o histograma de podas e a igualdade `BigInteger(avaliadas) + descartadas = (N-1)!` em buscas concluídas pertencem à issue #8. Essa igualdade não é exigida para métricas ausentes ou resultados interrompidos e não é usada nesta entrega como prova de otimalidade.
+
+`TspSolver` é uma interface funcional com `TspResult solve(TspProblem problem)`, comum aos futuros `BruteForceSolver` e `BacktrackingSolver`. A entrada é imutável, a saída deve ser não nula e terminal, e entrada nula deve falhar com `NullPointerException`. Nenhum algoritmo foi implementado. Limites, cancelamento cooperativo e listeners serão integrados na issue #9 por uma sobrecarga, preservando a entrada simples. A implementação mínima usada nos testes retorna uma solução manual conhecida e não realiza busca.
+
+### Evidências e ponto de controle
+
+`mvn -pl tsp-core test`: **282 testes aprovados**. `mvn clean verify`: **BUILD SUCCESS** no pai, `tsp-core` e `tsp-app`, com **286 testes**, sem falhas, erros ou testes ignorados. Os 166 testes anteriores foram preservados e foram acrescentados 120 casos: 31 de rota, 11 de validação, 20 de métricas, sete de estados, 49 de resultados e dois de interface. Contagens incluem parâmetros. Ambiente: Fedora 44, Temurin 21.0.12.1 e Maven 3.9.11. O CI Ubuntu/Windows será registrado no roadmap após a publicação.
+
+Não foram alterados os modelos existentes, o gerador ou a UI; não há novos frameworks ou dependências gráficas no núcleo. `git diff --check` aprovado; arquivos gerados e credenciais não pertencem à entrega. A issue #4 está implementada e aguarda revisão; G1 continua em andamento. A Etapa B de segurança do gerador não foi iniciada: sua issue, branch e implementação dependem de autorização expressa e do merge desta PR. Instrumentação, controle dos solvers e prova de ótimo continuam pendentes nas respectivas issues.
