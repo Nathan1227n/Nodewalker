@@ -3,6 +3,7 @@ package io.github.nathan1227n.nodewalker.core.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.OptionalLong;
 
 /**
  * Instância imutável de um TSP completo e simétrico, com origem fixa no índice 0.
@@ -13,6 +14,7 @@ import java.util.Objects;
 public final class TspProblem {
     private final List<City> cities;
     private final long[][] costs;
+    private final OptionalLong seed;
 
     /**
      * Valida e copia cidades e custos, sem reter referências mutáveis do chamador.
@@ -24,8 +26,28 @@ public final class TspProblem {
      * @throws IllegalArgumentException se quantidade, índices ou custos violarem o contrato
      */
     public TspProblem(List<City> cities, long[][] costs) {
+        this(cities, costs, OptionalLong.empty());
+    }
+
+    /**
+     * Valida e copia cidades e custos com as mesmas regras do construtor manual,
+     * preservando também a seed de geração como metadado imutável (DOC 02 §12).
+     * A seed não altera nem substitui as validações das cidades e da matriz.
+     *
+     * @param cities lista ordenada por índice com pelo menos três cidades
+     * @param costs matriz N por N, simétrica, não negativa e com diagonal zero
+     * @param seed semente associada à geração da instância
+     * @throws NullPointerException se a lista, uma cidade, a matriz ou uma linha for nula
+     * @throws IllegalArgumentException se quantidade, índices ou custos violarem o contrato
+     */
+    public TspProblem(List<City> cities, long[][] costs, long seed) {
+        this(cities, costs, OptionalLong.of(seed));
+    }
+
+    private TspProblem(List<City> cities, long[][] costs, OptionalLong seed) {
         this.cities = copyCities(cities);
         this.costs = copyCosts(costs, this.cities.size());
+        this.seed = seed;
     }
 
     private static List<City> copyCities(List<City> source) {
@@ -100,5 +122,10 @@ public final class TspProblem {
     /** @return índice fixo da origem, sempre 0 */
     public int originIndex() {
         return 0;
+    }
+
+    /** @return seed de geração, ou vazio para instâncias construídas sem esse metadado */
+    public OptionalLong seed() {
+        return seed;
     }
 }
