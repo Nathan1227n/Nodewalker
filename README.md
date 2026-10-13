@@ -4,7 +4,7 @@
 
 Aplicação desktop Java para comparar **força bruta** e **backtracking com poda**, com visualização JavaFX 3D e alternativa 2D.
 
-> **Estado atual — G0 e início de G1:** o repositório contém uma demonstração gráfica ilustrativa, o modelo TSP e o gerador determinístico de cidades/custos 3D já integrados. Os contratos de rota, validação, resultado e solver da issue #4 estão implementados e aguardam revisão. **Os solvers, o mapa conectado ao TSP e o controle de execução ainda não estão implementados.** Não confundir a rota ilustrativa do G0 com um resultado ótimo.
+> **Estado atual — G0 e início de G1:** o repositório contém uma demonstração gráfica ilustrativa, o modelo TSP e o gerador determinístico de cidades/custos 3D já integrados. Os contratos de rota, validação, resultado e solver da issue #4 já foram integrados (PR #22). **Os solvers, o mapa conectado ao TSP e o controle de execução ainda não estão implementados.** Não confundir a rota ilustrativa do G0 com um resultado ótimo.
 
 ## Requisitos
 
@@ -62,10 +62,10 @@ NodeWalker/
 - **G0:** Maven multimódulo, Java 21, JavaFX 21.0.12, JUnit 5.14.3, hello 3D + fallback 2D. **Compilação corrigida e sete testes aprovados; demonstração original validada no Fedora. Evidências e pendências finais de CI/interface: [roadmap](docs/ROADMAP.md).**
 - **G1:** modelo do grafo completo, custos, geração por seed, força bruta, testes e CLI de benchmark.
 - **G2:** backtracking com poda exata, métricas, limites, cancelamento, teste diferencial.
-- **G3:** MVP visual funcional, com solvers conectados à UI em thread separada.
+- **G3:** MVP visual funcional com mapa **pós-apocalíptico** (refúgios, terreno montanhoso estilizado e ruínas leves), rota fiel ao TSP, HUD, câmera e execução assíncrona. O motor 3D será decidido após a [spike #23](https://github.com/Nathan1227n/Nodewalker/issues/23); o 2D continua obrigatório.
 - **G4/G5:** camada didática e efeitos, apenas após o MVP estar estável.
 
-Leia [docs/ROADMAP.md](docs/ROADMAP.md) e [docs/REVISAO_TECNICA.md](docs/REVISAO_TECNICA.md) antes de expandir o escopo.
+Leia [docs/ROADMAP.md](docs/ROADMAP.md), [docs/REVISAO_TECNICA.md](docs/REVISAO_TECNICA.md), [docs/DIRECAO_VISUAL.md](docs/DIRECAO_VISUAL.md) e a [ADR do renderizador 3D](docs/ADR/0001-renderizador-3d.md) antes de expandir o escopo. A ADR ainda é **proposta**: jMonkeyEngine não foi adotado nem está integrado à aplicação.
 
 ## Fonte das especificações
 
