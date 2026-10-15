@@ -222,3 +222,53 @@ As contagens de poda são conferidas com exemplos manuais: no triângulo 0–1=0
 O pior caso permanece **O(N·(N-1)!)**, equivalente a **O(N!)**, com memória auxiliar **O(N)** para caminhos, visitadas, incumbente e pilha recursiva, além da matriz imutável existente. A poda pode reduzir o trabalho observado, mas não garante desempenho para N grande. A profundidade da pilha é O(N); seu limite real depende da JVM e de sua configuração. `Error`, incluindo `StackOverflowError` e `OutOfMemoryError`, é propagado conforme a política já adotada pela força bruta, sem resultado falso de sucesso. Não se impõe N máximo universal.
 
 Contratos públicos, `BruteForceSolver`, gerador, CLI/benchmark, aplicação e documentação visual foram preservados. A integração deste solver à CLI não pertence a esta PR. Cancelamento, timeout e limites de nós permanecem na issue #9. A entrega da issue #7 destina-se à revisão, sem merge ou encerramento automático.
+
+## Instrumentação e folhas descartadas — issue #8, 15/10/2026
+
+A PR #29 foi mesclada em `247e956`; a branch `feat/g2-solver-metrics` nasceu dessa `main` limpa e sincronizada após aprovação do plano. Antes da implementação, `mvn clean verify` confirmou o baseline de **1585 testes**. Fontes: issue #8 integral, DOC 03 §§9–12 e §17 (TSP-08/TSP-13), esta revisão e contratos atuais. Os registros históricos acima conservam a situação das entregas anteriores.
+
+### Semântica dos contadores
+
+`SolverMetrics` preserva os quatro campos opcionais já existentes e sua imutabilidade. Ambos os solvers agora reportam `visitedNodes`, `completeRoutesEvaluated`, `discardedRoutes` e `elapsedNanos` quando a medição é obtida. Ausência continua diferente de zero. Melhor custo e melhor rota permanecem somente em `TspResult`; o espaço teórico permanece em `SearchSpace.completeRoutes(N)`.
+
+- No backtracking, `visitedNodes` conta cada entrada efetivamente processada na recursão, antes da condição de poda: raiz, estados internos, folhas e estados podados. Overflow ao calcular a aresta para um filho impede sua entrada e não conta esse filho.
+- Na força bruta, `visitedNodes` conta cada permutação cujo processamento começou. A avaliação que falhe já é um estado observado, mas não uma rota completa calculada. Não são inventados nós de uma árvore de prefixos que o algoritmo iterativo não constrói.
+- `completeRoutesEvaluated` conta somente ciclos calculados integralmente com sucesso, incluindo o retorno à origem. A capacidade do contador é verificada antes do cálculo e o incremento só é publicado após o fechamento. Folhas podadas e fechamentos com overflow não incrementam avaliações.
+- `discardedRoutes` representa folhas completas eliminadas. Na força bruta, o valor observado é `BigInteger.ZERO`. No backtracking, cada estado podado com `depth` cidades presentes, incluindo a origem, elimina `(N-depth)!` continuações; a profundidade N elimina `0! = 1` folha.
+
+### Histograma, precisão e invariante
+
+`PruningHistogram`, restrito ao pacote do solver, mantém um `long` por profundidade. Cada poda incrementa exatamente um contador com `Math.incrementExact`. A recursão não calcula fatoriais nem multiplica `BigInteger`. Ao produzir o relatório final ou parcial, a consolidação calcula fatoriais incrementalmente e soma `Σ pruningCountByDepth[depth] × (N-depth)!` em precisão arbitrária. Um histograma sem podas produz zero; um snapshot consolidado é um `BigInteger` imutável, independente de registros posteriores.
+
+As subárvores podadas são disjuntas porque seus descendentes não são explorados. Cada ciclo possível acaba avaliado ou pertence a exatamente uma subárvore eliminada. Ao concluir a busca, ambos os solvers verificam:
+
+```text
+BigInteger.valueOf(completeRoutesEvaluated) + discardedRoutes
+    == SearchSpace.completeRoutes(N)
+```
+
+A força bruta mantém assim sua verificação original de `(N-1)!` avaliações, com descartes zero. Uma divergência impede CONCLUIDO. Em ERRO, CANCELADO ou LIMITE_ATINGIDO, partes da árvore podem permanecer sem cobertura e a igualdade não é exigida. A contagem de descartes é não negativa e monotônica enquanto o histograma cresce. Overflow de custo não registra poda; a falha interrompe a exploração.
+
+### Tempo interno e tratamento de falhas
+
+`SolverRunMetrics`, também restrito ao pacote, reúne contadores e cronômetro por chamada. A primeira leitura ocorre após validar a entrada não nula e antes de preparar a busca. A leitura final ocorre após a busca, a canonicalização e a consolidação/conferência das métricas, antes da fábrica de `TspResult`. Esse intervalo inclui o trabalho interno de instrumentação; exclui geração, renderização, saída e a construção/validação final pela fábrica. Em erro de busca, mede-se até a consolidação das métricas parciais.
+
+O tempo é `fim - início`, conforme [System.nanoTime() no Java 21](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/System.html#nanoTime()). A origem pode ser negativa. A subtração modular aceita a passagem pelo limite de `long` quando o intervalo cabe no domínio não negativo; não usa `Math.subtractExact`, valor absoluto ou truncamento para zero. Diferença negativa é tratada como duração inválida/não representável, com ERRO e tempo ausente. Zero medido é válido. O relógio final é consultado uma vez; falha não provoca nova tentativa ao construir o diagnóstico.
+
+As amostras externas da CLI continuam medindo toda a chamada `solve(problem)`, inclusive sua fábrica de resultado. A mediana usa essas amostras; não substitui o tempo interno nem exige igualdade com ele. Nenhum controle novo foi introduzido na CLI.
+
+Os contadores observados e o histograma usam incrementos exatos, sem wraparound. Uma falha deixa os valores anteriores intactos e impede sucesso. Erros reportam classe/mensagem originais; falhas adicionais de medição ou validação são acrescentadas ao diagnóstico. Quando possível, preservam-se o incumbente validado e todas as métricas parciais obtidas. Um incumbente que falhe na validação é omitido. `Error` da JVM continua sendo propagado. Não há nova API pública, limites, cancelamento, timeout, heurística ou alteração de custo, geração, ordem de busca, desempate ou poda.
+
+### Evidências, N=25 e dependências
+
+Os testes existentes continuam validando os mesmos custos, rotas e contadores observados. As comparações entre chamadas independentes agora comparam somente os três contadores determinísticos e verificam a duração separadamente; a preservação de um mesmo snapshot continua exigindo igualdade integral. Os testes da CLI e do JAR passam a conferir a presença do tempo e os valores reais de nós/descartes, mantendo os testes sintéticos de ausência versus zero e de tempo externo independente.
+
+Casos independentes verificam que podas com 0/1/2/3/4/5/6 cidades restantes eliminam 1/1/2/6/24/120/720 folhas. No exemplo de quatro cidades com diagonais caras, os prefixos `013`, `02` e `031` eliminam `1! + 2! + 1! = 4` ciclos; os outros dois são avaliados. Há testes de poda em folha, igualdade, métricas monotônicas, cópias defensivas, reservas de avaliação e overflow dos contadores inicializados próximos de `Long.MAX_VALUE`, sem buscas impraticáveis. Um caso de erro após uma poda real preserva exatamente uma folha descartada, sem contabilizar o ramo que sofreu overflow.
+
+TSP-08 é exercitado com matrizes zero N=5..12 e a invariante é conferida nas 1020 comparações diferenciais existentes em instâncias geradas N=3..7. Mantêm-se os ótimos manuais N=3/4/5, DOC 03 §7 (300 e `[0,1,2,3,0]`), empates, ótimo `Long.MAX_VALUE`, overflow parcial/no retorno antes/depois de incumbente, determinismo, canonicidade, imutabilidade e entrada nula. Relógios controlados verificam duração zero, origem negativa, passagem pelo limite numérico e falhas antes/depois da busca, inclusive uma falha secundária que não mascara overflow de custo.
+
+O cenário **N=25** usa matriz manual zero e somente o backtracking. Após a primeira rota lexicográfica, custo zero, cada irmão restante é podado por igualdade. Na profundidade `depth=2..24`, há `25-depth` podas. Logo, `Σ r × r!`, para `r=1..23`, telescopa para `24! - 1`. São **276 operações de poda**, **301 estados visitados**, **1 ciclo avaliado** e **620448401733239439359999 folhas descartadas**. O total é exatamente **620448401733239439360000 = 24!**, verificado por literal independente e `SearchSpace`, e excede `Long.MAX_VALUE`. O histograma desse cenário também é exercitado em snapshots sucessivos para verificar monotonicidade. Isso valida aritmética de alta magnitude com trabalho pequeno, sem executar a força bruta em N=25. A parte de TSP-13 que exige interrupção por limite de nós depende explicitamente da issue #9.
+
+O histograma acrescenta O(N) contadores; a consolidação usa operações `BigInteger` fora da busca, com custo dependente do tamanho dos fatoriais. O pior caso dos solvers permanece O(N·(N-1)!), com estruturas de busca e profundidade recursiva O(N). A instrumentação não oferece garantia prática para N grande nem muda a prova de exatidão.
+
+`mvn -pl tsp-core test`: **1501 testes aprovados**. `mvn clean verify`: **BUILD SUCCESS** nos quatro módulos, com **1630 testes aprovados** (1501 do núcleo, 125 da CLI e quatro da aplicação), sem falhas, erros ou ignorados. São **45 casos novos**, preservando os 1585 anteriores. Ambiente local: Linux, OpenJDK 21.0.12 e Maven 3.8.7. `git diff --check` aprovado. O comando do README N=4/seed=657 foi reproduzido no JAR: custo 2799, rota `[0,2,1,3,0]`, seis avaliações, seis estados e zero descartes. O CI Ubuntu/Windows é acompanhado na PR exclusiva com `Refs #8`; a entrega se destina à revisão, sem merge ou encerramento automático.

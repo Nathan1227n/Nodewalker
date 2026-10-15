@@ -46,7 +46,9 @@ class CliJarIT {
         assertTrue(output.out().contains("Rota: 0 -> 2 -> 1 -> 3 -> 0"));
         assertTrue(output.out().contains("Custo: 2799"));
         assertTrue(output.out().contains("completeRoutesEvaluated: 6"));
-        assertTrue(output.out().contains("elapsedNanos: não informado"));
+        assertTrue(output.out().matches("(?s).*  elapsedNanos: [0-9]+\\R.*"));
+        assertTrue(output.out().contains("visitedNodes: 6"));
+        assertTrue(output.out().contains("discardedRoutes: 0"));
         assertTrue(output.out().contains("Mediana do solver (ns): "));
     }
 

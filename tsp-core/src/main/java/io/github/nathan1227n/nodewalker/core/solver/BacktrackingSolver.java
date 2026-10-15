@@ -3,11 +3,12 @@ package io.github.nathan1227n.nodewalker.core.solver;
 import io.github.nathan1227n.nodewalker.core.model.CostMath;
 import io.github.nathan1227n.nodewalker.core.model.TspProblem;
 import io.github.nathan1227n.nodewalker.core.model.TspRoute;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.OptionalLong;
+import java.util.function.LongSupplier;
 
 /**
  * Busca exata em profundidade, com origem 0, candidatos crescentes e poda por custo parcial.
@@ -18,10 +19,21 @@ import java.util.OptionalLong;
  * limite artificial de tamanho. Error, inclusive StackOverflowError, é propagado.
  */
 public final class BacktrackingSolver implements TspSolver {
+    private final LongSupplier clock;
+
+    public BacktrackingSolver() {
+        this(System::nanoTime);
+    }
+
+    BacktrackingSolver(LongSupplier clock) {
+        this.clock = Objects.requireNonNull(clock);
+    }
+
     /**
      * Resolve com estado privado por chamada, sem normalizar ou deduplicar durante a busca.
-     * Reporta estados visitados e ciclos cujo custo completo foi calculado; tempo e folhas
-     * descartadas permanecem ausentes. Falhas de execução retornam ERRO com diagnóstico,
+     * Reporta estados visitados, ciclos calculados, folhas descartadas e tempo interno.
+     * Cada poda de profundidade depth representa (N-depth)! folhas, inclusive 0! na folha.
+     * Falhas de execução retornam ERRO com diagnóstico,
      * métricas parciais e somente um incumbente anterior válido, quando disponível.
      *
      * @param problem instância válida e imutável com origem fixa 0
@@ -31,21 +43,25 @@ public final class BacktrackingSolver implements TspSolver {
     @Override
     public TspResult solve(TspProblem problem) {
         Objects.requireNonNull(problem, "O problema TSP não pode ser nulo.");
-        Search search = new Search(problem);
+        SolverRunMetrics metrics = new SolverRunMetrics(clock);
+        PruningHistogram pruning = null;
+        Search search = null;
         try {
+            metrics.start();
+            pruning = new PruningHistogram(problem.size());
+            search = new Search(problem, metrics, pruning);
             search.visit(1, 0);
-        } catch (RuntimeException failure) {
-            return search.errorResult(failure, true);
-        }
-
-        try {
             if (!search.hasIncumbent) {
                 throw new IllegalStateException("A busca terminou sem encontrar um ciclo completo.");
             }
-            return TspResult.completed(problem, search.bestRoute.canonical(), search.bestCost, search.metrics());
+            TspRoute canonicalRoute = search.bestRoute.canonical();
+            BigInteger discarded = pruning.discardedRoutes();
+            metrics.requireCompleteCoverage(problem.size(), discarded);
+            metrics.stop();
+            return TspResult.completed(problem, canonicalRoute, search.bestCost, metrics.snapshot(Optional.of(discarded)));
         } catch (RuntimeException failure) {
-            // Uma falha na validação final impede publicar esse incumbente.
-            return search.errorResult(failure, false);
+            return metrics.errorResult("BacktrackingSolver", problem, search == null ? null : search.bestRoute,
+                    search == null ? 0 : search.bestCost, pruning, failure);
         }
     }
 
@@ -53,14 +69,16 @@ public final class BacktrackingSolver implements TspSolver {
         private final TspProblem problem;
         private final int[] path;
         private final boolean[] visited;
+        private final SolverRunMetrics metrics;
+        private final PruningHistogram pruning;
         private boolean hasIncumbent;
         private TspRoute bestRoute;
         private long bestCost;
-        private long visitedNodes;
-        private long evaluatedRoutes;
 
-        private Search(TspProblem problem) {
+        private Search(TspProblem problem, SolverRunMetrics metrics, PruningHistogram pruning) {
             this.problem = problem;
+            this.metrics = metrics;
+            this.pruning = pruning;
             path = new int[problem.size()];
             visited = new boolean[problem.size()];
             path[0] = 0;
@@ -68,20 +86,21 @@ public final class BacktrackingSolver implements TspSolver {
         }
 
         private void visit(int depth, long partialCost) {
-            visitedNodes = Math.incrementExact(visitedNodes);
+            metrics.visit();
 
             // Toda continuação custa >= partialCost, inclusive o retorno à origem.
             // A igualdade não pode melhorar o incumbente e não substitui a primeira ótima.
             // Verifica também folhas antes de tentar somar a aresta final.
             if (hasIncumbent && partialCost >= bestCost) {
+                pruning.record(depth);
                 return;
             }
             if (depth == path.length) {
                 // Reserva a capacidade do contador antes de calcular outro ciclo;
                 // publica o incremento somente após somar o retorno sem overflow.
-                long nextCount = Math.incrementExact(evaluatedRoutes);
+                long nextCount = metrics.nextEvaluationCount();
                 long cost = CostMath.addExact(partialCost, problem.cost(path[depth - 1], 0));
-                evaluatedRoutes = nextCount;
+                metrics.completeEvaluation(nextCount);
                 if (!hasIncumbent || cost < bestCost) {
                     bestRoute = completeRoute();
                     bestCost = cost;
@@ -111,22 +130,6 @@ public final class BacktrackingSolver implements TspSolver {
             }
             indices.add(0);
             return new TspRoute(indices);
-        }
-
-        private SolverMetrics metrics() {
-            return new SolverMetrics(OptionalLong.empty(), OptionalLong.of(evaluatedRoutes),
-                    OptionalLong.of(visitedNodes), Optional.empty());
-        }
-
-        private TspResult errorResult(RuntimeException failure, boolean retainIncumbent) {
-            String reason = "Falha no BacktrackingSolver: " + failure.getClass().getName();
-            if (failure.getMessage() != null) {
-                reason += ": " + failure.getMessage();
-            }
-            boolean present = retainIncumbent && hasIncumbent;
-            return TspResult.interrupted(problem, SolverStatus.ERRO,
-                    present ? Optional.of(bestRoute) : Optional.empty(),
-                    present ? OptionalLong.of(bestCost) : OptionalLong.empty(), metrics(), reason);
         }
     }
 }

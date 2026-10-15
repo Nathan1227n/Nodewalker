@@ -131,6 +131,7 @@ class BacktrackingSolverTest {
         // Os cinco estados são 0, 01, 012, 02 e 021. A folha 021 é podada;
         // somente 0120 tem o custo completo efetivamente calculado.
         assertMetrics(result, 1, 5);
+        assertEquals(BigInteger.ONE, result.metrics().discardedRoutes().orElseThrow());
     }
 
     @Test
@@ -149,6 +150,65 @@ class BacktrackingSolverTest {
         assertEquals(List.of(0, 1, 2, 3, 0), result.route().orElseThrow().indices());
         // Completos: 01230 e 03210. Prefixos 013, 02 e 031 são podados.
         assertMetrics(result, 2, 10);
+        assertEquals(BigInteger.valueOf(4), result.metrics().discardedRoutes().orElseThrow());
+    }
+
+    @ParameterizedTest
+    @CsvSource({"3, 1", "4, 5", "5, 23", "6, 119", "7, 719", "8, 5039", "9, 40319",
+            "10, 362879", "11, 3628799", "12, 39916799"})
+    void accountsForAllLeavesOnZeroCostTiesIncludingTsp08(int n, long discarded) {
+        TspProblem problem = equalEdges(n, 0);
+
+        TspResult result = solver.solve(problem);
+
+        assertCompleted(problem, result);
+        assertEquals(firstRoute(n), result.route().orElseThrow().indices());
+        assertEquals(0, result.cost().orElseThrow());
+        assertMetrics(result, 1, 1L + n * (n - 1L) / 2);
+        assertEquals(BigInteger.valueOf(discarded), result.metrics().discardedRoutes().orElseThrow());
+    }
+
+    @Test
+    void accountsForTwentyFourFactorialLeavesByPruningOnlyThreeHundredAndOneStates() {
+        // Confirma a poda em uma instância pequena antes do cenário que seria impraticável sem ela.
+        assertMetrics(solver.solve(equalEdges(5, 0)), 1, 11);
+        TspProblem problem = equalEdges(25, 0);
+
+        TspResult result = solver.solve(problem);
+
+        assertCompleted(problem, result);
+        assertEquals(firstRoute(25), result.route().orElseThrow().indices());
+        assertEquals(0, result.cost().orElseThrow());
+        assertMetrics(result, 1, 301);
+        BigInteger discarded = result.metrics().discardedRoutes().orElseThrow();
+        assertEquals(new BigInteger("620448401733239439359999"), discarded);
+        assertTrue(discarded.compareTo(BigInteger.valueOf(Long.MAX_VALUE)) > 0);
+        assertEquals(new BigInteger("620448401733239439360000"), discarded.add(BigInteger.ONE));
+        assertEquals(new BigInteger("620448401733239439360000"), SearchSpace.completeRoutes(25));
+    }
+
+    @Test
+    void preservesEarlierPrunedLeavesWhenALaterBranchOverflowsWithoutCountingTheFailureAsPruning() {
+        long[][] costs = new long[5][5];
+        for (int i = 0; i < costs.length; i++) {
+            for (int j = 0; j < costs.length; j++) {
+                costs[i][j] = i == j ? 0 : 1;
+            }
+        }
+        costs[2][4] = costs[4][2] = 100;
+        costs[1][3] = costs[3][1] = Long.MAX_VALUE;
+        TspProblem problem = problem(costs);
+
+        TspResult result = solver.solve(problem);
+
+        // 012340 custa 5; 0124 é podado (1! folha); somar 01 + 13 depois causa overflow.
+        assertOverflow(problem, result, 1, 6);
+        assertEquals(5, result.cost().orElseThrow());
+        assertEquals(firstRoute(5), result.route().orElseThrow().indices());
+        assertEquals(BigInteger.ONE, result.metrics().discardedRoutes().orElseThrow());
+        BigInteger covered = BigInteger.valueOf(result.metrics().completeRoutesEvaluated().orElseThrow())
+                .add(result.metrics().discardedRoutes().orElseThrow());
+        assertTrue(covered.compareTo(SearchSpace.completeRoutes(5)) < 0);
     }
 
     @ParameterizedTest
@@ -255,7 +315,7 @@ class BacktrackingSolverTest {
 
     @ParameterizedTest
     @CsvSource({"3, 0", "4, 657", "5, -1", "6, -9223372036854775808", "7, 9223372036854775807"})
-    void repeatsIdenticalResultsAndMetricsAcrossInterleavedCallsAndNewSolvers(int n, long seed) {
+    void repeatsIdenticalResultsAndDeterministicCountersAcrossInterleavedCallsAndNewSolvers(int n, long seed) {
         TspProblem problem = TspGenerator.generate(n, seed);
         TspResult first = solver.solve(problem);
 
@@ -268,10 +328,10 @@ class BacktrackingSolverTest {
         assertCompleted(problem, independent);
         assertEquals(first.route(), repeated.route());
         assertEquals(first.cost(), repeated.cost());
-        assertEquals(first.metrics(), repeated.metrics());
+        assertDeterministicMetrics(first.metrics(), repeated.metrics());
         assertEquals(first.route(), independent.route());
         assertEquals(first.cost(), independent.cost());
-        assertEquals(first.metrics(), independent.metrics());
+        assertDeterministicMetrics(first.metrics(), independent.metrics());
     }
 
     @Test
@@ -322,8 +382,10 @@ class BacktrackingSolverTest {
         assertTrue(evaluated >= 1);
         assertTrue(BigInteger.valueOf(evaluated).compareTo(SearchSpace.completeRoutes(problem.size())) <= 0);
         assertTrue(result.metrics().visitedNodes().orElseThrow() >= problem.size());
-        assertTrue(result.metrics().elapsedNanos().isEmpty());
-        assertTrue(result.metrics().discardedRoutes().isEmpty());
+        assertTrue(result.metrics().elapsedNanos().orElseThrow() >= 0);
+        BigInteger discarded = result.metrics().discardedRoutes().orElseThrow();
+        assertTrue(discarded.signum() >= 0);
+        assertEquals(SearchSpace.completeRoutes(problem.size()), BigInteger.valueOf(evaluated).add(discarded));
     }
 
     private static void assertOverflow(TspProblem problem, TspResult result, long evaluated, long visited) {
@@ -340,8 +402,14 @@ class BacktrackingSolverTest {
     private static void assertMetrics(TspResult result, long evaluated, long visited) {
         assertEquals(evaluated, result.metrics().completeRoutesEvaluated().orElseThrow());
         assertEquals(visited, result.metrics().visitedNodes().orElseThrow());
-        assertTrue(result.metrics().elapsedNanos().isEmpty());
-        assertTrue(result.metrics().discardedRoutes().isEmpty());
+        assertTrue(result.metrics().elapsedNanos().orElseThrow() >= 0);
+        assertTrue(result.metrics().discardedRoutes().orElseThrow().signum() >= 0);
+    }
+
+    private static void assertDeterministicMetrics(SolverMetrics expected, SolverMetrics actual) {
+        assertEquals(expected.completeRoutesEvaluated(), actual.completeRoutesEvaluated());
+        assertEquals(expected.visitedNodes(), actual.visitedNodes());
+        assertEquals(expected.discardedRoutes(), actual.discardedRoutes());
     }
 
     private static List<Integer> firstRoute(int n) {

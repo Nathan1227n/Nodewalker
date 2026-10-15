@@ -4,7 +4,7 @@
 
 Aplicação desktop Java para comparar **força bruta** e **backtracking com poda**, com visualização JavaFX 3D e alternativa 2D.
 
-> **Estado atual — G1:** o repositório contém uma demonstração gráfica ilustrativa, o modelo TSP, o gerador determinístico com proteção operacional, os contratos do núcleo e o `BruteForceSolver` exato. A CLI permite resolver e medir instâncias sem JavaFX. **Backtracking, mapa conectado ao TSP e controle de execução dos solvers ainda não estão implementados.** Não confundir a rota ilustrativa do G0 com um resultado ótimo.
+> **Estado atual — G2 em andamento:** o repositório contém uma demonstração gráfica ilustrativa, o modelo TSP, o gerador determinístico com proteção operacional e os solvers exatos `BruteForceSolver` e `BacktrackingSolver`, com métricas de trabalho e tempo. A CLI permite resolver e medir instâncias por força bruta sem JavaFX. **Mapa conectado ao TSP e controle de execução dos solvers ainda não estão implementados.** Não confundir a rota ilustrativa do G0 com um resultado ótimo.
 
 ## Requisitos
 
@@ -20,7 +20,7 @@ Na raiz do repositório:
 mvn clean verify
 ```
 
-A suíte contém 535 execuções de testes, incluindo casos parametrizados: 406 do núcleo, 125 da CLI (120 unitários e cinco de integração do JAR) e quatro da seleção inicial 3D/2D. Todos são executados sem abrir uma janela JavaFX. `verify` inclui os testes do JAR após o empacotamento; `test` executa somente os testes unitários.
+A suíte contém 1630 execuções de testes, incluindo casos parametrizados: 1501 do núcleo, 125 da CLI (120 unitários e cinco de integração do JAR) e quatro da seleção inicial 3D/2D. Todos são executados sem abrir uma janela JavaFX. `verify` inclui os testes do JAR após o empacotamento; `test` executa somente os testes unitários.
 
 Para reproduzir uma instância no núcleo, use `TspGenerator.generate(4, 657L)`. As coordenadas, a matriz de referência e a tentativa rejeitada estão documentadas em [REVISAO_TECNICA.md](docs/REVISAO_TECNICA.md#gerador-determinístico-g1--issue-3-12102026).
 
@@ -37,7 +37,7 @@ java -jar tsp-cli/target/nodewalker-cli.jar --n 4 --seed 657 --solver brute-forc
 
 O JAR inclui apenas a CLI e `tsp-core`, sem dependências JavaFX. Para compilação/testes completos, continue usando `mvn clean verify`. Para testes unitários da CLI e suas dependências, use `mvn -pl tsp-cli -am test`.
 
-Trecho da saída reproduzida para esse comando; durações são impressas separadamente e variam conforme máquina, JVM e execução:
+Trecho determinístico da saída reproduzida para esse comando. A saída também inclui `elapsedNanos` e as durações do benchmark, que variam conforme máquina, JVM e execução:
 
 ```text
 Espaço teórico (N-1)!: 6
@@ -49,12 +49,11 @@ Rota: 0 -> 2 -> 1 -> 3 -> 0
 Custo: 2799
 Métricas da primeira execução medida:
   completeRoutesEvaluated: 6
-  elapsedNanos: não informado
-  visitedNodes: não informado
-  discardedRoutes: não informado
+  visitedNodes: 6
+  discardedRoutes: 0
 ```
 
-`--n`, `--seed` e `--solver` são obrigatórios. Somente `brute-force` está implementado; `backtracking` e valores desconhecidos são rejeitados. A seed aceita todo o intervalo de `long`, inclusive negativos. Opções usam pares `--opção valor`; opções desconhecidas, repetidas ou sem valor são erros. Consulte `java -jar tsp-cli/target/nodewalker-cli.jar --help`.
+`--n`, `--seed` e `--solver` são obrigatórios. Somente `brute-force` está disponível na CLI; `BacktrackingSolver` já existe no núcleo, mas sua integração ao terminal está pendente. A CLI rejeita `backtracking` e valores desconhecidos. A seed aceita todo o intervalo de `long`, inclusive negativos. Opções usam pares `--opção valor`; opções desconhecidas, repetidas ou sem valor são erros. Consulte `java -jar tsp-cli/target/nodewalker-cli.jar --help`.
 
 | Opção | Padrão | Validação e significado |
 | --- | --- | --- |
@@ -78,6 +77,30 @@ A mediana ordena uma cópia das durações: para quantidade ímpar, seleciona o 
 Use `--warmup 0 --runs 1` para uma execução simples. Falha ou cancelamento da geração não produz resultado de solver. Exemplo real: adicionar `--max-candidates 4` ao comando N=4/seed=657 falha após quatro candidatos e três cidades aceitas, antes de iniciar o solver. A API controlada preserva a interrupção da thread e observa seu token de cancelamento.
 
 Códigos de saída: **0** sucesso/ajuda; **2** argumentos inválidos ou preflight recusado; **1** falha de geração, solver ou consistência; **130** cancelamento reconhecido da geração. Diagnósticos vão para stderr; saída textual usa UTF-8.
+
+## Métricas dos solvers
+
+Cada chamada produz um snapshot imutável em `TspResult.metrics()`. Ausência significa **não informado**; zero presente é uma medição real. Melhor custo e rota pertencem a `TspResult`.
+
+| Métrica | Definição |
+| --- | --- |
+| `visitedNodes` — backtracking | Entradas processadas na recursão, incluindo raiz, estados internos, folhas e estados podados. Overflow de uma aresta antes da entrada no filho não conta esse filho. |
+| `visitedNodes` — força bruta | Permutações cujo processamento começou, inclusive uma tentativa que falhe. O algoritmo iterativo não conta prefixos ou nós recursivos. Em CONCLUIDO, coincide com as avaliações. |
+| `completeRoutesEvaluated` | Ciclos cujo custo completo foi calculado com sucesso, incluindo a aresta de retorno à origem. Folhas podadas e avaliações com overflow ficam fora desse contador. |
+| `discardedRoutes` | Número equivalente de ciclos completos eliminados por poda, em `BigInteger`. Cada poda com `depth` cidades no caminho, incluindo a origem, elimina `(N-depth)!` folhas; na profundidade N, elimina `0! = 1`. Na força bruta, é zero. |
+| `elapsedNanos` | Tempo interno de cada chamada, com `System.nanoTime()`: preparação, busca, canonicalização e consolidação/conferência das métricas, até antes da fábrica validada de `TspResult`. Exclui geração, impressão, renderização e a construção/validação final do resultado. Pode ser zero. |
+| Espaço teórico | `SearchSpace.completeRoutes(N)` calcula `(N-1)!` em `BigInteger`, com origem 0 fixa e ambas as orientações. É propriedade da instância, não trabalho observado nem campo adicional do snapshot. |
+
+O backtracking registra um histograma `long` de podas por profundidade e consolida `Σ podas[depth] × (N-depth)!` fora da recursão. Podas de subárvores distintas eliminam conjuntos disjuntos de folhas. Antes de publicar CONCLUIDO, ambos os solvers conferem exatamente:
+
+```text
+BigInteger.valueOf(completeRoutesEvaluated) + discardedRoutes
+    == SearchSpace.completeRoutes(N)
+```
+
+Essa igualdade não é exigida para ERRO, CANCELADO ou LIMITE_ATINGIDO. Overflow de custo ou de contador observado e falhas de instrumentação impedem CONCLUIDO, preservando diagnóstico, métricas parciais e incumbente válido quando disponíveis. O ramo que sofreu erro não é contado como poda. Os contadores são determinísticos; o tempo pode variar entre chamadas. A mediana da CLI usa suas próprias amostras externas de `solve(problem)` inteiro, sem substituir `elapsedNanos`.
+
+O teste N=25 usa uma matriz manual com todas as arestas zero. A primeira rota custa zero e a poda por igualdade permite concluir com **301 estados**, **1 ciclo avaliado** e **620448401733239439359999 folhas descartadas** (`24! - 1`), acima de `Long.MAX_VALUE`. Esse cenário verifica a aritmética sem enumerar 24! ciclos. A variante do TSP-13 com limite de nós depende da issue #9. Não há limite, timeout ou cancelamento novo nesta entrega, nem promessa de desempenho para N grande: o pior caso continua fatorial.
 
 ## Executar a demonstração do G0
 
