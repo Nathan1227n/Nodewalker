@@ -4,13 +4,13 @@
 
 Aplicação desktop Java para comparar **força bruta** e **backtracking com poda**, com visualização JavaFX 3D e alternativa 2D.
 
-> **Estado atual — G0 e início de G1:** o repositório contém uma demonstração gráfica ilustrativa, o modelo TSP e o gerador determinístico de cidades/custos 3D já integrados. Os contratos de rota, validação, resultado e solver da issue #4 já foram integrados (PR #22). **Os solvers, o mapa conectado ao TSP e o controle de execução ainda não estão implementados.** Não confundir a rota ilustrativa do G0 com um resultado ótimo.
+> **Estado atual — G1:** o repositório contém uma demonstração gráfica ilustrativa, o modelo TSP, o gerador determinístico com proteção operacional, os contratos do núcleo e o `BruteForceSolver` exato. A CLI permite resolver e medir instâncias sem JavaFX. **Backtracking, mapa conectado ao TSP e controle de execução dos solvers ainda não estão implementados.** Não confundir a rota ilustrativa do G0 com um resultado ótimo.
 
 ## Requisitos
 
 - JDK 21 (`java -version` / `javac -version`)
 - Apache Maven 3.9+ (`mvn -version`)
-- Fedora Linux ou Windows com ambiente de desktop para executar JavaFX
+- Ambiente de desktop e bibliotecas gráficas somente para executar JavaFX; a CLI e os testes dispensam desktop
 
 ## Compilar e testar
 
@@ -20,11 +20,64 @@ Na raiz do repositório:
 mvn clean verify
 ```
 
-A suíte contém 286 execuções de testes, incluindo casos parametrizados: três cobrem `(N-1)!`, quatro cobrem a seleção inicial 3D/2D, 70 cobrem o modelo de domínio, a seed, a imutabilidade defensiva e a soma segura de custos, 89 cobrem o gerador e 120 cobrem os novos contratos. Todos são executados sem abrir uma janela JavaFX.
+A suíte contém 535 execuções de testes, incluindo casos parametrizados: 406 do núcleo, 125 da CLI (120 unitários e cinco de integração do JAR) e quatro da seleção inicial 3D/2D. Todos são executados sem abrir uma janela JavaFX. `verify` inclui os testes do JAR após o empacotamento; `test` executa somente os testes unitários.
 
 Para reproduzir uma instância no núcleo, use `TspGenerator.generate(4, 657L)`. As coordenadas, a matriz de referência e a tentativa rejeitada estão documentadas em [REVISAO_TECNICA.md](docs/REVISAO_TECNICA.md#gerador-determinístico-g1--issue-3-12102026).
 
-`TspRoute` representa o ciclo incluindo o zero final; `RouteValidator.validateAndCost(problem, route)` valida sua compatibilidade e soma a matriz com retorno à origem e detecção de overflow. Resultados concluídos exigem orientação canônica e custo consistente; a prova de ótimo pertence aos futuros solvers. APIs e resultados interrompidos estão documentados em [REVISAO_TECNICA.md](docs/REVISAO_TECNICA.md#contratos-de-rota-resultado-e-solver--issue-4-12102026).
+`TspRoute` representa o ciclo incluindo o zero final; `RouteValidator.validateAndCost(problem, route)` valida sua compatibilidade e soma a matriz com retorno à origem e detecção de overflow. Resultados concluídos exigem orientação canônica e custo consistente; a prova de ótimo pertence ao solver, não ao validador. APIs e resultados interrompidos estão documentados em [REVISAO_TECNICA.md](docs/REVISAO_TECNICA.md#contratos-de-rota-resultado-e-solver--issue-4-12102026).
+
+## CLI e benchmark sem JavaFX
+
+Na raiz do repositório, estes comandos funcionam em Linux e Windows com JDK 21 e Maven, sem iniciar a aplicação gráfica:
+
+```bash
+mvn -pl tsp-cli -am clean verify
+java -jar tsp-cli/target/nodewalker-cli.jar --n 4 --seed 657 --solver brute-force --warmup 3 --runs 5
+```
+
+O JAR inclui apenas a CLI e `tsp-core`, sem dependências JavaFX. Para compilação/testes completos, continue usando `mvn clean verify`. Para testes unitários da CLI e suas dependências, use `mvn -pl tsp-cli -am test`.
+
+Trecho da saída reproduzida para esse comando; durações são impressas separadamente e variam conforme máquina, JVM e execução:
+
+```text
+Espaço teórico (N-1)!: 6
+Avaliações previstas na bateria (warm-up + medições): 48
+Benchmark: CONCLUIDO
+Seed da instância: 657
+Estado do solver: CONCLUIDO
+Rota: 0 -> 2 -> 1 -> 3 -> 0
+Custo: 2799
+Métricas da primeira execução medida:
+  completeRoutesEvaluated: 6
+  elapsedNanos: não informado
+  visitedNodes: não informado
+  discardedRoutes: não informado
+```
+
+`--n`, `--seed` e `--solver` são obrigatórios. Somente `brute-force` está implementado; `backtracking` e valores desconhecidos são rejeitados. A seed aceita todo o intervalo de `long`, inclusive negativos. Opções usam pares `--opção valor`; opções desconhecidas, repetidas ou sem valor são erros. Consulte `java -jar tsp-cli/target/nodewalker-cli.jar --help`.
+
+| Opção | Padrão | Validação e significado |
+| --- | --- | --- |
+| `--n` | obrigatório | Inteiro de 32 bits, >= 3 |
+| `--seed` | obrigatório | Inteiro de 64 bits |
+| `--solver` | obrigatório | `brute-force` |
+| `--warmup` | 3 | Inteiro >= 0; chamadas não medidas |
+| `--runs` | 5 | Inteiro >= 1; chamadas medidas |
+| `--max-total-routes` | 10000000 | `long` positivo; teto de avaliações da bateria inteira |
+| `--max-candidates` | 100000 | `long` positivo; candidatos da geração, inclusive rejeitados |
+| `--max-estimated-bytes` | 67108864 | `long` positivo; orçamento do modelo de memória da geração (64 MiB por padrão) |
+
+O preflight confere os orçamentos de candidatos e memória antes de calcular o fatorial e gerar a instância. O modelo de memória é o já definido por `TspGenerator.estimatePeakMemoryBytes`; não reserva heap nem garante ausência de `OutOfMemoryError`. O trabalho previsto é `(warmup + runs) × (N-1)!`, calculado com `BigInteger`. Por exemplo, N=11 com os padrões exige **29.030.400** avaliações e é recusado antes da geração pelo teto de 10 milhões. Para N<=22, o espaço é exibido exatamente; acima disso, usa-se explicitamente o limite inferior `21! = 51090942171709440000`, que já excede qualquer teto `long` aceito, sem construir um fatorial gigantesco.
+
+O teto pode ser ajustado explicitamente por `--max-total-routes`; a CLI não reduz silenciosamente a bateria nem altera o algoritmo exato. Essa proteção anterior à busca **não é um limite de tempo ou cancelamento durante `solve`**. Controles dos solvers pertencem à issue #9. A força bruta continua fatorial: não há promessa de desempenho para N grande.
+
+A instância é gerada uma única vez com `GenerationOptions` e reutilizada, por identidade, em todos os aquecimentos e medições. O tempo de geração é separado. Cada amostra mede somente `solver.solve(problem)` entre duas chamadas a `System.nanoTime()`: não inclui geração, impressão ou conferência dos resultados. Não há listener/trilha de eventos na API atual. A saída identifica Java/SO/arquitetura, opções efetivas, durações em ordem de execução e métricas da primeira execução medida; o tempo externo do benchmark não preenche `SolverMetrics.elapsedNanos`.
+
+A mediana ordena uma cópia das durações: para quantidade ímpar, seleciona o elemento central; para quantidade par, calcula a média aritmética exata dos dois centrais com `BigDecimal`, sem overflow de soma de `long` ou perda de meio nanossegundo. Não exige igualdade entre tempos. Exige estado CONCLUIDO, custo e rota iguais em **todas** as chamadas, inclusive aquecimentos. Qualquer erro, interrupção ou divergência encerra a bateria sem mediana, mesmo após medições válidas. A comparação definitiva entre algoritmos fica para depois do G2.
+
+Use `--warmup 0 --runs 1` para uma execução simples. Falha ou cancelamento da geração não produz resultado de solver. Exemplo real: adicionar `--max-candidates 4` ao comando N=4/seed=657 falha após quatro candidatos e três cidades aceitas, antes de iniciar o solver. A API controlada preserva a interrupção da thread e observa seu token de cancelamento.
+
+Códigos de saída: **0** sucesso/ajuda; **2** argumentos inválidos ou preflight recusado; **1** falha de geração, solver ou consistência; **130** cancelamento reconhecido da geração. Diagnósticos vão para stderr; saída textual usa UTF-8.
 
 ## Executar a demonstração do G0
 
@@ -52,6 +105,7 @@ NodeWalker/
 ├── .github/workflows/ci.yml
 ├── docs/                     # especificações v0.4 e notas técnicas
 ├── tsp-core/                 # algoritmo e modelo, sem JavaFX
+├── tsp-cli/                  # CLI e benchmark, depende somente de tsp-core
 ├── tsp-app/                  # interface JavaFX
 ├── pom.xml                   # Maven multimódulo
 └── README.md
