@@ -188,3 +188,37 @@ Os testes conferem N=3/4/5 com exatamente 2/6/24 avaliações, triângulo de cus
 Também são verificados ótimo `Long.MAX_VALUE` em cada posição da aresta do triângulo; overflow interno e no retorno antes/depois de um incumbente; preservação de incumbente `Long.MAX_VALUE` em erro posterior; ausência de falsa garantia de ótimo; saída imutável; ciclo, custo e métricas consistentes; e entrada nula. Repetições intercaladas e novos solvers usam N=3/4/5/6 e seeds 0/1/-1/extremos/657. A referência gerada N=4, seed=657 exige literalmente custo **2799** e rota `[0,2,1,3,0]`.
 
 São `(N-1)!` ciclos com custo O(N) por avaliação: tempo **O(N·(N-1)!)**, com espaço auxiliar da busca **O(N)**, além da instância já existente. Isso não promete desempenho ou viabilidade para N grande; não foi introduzido N máximo universal. Contratos, geração determinística e proteção do gerador foram preservados. Controle/cancelamento dos solvers, instrumentação adicional, backtracking, benchmark e UI continuam nas respectivas issues. A entrega da issue #5 destina-se à revisão, sem merge ou encerramento automático.
+
+## Backtracking exato com poda por custo parcial — issue #7, 15/10/2026
+
+A [PR #28](https://github.com/Nathan1227n/Nodewalker/pull/28) foi mesclada na `main` em `2511f1f`, após a PR #27 do solver de força bruta. A [issue #7](https://github.com/Nathan1227n/Nodewalker/issues/7) continua aberta. A branch `feat/g2-backtracking-solver` nasceu da `main` limpa e sincronizada com `git pull --ff-only`, após aprovação do plano. Fontes: issue #7 integral, DOC 03 §§9–10, esta revisão e os contratos existentes. Os registros acima descrevem o estado de suas entregas à época.
+
+`core.solver.BacktrackingSolver` implementa `TspSolver.solve(TspProblem)` no núcleo, sem dependências novas. Cada chamada cria seu próprio contexto de busca: rota parcial em `int[]`, visitadas em `boolean[]`, origem 0 marcada, custo passado por valor, incumbente e contadores. A recursão começa na profundidade 1 com custo zero, percorre índices 1 até N-1 em ordem crescente e desfaz a marcação em `finally`. O incumbente é uma cópia imutável do ciclo, incluindo o zero final; alterações posteriores no caminho de busca não o modificam.
+
+### Regra de poda e correção
+
+Cada chamada primeiro conta o estado, depois verifica `hasIncumbent && partialCost >= bestCost`. A verificação acontece inclusive na folha, antes de somar o retorno à origem. Se o ramo continuar, uma folha fecha o ciclo; um estado interno explora candidatos ainda não visitados. Não há heurística, deduplicação por inversão ou condição de poda adicional.
+
+Qualquer continuação tem custo final maior ou igual ao custo parcial porque todas as arestas, inclusive a de retorno, são não negativas. Se esse custo parcial já alcança o incumbente, nenhuma continuação pode produzir solução estritamente melhor. A igualdade também é descartada: como a exploração é lexicográfica e somente custo estritamente menor substitui o incumbente, a primeira ótima permanece. Um indicador explícito separa ausência de incumbente de custos legítimos zero ou `Long.MAX_VALUE`. Somente ao terminar corretamente a busca a orientação é canonicalizada e `TspResult.completed` valida o ciclo e o custo.
+
+Todas as somas de custo usam `CostMath.addExact`, sem saturação ou truncamento. Overflow detectado ou outra `RuntimeException` encerra a busca em ERRO com classe/mensagem, métricas parciais e somente incumbente anterior completo válido, se houver. A falha não é ignorada nem reinterpretada como poda. Uma falha na validação final impede a publicação desse incumbente. Entrada nula lança `NullPointerException` fora do tratamento de execução.
+
+Uma aresta restante de um ramo já podado não é calculada; portanto um overflow hipotético nesse ramo não é uma falha observada. Há teste em que o backtracking prova o ótimo 4 e poda folhas antes de retornos `Long.MAX_VALUE`, enquanto a força bruta tenta essas somas e retorna ERRO. A concordância diferencial de custo e rota é exigida nas instâncias pequenas com custos de ciclos representáveis; o backtracking não precisa avaliar rotas que sua poda já demonstrou incapazes de melhorar o incumbente.
+
+### Métricas e evidências
+
+Somente `visitedNodes` e `completeRoutesEvaluated` são reportados. O primeiro conta estados efetivamente processados, incluindo a raiz, estados internos, folhas e estados em que a poda é aplicada. O segundo conta apenas ciclos cujo custo completo foi calculado com sucesso, incluindo o retorno. Uma folha podada ou cujo fechamento sofreu overflow não incrementa avaliações; overflow antes de entrar no filho não conta esse filho como visitado. Os contadores usam `Math.incrementExact`, impedindo wraparound, e valores parciais presentes podem ser zero.
+
+`elapsedNanos` e `discardedRoutes` permanecem ausentes. Não se apresenta quantidade de chamadas de poda como folhas descartadas, não se infere zero para métricas não medidas e não se declara a invariante fatorial de descarte. Histograma, contagem definitiva de folhas eliminadas em `BigInteger` e sua invariante pertencem à issue #8.
+
+`mvn -pl tsp-core test`: **1456 testes aprovados**. `mvn clean verify`: **BUILD SUCCESS** nos quatro módulos, com **1585 testes aprovados** (1456 do núcleo, 125 da CLI e quatro da aplicação), sem falhas, erros ou ignorados. São **1050 casos novos**, preservando os 535 anteriores. Contagens incluem testes parametrizados. Ambiente local: Linux, OpenJDK 21.0.12 e Maven 3.8.7. `git diff --check` aprovado.
+
+Os testes incluem 1020 comparações de custo e rota canônica com a força bruta: N=3..7, seeds 0..199, -1, `Long.MIN_VALUE`, `Long.MAX_VALUE` e 657. Os demais 30 casos cobrem ótimos manuais N=3/4/5, referência de custo 300 e rota `[0,1,2,3,0]`, ótimos posteriores a incumbentes mais caros, empate total positivo/zero, empate entre ciclos distintos, poda parcial e de folha, ótimo `Long.MAX_VALUE`, overflow parcial/no retorno com e sem incumbente, inclusive incumbente `Long.MAX_VALUE`, custo recalculado, canonicidade, imutabilidade, repetições intercaladas e entrada nula. A referência gerada N=4/seed=657 retorna custo literal 2799 e rota `[0,2,1,3,0]`.
+
+As contagens de poda são conferidas com exemplos manuais: no triângulo 0–1=0, 1–2=5, 2–0=0, há cinco estados visitados e um ciclo avaliado; a folha inversa é podada em igualdade. Com quatro cidades e todas as arestas zero, são sete estados e um ciclo. Com quatro cidades, arestas de custo 1 e diagonais 0–2/1–3 de custo 100, prefixos mais caros são podados e resultam em dez estados e dois ciclos avaliados.
+
+### Complexidade, recursão e limites desta entrega
+
+O pior caso permanece **O(N·(N-1)!)**, equivalente a **O(N!)**, com memória auxiliar **O(N)** para caminhos, visitadas, incumbente e pilha recursiva, além da matriz imutável existente. A poda pode reduzir o trabalho observado, mas não garante desempenho para N grande. A profundidade da pilha é O(N); seu limite real depende da JVM e de sua configuração. `Error`, incluindo `StackOverflowError` e `OutOfMemoryError`, é propagado conforme a política já adotada pela força bruta, sem resultado falso de sucesso. Não se impõe N máximo universal.
+
+Contratos públicos, `BruteForceSolver`, gerador, CLI/benchmark, aplicação e documentação visual foram preservados. A integração deste solver à CLI não pertence a esta PR. Cancelamento, timeout e limites de nós permanecem na issue #9. A entrega da issue #7 destina-se à revisão, sem merge ou encerramento automático.
