@@ -12,6 +12,7 @@
 
     <modules>
         <module>tsp-core</module>
+        <module>tsp-cli</module>
         <module>tsp-app</module>
     </modules>
 
