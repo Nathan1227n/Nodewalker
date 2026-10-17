@@ -42,6 +42,29 @@ final class SolverRunMetrics {
         visitedNodes = Math.incrementExact(visitedNodes);
     }
 
+    long visitedNodes() {
+        return visitedNodes;
+    }
+
+    long evaluatedRoutes() {
+        return evaluatedRoutes;
+    }
+
+    long elapsedAtCheckpoint() {
+        if (stopped) {
+            return elapsedNanos.orElseThrow();
+        }
+        return durationNow();
+    }
+
+    private long durationNow() {
+        long duration = clock.getAsLong() - start;
+        if (duration < 0) {
+            throw new IllegalStateException("Duração do solver negativa ou não representável em long.");
+        }
+        return duration;
+    }
+
     long nextEvaluationCount() {
         return Math.incrementExact(evaluatedRoutes);
     }
@@ -65,11 +88,7 @@ final class SolverRunMetrics {
         // Marca antes de ler: falha no relógio não deve causar novas tentativas ao reportar ERRO.
         stopped = true;
         // Subtração intencionalmente modular: a origem pode ser negativa e atravessar o limite.
-        long duration = clock.getAsLong() - start;
-        if (duration < 0) {
-            throw new IllegalStateException("Duração do solver negativa ou não representável em long.");
-        }
-        elapsedNanos = OptionalLong.of(duration);
+        elapsedNanos = OptionalLong.of(durationNow());
     }
 
     SolverMetrics snapshot(Optional<BigInteger> discardedRoutes) {
@@ -79,7 +98,12 @@ final class SolverRunMetrics {
 
     TspResult errorResult(String solverName, TspProblem problem, TspRoute incumbent, long cost,
                           PruningHistogram pruning, RuntimeException failure) {
-        String reason = "Falha no " + solverName + ": " + diagnostic(failure);
+        return interruptedResult(problem, incumbent, cost, pruning, SolverStatus.ERRO,
+                "Falha no " + solverName + ": " + diagnostic(failure));
+    }
+
+    TspResult interruptedResult(TspProblem problem, TspRoute incumbent, long cost,
+                                PruningHistogram pruning, SolverStatus status, String reason) {
         Optional<BigInteger> discarded = Optional.empty();
         try {
             discarded = Optional.of(pruning == null ? BigInteger.ZERO : pruning.discardedRoutes());
@@ -94,13 +118,13 @@ final class SolverRunMetrics {
         SolverMetrics metrics = snapshot(discarded);
         if (incumbent != null) {
             try {
-                return TspResult.interrupted(problem, SolverStatus.ERRO, Optional.of(incumbent),
+                return TspResult.interrupted(problem, status, Optional.of(incumbent),
                         OptionalLong.of(cost), metrics, reason);
             } catch (RuntimeException validationFailure) {
                 reason += "; falha ao validar incumbente: " + diagnostic(validationFailure);
             }
         }
-        return TspResult.interrupted(problem, SolverStatus.ERRO, Optional.empty(), OptionalLong.empty(), metrics, reason);
+        return TspResult.interrupted(problem, status, Optional.empty(), OptionalLong.empty(), metrics, reason);
     }
 
     private static String diagnostic(RuntimeException failure) {

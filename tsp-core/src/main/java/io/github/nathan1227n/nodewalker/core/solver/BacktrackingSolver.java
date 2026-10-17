@@ -20,13 +20,19 @@ import java.util.function.LongSupplier;
  */
 public final class BacktrackingSolver implements TspSolver {
     private final LongSupplier clock;
+    private final SolverExecutionControl.Observer observer;
 
     public BacktrackingSolver() {
         this(System::nanoTime);
     }
 
     BacktrackingSolver(LongSupplier clock) {
+        this(clock, null);
+    }
+
+    BacktrackingSolver(LongSupplier clock, SolverExecutionControl.Observer observer) {
         this.clock = Objects.requireNonNull(clock);
+        this.observer = observer;
     }
 
     /**
@@ -42,14 +48,29 @@ public final class BacktrackingSolver implements TspSolver {
      */
     @Override
     public TspResult solve(TspProblem problem) {
+        return solveInternal(problem, null, null);
+    }
+
+    @Override
+    public TspResult solve(TspProblem problem, SolverExecutionOptions options, SolverCancellationToken token) {
+        Objects.requireNonNull(problem, "O problema TSP não pode ser nulo.");
+        Objects.requireNonNull(options, "As opções não podem ser nulas.");
+        Objects.requireNonNull(token, "O token não pode ser nulo.");
+        SolverPreflight.analyze(SolverAlgorithm.BACKTRACKING, problem.size(), options).requireAllowed();
+        return solveInternal(problem, options, token);
+    }
+
+    private TspResult solveInternal(TspProblem problem, SolverExecutionOptions options, SolverCancellationToken token) {
         Objects.requireNonNull(problem, "O problema TSP não pode ser nulo.");
         SolverRunMetrics metrics = new SolverRunMetrics(clock);
+        SolverExecutionControl control = new SolverExecutionControl(metrics, options, token, observer);
         PruningHistogram pruning = null;
         Search search = null;
         try {
             metrics.start();
+            control.checkpoint(SolverExecutionControl.Phase.PREPARATION);
             pruning = new PruningHistogram(problem.size());
-            search = new Search(problem, metrics, pruning);
+            search = new Search(problem, metrics, pruning, control);
             search.visit(1, 0);
             if (!search.hasIncumbent) {
                 throw new IllegalStateException("A busca terminou sem encontrar um ciclo completo.");
@@ -58,7 +79,11 @@ public final class BacktrackingSolver implements TspSolver {
             BigInteger discarded = pruning.discardedRoutes();
             metrics.requireCompleteCoverage(problem.size(), discarded);
             metrics.stop();
+            control.checkpoint(SolverExecutionControl.Phase.FINALIZATION);
             return TspResult.completed(problem, canonicalRoute, search.bestCost, metrics.snapshot(Optional.of(discarded)));
+        } catch (SolverExecutionControl.Stopped stopped) {
+            return metrics.interruptedResult(problem, search == null ? null : search.bestRoute,
+                    search == null ? 0 : search.bestCost, pruning, stopped.status(), stopped.getMessage());
         } catch (RuntimeException failure) {
             return metrics.errorResult("BacktrackingSolver", problem, search == null ? null : search.bestRoute,
                     search == null ? 0 : search.bestCost, pruning, failure);
@@ -71,14 +96,17 @@ public final class BacktrackingSolver implements TspSolver {
         private final boolean[] visited;
         private final SolverRunMetrics metrics;
         private final PruningHistogram pruning;
+        private final SolverExecutionControl control;
         private boolean hasIncumbent;
         private TspRoute bestRoute;
         private long bestCost;
 
-        private Search(TspProblem problem, SolverRunMetrics metrics, PruningHistogram pruning) {
+        private Search(TspProblem problem, SolverRunMetrics metrics, PruningHistogram pruning,
+                       SolverExecutionControl control) {
             this.problem = problem;
             this.metrics = metrics;
             this.pruning = pruning;
+            this.control = control;
             path = new int[problem.size()];
             visited = new boolean[problem.size()];
             path[0] = 0;
@@ -86,6 +114,7 @@ public final class BacktrackingSolver implements TspSolver {
         }
 
         private void visit(int depth, long partialCost) {
+            control.checkpoint(SolverExecutionControl.Phase.BEFORE_NODE);
             metrics.visit();
 
             // Toda continuação custa >= partialCost, inclusive o retorno à origem.
@@ -99,6 +128,7 @@ public final class BacktrackingSolver implements TspSolver {
                 // Reserva a capacidade do contador antes de calcular outro ciclo;
                 // publica o incremento somente após somar o retorno sem overflow.
                 long nextCount = metrics.nextEvaluationCount();
+                control.checkpoint(SolverExecutionControl.Phase.EDGE);
                 long cost = CostMath.addExact(partialCost, problem.cost(path[depth - 1], 0));
                 metrics.completeEvaluation(nextCount);
                 if (!hasIncumbent || cost < bestCost) {
@@ -110,7 +140,10 @@ public final class BacktrackingSolver implements TspSolver {
             }
 
             for (int city = 1; city < path.length; city++) {
+                control.checkpoint(SolverExecutionControl.Phase.ITERATION);
                 if (!visited[city]) {
+                    // Reserva operacional antes da soma: um filho impedido não calcula custo nem conta nó.
+                    control.checkpoint(SolverExecutionControl.Phase.BEFORE_DESCENT);
                     long nextCost = CostMath.addExact(partialCost, problem.cost(path[depth - 1], city));
                     path[depth] = city;
                     visited[city] = true;
