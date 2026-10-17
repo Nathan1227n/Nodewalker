@@ -1,6 +1,5 @@
 package io.github.nathan1227n.nodewalker.core.solver;
 
-import io.github.nathan1227n.nodewalker.core.SearchSpace;
 import io.github.nathan1227n.nodewalker.core.model.CostMath;
 import io.github.nathan1227n.nodewalker.core.model.TspProblem;
 import io.github.nathan1227n.nodewalker.core.model.TspRoute;
@@ -9,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.OptionalLong;
+import java.util.function.LongSupplier;
 
 /**
  * Solver exato de referência, sem poda, com origem fixa 0 e enumeração lexicográfica.
@@ -19,6 +18,16 @@ import java.util.OptionalLong;
  * O estado da busca é local a cada chamada; métricas não medidas ficam ausentes.
  */
 public final class BruteForceSolver implements TspSolver {
+    private final LongSupplier clock;
+
+    public BruteForceSolver() {
+        this(System::nanoTime);
+    }
+
+    BruteForceSolver(LongSupplier clock) {
+        this.clock = Objects.requireNonNull(clock);
+    }
+
     /**
      * Enumera todos os ciclos e conserva a primeira ótima, normalizando somente a saída.
      * Falhas de execução retornam ERRO com a contagem parcial e, quando disponível,
@@ -31,39 +40,37 @@ public final class BruteForceSolver implements TspSolver {
     @Override
     public TspResult solve(TspProblem problem) {
         Objects.requireNonNull(problem, "O problema TSP não pode ser nulo.");
-        long evaluatedRoutes = 0;
+        SolverRunMetrics metrics = new SolverRunMetrics(clock);
         TspRoute bestRoute = null;
         long bestCost = 0;
 
         try {
+            metrics.start();
             int[] permutation = new int[problem.size() - 1];
             for (int i = 0; i < permutation.length; i++) {
                 permutation[i] = i + 1;
             }
 
             do {
+                // Um estado observado é uma permutação cujo processamento começou,
+                // inclusive se seu custo falhar; não há árvore recursiva neste algoritmo.
+                metrics.visit();
                 // Verifica a capacidade do contador antes de avaliar outra rota,
                 // mas só publica o incremento depois de calcular o ciclo inteiro.
-                long nextCount = Math.incrementExact(evaluatedRoutes);
+                long nextCount = metrics.nextEvaluationCount();
                 long cost = cycleCost(problem, permutation);
-                evaluatedRoutes = nextCount;
+                metrics.completeEvaluation(nextCount);
                 if (bestRoute == null || cost < bestCost) {
                     bestRoute = routeOf(permutation);
                     bestCost = cost;
                 }
             } while (nextPermutation(permutation));
+            metrics.requireCompleteCoverage(problem.size(), BigInteger.ZERO);
+            TspRoute canonicalRoute = bestRoute.canonical();
+            metrics.stop();
+            return TspResult.completed(problem, canonicalRoute, bestCost, metrics.snapshot(Optional.of(BigInteger.ZERO)));
         } catch (RuntimeException failure) {
-            return errorResult(problem, bestRoute, bestCost, evaluatedRoutes, failure);
-        }
-
-        try {
-            if (!BigInteger.valueOf(evaluatedRoutes).equals(SearchSpace.completeRoutes(problem.size()))) {
-                throw new IllegalStateException("A enumeração não cobriu todas as (N-1)! rotas.");
-            }
-            return TspResult.completed(problem, bestRoute.canonical(), bestCost, metrics(evaluatedRoutes));
-        } catch (RuntimeException failure) {
-            // Uma falha na conferência final não permite publicar esse incumbente.
-            return errorResult(problem, null, 0, evaluatedRoutes, failure);
+            return metrics.errorResult("BruteForceSolver", problem, bestRoute, bestCost, null, failure);
         }
     }
 
@@ -111,20 +118,5 @@ public final class BruteForceSolver implements TspSolver {
         int temporary = values[left];
         values[left] = values[right];
         values[right] = temporary;
-    }
-
-    private static SolverMetrics metrics(long evaluatedRoutes) {
-        return new SolverMetrics(OptionalLong.empty(), OptionalLong.of(evaluatedRoutes),
-                OptionalLong.empty(), Optional.empty());
-    }
-
-    private static TspResult errorResult(TspProblem problem, TspRoute incumbent, long cost,
-                                         long evaluatedRoutes, RuntimeException failure) {
-        String reason = "Falha no BruteForceSolver: " + failure.getClass().getName();
-        if (failure.getMessage() != null) {
-            reason += ": " + failure.getMessage();
-        }
-        return TspResult.interrupted(problem, SolverStatus.ERRO, Optional.ofNullable(incumbent),
-                incumbent == null ? OptionalLong.empty() : OptionalLong.of(cost), metrics(evaluatedRoutes), reason);
     }
 }

@@ -206,10 +206,10 @@ class BruteForceSolverTest {
         assertCompleted(problem, independentSolver, expectedRoutes);
         assertEquals(first.route(), repeated.route());
         assertEquals(first.cost(), repeated.cost());
-        assertEquals(first.metrics(), repeated.metrics());
+        assertDeterministicMetrics(first.metrics(), repeated.metrics());
         assertEquals(first.route(), independentSolver.route());
         assertEquals(first.cost(), independentSolver.cost());
-        assertEquals(first.metrics(), independentSolver.metrics());
+        assertDeterministicMetrics(first.metrics(), independentSolver.metrics());
     }
 
     @Test
@@ -227,12 +227,14 @@ class BruteForceSolverTest {
     @Test
     void preservesImmutableResultsAfterSubsequentCalls() {
         TspResult result = solver.solve(ContractTestProblems.fourCityReference());
+        SolverMetrics snapshot = result.metrics();
 
         solver.solve(ContractTestProblems.triangle());
 
         assertEquals(List.of(0, 1, 2, 3, 0), result.route().orElseThrow().indices());
         assertEquals(300L, result.cost().orElseThrow());
         assertMetrics(result.metrics(), 6);
+        assertEquals(snapshot, result.metrics());
         assertThrows(UnsupportedOperationException.class, () -> result.route().orElseThrow().indices().set(1, 3));
     }
 
@@ -265,18 +267,28 @@ class BruteForceSolverTest {
         assertFalse(result.optimalityGuaranteed());
         assertTrue(result.reason().orElseThrow().contains("ArithmeticException"));
         assertTrue(result.reason().orElseThrow().contains("Long.MAX_VALUE"));
-        assertMetrics(result.metrics(), expectedRoutes);
+        assertMetrics(result.metrics(), expectedRoutes, expectedRoutes + 1);
         assertEquals(result.route().isPresent(), result.cost().isPresent());
         result.route().ifPresent(route ->
                 assertEquals(RouteValidator.validateAndCost(problem, route), result.cost().orElseThrow()));
     }
 
     private static void assertMetrics(SolverMetrics metrics, long expectedRoutes) {
+        assertMetrics(metrics, expectedRoutes, expectedRoutes);
+    }
+
+    private static void assertMetrics(SolverMetrics metrics, long expectedRoutes, long expectedNodes) {
         assertTrue(metrics.completeRoutesEvaluated().isPresent());
         assertEquals(expectedRoutes, metrics.completeRoutesEvaluated().orElseThrow());
-        assertTrue(metrics.elapsedNanos().isEmpty());
-        assertTrue(metrics.visitedNodes().isEmpty());
-        assertTrue(metrics.discardedRoutes().isEmpty());
+        assertTrue(metrics.elapsedNanos().orElseThrow() >= 0);
+        assertEquals(expectedNodes, metrics.visitedNodes().orElseThrow());
+        assertEquals(BigInteger.ZERO, metrics.discardedRoutes().orElseThrow());
+    }
+
+    private static void assertDeterministicMetrics(SolverMetrics expected, SolverMetrics actual) {
+        assertEquals(expected.completeRoutesEvaluated(), actual.completeRoutesEvaluated());
+        assertEquals(expected.visitedNodes(), actual.visitedNodes());
+        assertEquals(expected.discardedRoutes(), actual.discardedRoutes());
     }
 
     private static List<Integer> firstRoute(int n) {

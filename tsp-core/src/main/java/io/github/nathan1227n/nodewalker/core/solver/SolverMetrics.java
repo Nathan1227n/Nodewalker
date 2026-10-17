@@ -7,13 +7,15 @@ import java.util.OptionalLong;
 
 /**
  * Snapshot imutável de métricas reportadas, inclusive em execuções interrompidas.
- * Ausência significa não reportado, não zero. A instrumentação pertence à issue #8.
+ * Ausência significa não reportado, não zero. Os solvers medem sua própria duração;
+ * a medição externa da CLI é independente e não preenche este snapshot.
  * Contadores observados usam long sob limites operacionais representáveis;
  * folhas descartadas usam BigInteger. O espaço teórico é fornecido por SearchSpace.
  *
- * @param elapsedNanos duração reportada pelo solver em nanossegundos
- * @param completeRoutesEvaluated folhas completas efetivamente avaliadas
- * @param visitedNodes estados efetivamente processados, incluindo folhas e verificações de poda
+ * @param elapsedNanos duração interna: preparação, busca e consolidação, antes da fábrica de TspResult
+ * @param completeRoutesEvaluated ciclos calculados com sucesso, incluindo retorno à origem
+ * @param visitedNodes no backtracking, entradas na recursão, incluindo raiz e podas;
+ *                     na força bruta, permutações cujo processamento começou, inclusive falhas
  * @param discardedRoutes folhas completas eliminadas por poda, não quantidade de chamadas de poda
  */
 public record SolverMetrics(OptionalLong elapsedNanos, OptionalLong completeRoutesEvaluated,
