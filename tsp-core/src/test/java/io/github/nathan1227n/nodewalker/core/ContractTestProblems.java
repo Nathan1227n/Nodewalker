@@ -40,7 +40,41 @@ public final class ContractTestProblems {
         });
     }
 
-    private static TspProblem problem(long[][] costs) {
+    public static TspProblem lateFirstOptimum() {
+        return problem(new long[][] {
+                {0, 9, 1, 1}, {9, 0, 1, 1}, {1, 1, 0, 9}, {1, 1, 9, 0}
+        });
+    }
+
+    public static TspProblem distinctTiedCycles() {
+        return problem(new long[][] {
+                {0, 5, 1, 5}, {5, 0, 5, 1}, {1, 5, 0, 5}, {5, 1, 5, 0}
+        });
+    }
+
+    public static TspProblem equalEdges(int n, long cost) {
+        long[][] costs = new long[n][n];
+        for (int from = 0; from < n; from++) {
+            for (int to = 0; to < n; to++) {
+                costs[from][to] = from == to ? 0 : cost;
+            }
+        }
+        return problem(costs);
+    }
+
+    /** Um ciclo e seu inverso custam N; todo ciclo usa N arestas >= 1. */
+    public static TspProblem unitRing(int n) {
+        long[][] costs = new long[n][n];
+        for (int from = 0; from < n; from++) {
+            for (int to = 0; to < n; to++) {
+                int distance = Math.abs(from - to);
+                costs[from][to] = from == to ? 0 : distance == 1 || distance == n - 1 ? 1 : 1000;
+            }
+        }
+        return problem(costs);
+    }
+
+    public static TspProblem problem(long[][] costs) {
         List<City> cities = IntStream.range(0, costs.length)
                 .mapToObj(i -> new City(i, 0, 0, 0)).toList();
         return new TspProblem(cities, costs);

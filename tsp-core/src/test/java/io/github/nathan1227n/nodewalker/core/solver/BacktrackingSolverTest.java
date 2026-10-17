@@ -15,6 +15,7 @@ import io.github.nathan1227n.nodewalker.core.validation.RouteValidator;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
@@ -174,7 +175,7 @@ class BacktrackingSolverTest {
         assertMetrics(solver.solve(equalEdges(5, 0)), 1, 11);
         TspProblem problem = equalEdges(25, 0);
 
-        TspResult result = solver.solve(problem);
+        TspResult result = solver.solve(problem, SolverExecutionOptions.nodeLimit(301), new SolverCancellationToken());
 
         assertCompleted(problem, result);
         assertEquals(firstRoute(25), result.route().orElseThrow().indices());
@@ -299,18 +300,24 @@ class BacktrackingSolverTest {
 
     @ParameterizedTest(name = "N={0}, seed={1}")
     @MethodSource("differentialCases")
-    void agreesWithBruteForceOnSmallRepresentableInstances(int n, long seed) {
+    void agreesWithBruteForceAndHeldKarpOnSmallRepresentableInstances(int n, long seed) {
         TspProblem problem = TspGenerator.generate(n, seed);
 
+        HeldKarpOracle.Optimum optimum = HeldKarpOracle.solve(problem);
         TspResult reference = new BruteForceSolver().solve(problem);
         TspResult result = solver.solve(problem);
+        var details = SolverAuditAssertions.diagnostics("TSP-07, solvers legados", problem, () -> optimum,
+                Map.of("BruteForceSolver", reference, "BacktrackingSolver", result));
 
+        SolverAuditAssertions.assertCompleted(problem, optimum, reference, details);
+        SolverAuditAssertions.assertCompleted(problem, optimum, result, details);
+        assertTrue(result.metrics().visitedNodes().orElseThrow() >= n, details);
         assertCompleted(problem, result);
-        assertEquals(SolverStatus.CONCLUIDO, reference.status());
-        assertEquals(reference.cost(), result.cost());
-        assertEquals(reference.route(), result.route());
+        assertEquals(SolverStatus.CONCLUIDO, reference.status(), details);
+        assertEquals(reference.cost(), result.cost(), details);
+        assertEquals(reference.route(), result.route(), details);
         assertTrue(result.metrics().completeRoutesEvaluated().orElseThrow()
-                <= reference.metrics().completeRoutesEvaluated().orElseThrow());
+                <= reference.metrics().completeRoutesEvaluated().orElseThrow(), details);
     }
 
     @ParameterizedTest

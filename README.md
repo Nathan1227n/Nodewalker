@@ -110,6 +110,8 @@ Ambos os solvers aceitam `solve(problem, options, token)`, com cancelamento coop
 
 Contratos, precedência, fronteiras, exemplos, benchmark reproduzível e consumo futuro pela CLI: [CONTROLE_SOLVERS.md](docs/CONTROLE_SOLVERS.md).
 
+O conjunto de testes também audita o ótimo com Held–Karp independente em `BigInteger`, restrito a `src/test/java` e N≤12. As 1020 configurações diferenciais existentes comparam custo e rota dos dois solvers com essa referência; N=25 usa somente backtracking controlado e contagens analíticas. Recorrência, desempate, overflow, cobertura TSP-01..13 e reprodução: [AUDITORIA_OTIMO.md](docs/AUDITORIA_OTIMO.md).
+
 ## Executar a demonstração do G0
 
 O primeiro comando instala o módulo `tsp-core` no repositório local do Maven; o segundo abre a UI de `tsp-app`.
