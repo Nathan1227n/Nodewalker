@@ -16,6 +16,7 @@ import io.github.nathan1227n.nodewalker.core.model.TspProblem;
 import io.github.nathan1227n.nodewalker.core.validation.RouteValidator;
 import java.math.BigInteger;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -428,27 +429,34 @@ class SolverExecutionControlsTest {
         for (int budget : new int[] {24, 25, 100, 250, 300, 301, 302}) {
             var result = new BacktrackingSolver(() -> 0).solve(problem,
                     SolverExecutionOptions.nodeLimit(budget), new SolverCancellationToken());
-            assertEquals(budget < 301 ? SolverStatus.LIMITE_ATINGIDO : SolverStatus.CONCLUIDO, result.status());
-            assertEquals(Math.min(budget, 301), result.metrics().visitedNodes().orElseThrow());
+            BigInteger expectedDiscarded = SolverAuditAssertions.zeroCostDiscardedRoutes(25, budget);
+            var details = SolverAuditAssertions.diagnostics("TSP-13, maxVisitedNodes=" + budget, problem,
+                    () -> "Referência analítica: ótimo=0, 24!=620448401733239439360000, descartes=" + expectedDiscarded,
+                    Map.of("BacktrackingSolver", result));
+            assertEquals(expectedDiscarded, result.metrics().discardedRoutes().orElseThrow(), details);
+            assertEquals(new BigInteger("620448401733239439360000"), SolverAuditAssertions.factorial(24), details);
+            SolverAuditAssertions.assertIncumbent(problem, BigInteger.ZERO, result, details);
+            assertEquals(budget < 301 ? SolverStatus.LIMITE_ATINGIDO : SolverStatus.CONCLUIDO, result.status(), details);
+            assertEquals(Math.min(budget, 301), result.metrics().visitedNodes().orElseThrow(), details);
             BigInteger discarded = result.metrics().discardedRoutes().orElseThrow();
-            assertTrue(discarded.compareTo(previous) >= 0);
+            assertTrue(discarded.compareTo(previous) >= 0, details);
             previous = discarded;
             BigInteger covered = discarded.add(BigInteger.valueOf(result.metrics().completeRoutesEvaluated().orElseThrow()));
             if (budget < 301) {
-                assertFalse(result.optimalityGuaranteed());
-                assertTrue(covered.compareTo(SearchSpace.completeRoutes(25)) < 0);
+                assertFalse(result.optimalityGuaranteed(), details);
+                assertTrue(covered.compareTo(SearchSpace.completeRoutes(25)) < 0, details);
             } else {
-                assertEquals(new BigInteger("620448401733239439360000"), covered);
-                assertTrue(result.optimalityGuaranteed());
+                assertEquals(new BigInteger("620448401733239439360000"), covered, details);
+                assertTrue(result.optimalityGuaranteed(), details);
             }
             if (budget >= 250) {
-                assertTrue(discarded.compareTo(BigInteger.valueOf(Long.MAX_VALUE)) > 0);
+                assertTrue(discarded.compareTo(BigInteger.valueOf(Long.MAX_VALUE)) > 0, details);
             }
             if (budget >= 25) {
-                assertEquals(0, RouteValidator.validateAndCost(problem, result.route().orElseThrow()));
-                assertEquals(1, result.metrics().completeRoutesEvaluated().orElseThrow());
+                assertEquals(0, RouteValidator.validateAndCost(problem, result.route().orElseThrow()), details);
+                assertEquals(1, result.metrics().completeRoutesEvaluated().orElseThrow(), details);
             } else {
-                assertTrue(result.route().isEmpty());
+                assertTrue(result.route().isEmpty(), details);
             }
         }
     }
