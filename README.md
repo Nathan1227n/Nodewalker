@@ -100,7 +100,15 @@ BigInteger.valueOf(completeRoutesEvaluated) + discardedRoutes
 
 Essa igualdade não é exigida para ERRO, CANCELADO ou LIMITE_ATINGIDO. Overflow de custo ou de contador observado e falhas de instrumentação impedem CONCLUIDO, preservando diagnóstico, métricas parciais e incumbente válido quando disponíveis. O ramo que sofreu erro não é contado como poda. Os contadores são determinísticos; o tempo pode variar entre chamadas. A mediana da CLI usa suas próprias amostras externas de `solve(problem)` inteiro, sem substituir `elapsedNanos`.
 
-O teste N=25 usa uma matriz manual com todas as arestas zero. A primeira rota custa zero e a poda por igualdade permite concluir com **301 estados**, **1 ciclo avaliado** e **620448401733239439359999 folhas descartadas** (`24! - 1`), acima de `Long.MAX_VALUE`. Esse cenário verifica a aritmética sem enumerar 24! ciclos. A variante do TSP-13 com limite de nós depende da issue #9. Não há limite, timeout ou cancelamento novo nesta entrega, nem promessa de desempenho para N grande: o pior caso continua fatorial.
+O teste N=25 usa uma matriz manual com todas as arestas zero. A primeira rota custa zero e a poda por igualdade permite concluir com **301 estados**, **1 ciclo avaliado** e **620448401733239439359999 folhas descartadas** (`24! - 1`), acima de `Long.MAX_VALUE`. Esse cenário verifica a aritmética sem enumerar 24! ciclos. Com limite de 300 nós, a busca retorna LIMITE_ATINGIDO e somente os descartes observados; com 301, conclui. O pior caso continua fatorial.
+
+## Controle de execução dos solvers
+
+Ambos os solvers aceitam `solve(problem, options, token)`, com cancelamento cooperativo thread-safe, observação da interrupção da thread sem limpar seu sinal e limites independentes de nós/tempo. `SolverExecutionOptions.limits(1_000_000, 2000)` permite até um milhão de estados e prazo de 2000 ms; somente a tentativa de outro estado excede o orçamento de nós. Cancelamento, limite e erro preservam incumbente completo validado e métricas parciais, sempre sem declarar ótimo comprovado.
+
+`SolverPreflight` informa N, origem, algoritmo, limites e espaço fatorial. Para N extremo, identifica um limite inferior demonstrado quando o espaço exato não é calculado. O perfil configurável padrão permite execução explicitamente sem limites até N=10 por solver, conforme benchmark documentado; acima disso, exige pelo menos um limite. **`solve(problem)` conserva o contrato legado e não recebe limites automáticos.** Geração, CLI atual e interface gráfica mantêm ciclos de vida próprios.
+
+Contratos, precedência, fronteiras, exemplos, benchmark reproduzível e consumo futuro pela CLI: [CONTROLE_SOLVERS.md](docs/CONTROLE_SOLVERS.md).
 
 ## Executar a demonstração do G0
 

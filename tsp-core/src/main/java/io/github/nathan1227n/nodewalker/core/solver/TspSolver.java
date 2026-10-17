@@ -6,8 +6,7 @@ import io.github.nathan1227n.nodewalker.core.model.TspProblem;
  * Contrato comum de entrada/saída para os futuros solvers exatos, sem dependência gráfica.
  * A busca deve explorar índices em ordem lexicográfica e conservar a primeira ótima:
  * somente custo estritamente menor substitui o incumbente (DOC 03 §6).
- * Limites, token de cancelamento e listeners serão integrados na issue #9 por
- * uma sobrecarga, preservando esta entrada simples; não fazem parte desta entrega.
+ * A entrada simples conserva o contrato legado sem limites automáticos.
  */
 @FunctionalInterface
 public interface TspSolver {
@@ -24,4 +23,16 @@ public interface TspSolver {
      * @throws NullPointerException se problem for nulo
      */
     TspResult solve(TspProblem problem);
+
+    /**
+     * Executa com preflight operacional, limites cooperativos e token separado da geração.
+     * Implementações existentes continuam funcionais; precisam implementar explicitamente
+     * esta sobrecarga para suportar controles. Argumentos inválidos/preflight recusado falham
+     * antes da busca. Nos solvers do núcleo, falhas de execução resultam em ERRO.
+     *
+     * @throws UnsupportedOperationException se esta implementação não suporta controles
+     */
+    default TspResult solve(TspProblem problem, SolverExecutionOptions options, SolverCancellationToken token) {
+        throw new UnsupportedOperationException("Esta implementação de TspSolver não suporta execução controlada.");
+    }
 }

@@ -19,13 +19,19 @@ import java.util.function.LongSupplier;
  */
 public final class BruteForceSolver implements TspSolver {
     private final LongSupplier clock;
+    private final SolverExecutionControl.Observer observer;
 
     public BruteForceSolver() {
         this(System::nanoTime);
     }
 
     BruteForceSolver(LongSupplier clock) {
+        this(clock, null);
+    }
+
+    BruteForceSolver(LongSupplier clock, SolverExecutionControl.Observer observer) {
         this.clock = Objects.requireNonNull(clock);
+        this.observer = observer;
     }
 
     /**
@@ -39,48 +45,70 @@ public final class BruteForceSolver implements TspSolver {
      */
     @Override
     public TspResult solve(TspProblem problem) {
+        return solveInternal(problem, null, null);
+    }
+
+    @Override
+    public TspResult solve(TspProblem problem, SolverExecutionOptions options, SolverCancellationToken token) {
+        Objects.requireNonNull(problem, "O problema TSP não pode ser nulo.");
+        Objects.requireNonNull(options, "As opções não podem ser nulas.");
+        Objects.requireNonNull(token, "O token não pode ser nulo.");
+        SolverPreflight.analyze(SolverAlgorithm.BRUTE_FORCE, problem.size(), options).requireAllowed();
+        return solveInternal(problem, options, token);
+    }
+
+    private TspResult solveInternal(TspProblem problem, SolverExecutionOptions options, SolverCancellationToken token) {
         Objects.requireNonNull(problem, "O problema TSP não pode ser nulo.");
         SolverRunMetrics metrics = new SolverRunMetrics(clock);
+        SolverExecutionControl control = new SolverExecutionControl(metrics, options, token, observer);
         TspRoute bestRoute = null;
         long bestCost = 0;
 
         try {
             metrics.start();
+            control.checkpoint(SolverExecutionControl.Phase.PREPARATION);
             int[] permutation = new int[problem.size() - 1];
             for (int i = 0; i < permutation.length; i++) {
+                control.checkpoint(SolverExecutionControl.Phase.ITERATION);
                 permutation[i] = i + 1;
             }
 
             do {
+                control.checkpoint(SolverExecutionControl.Phase.BEFORE_NODE);
                 // Um estado observado é uma permutação cujo processamento começou,
                 // inclusive se seu custo falhar; não há árvore recursiva neste algoritmo.
                 metrics.visit();
                 // Verifica a capacidade do contador antes de avaliar outra rota,
                 // mas só publica o incremento depois de calcular o ciclo inteiro.
                 long nextCount = metrics.nextEvaluationCount();
-                long cost = cycleCost(problem, permutation);
+                long cost = cycleCost(problem, permutation, control);
                 metrics.completeEvaluation(nextCount);
                 if (bestRoute == null || cost < bestCost) {
                     bestRoute = routeOf(permutation);
                     bestCost = cost;
                 }
-            } while (nextPermutation(permutation));
+            } while (nextPermutation(permutation, control));
             metrics.requireCompleteCoverage(problem.size(), BigInteger.ZERO);
             TspRoute canonicalRoute = bestRoute.canonical();
             metrics.stop();
+            control.checkpoint(SolverExecutionControl.Phase.FINALIZATION);
             return TspResult.completed(problem, canonicalRoute, bestCost, metrics.snapshot(Optional.of(BigInteger.ZERO)));
+        } catch (SolverExecutionControl.Stopped stopped) {
+            return metrics.interruptedResult(problem, bestRoute, bestCost, null, stopped.status(), stopped.getMessage());
         } catch (RuntimeException failure) {
             return metrics.errorResult("BruteForceSolver", problem, bestRoute, bestCost, null, failure);
         }
     }
 
-    private static long cycleCost(TspProblem problem, int[] permutation) {
+    private static long cycleCost(TspProblem problem, int[] permutation, SolverExecutionControl control) {
         long cost = 0;
         int previous = 0;
         for (int city : permutation) {
+            control.checkpoint(SolverExecutionControl.Phase.EDGE);
             cost = CostMath.addExact(cost, problem.cost(previous, city));
             previous = city;
         }
+        control.checkpoint(SolverExecutionControl.Phase.EDGE);
         return CostMath.addExact(cost, problem.cost(previous, 0));
     }
 
@@ -94,9 +122,10 @@ public final class BruteForceSolver implements TspSolver {
         return new TspRoute(indices);
     }
 
-    private static boolean nextPermutation(int[] permutation) {
+    private static boolean nextPermutation(int[] permutation, SolverExecutionControl control) {
         int pivot = permutation.length - 2;
         while (pivot >= 0 && permutation[pivot] >= permutation[pivot + 1]) {
+            control.checkpoint(SolverExecutionControl.Phase.ITERATION);
             pivot--;
         }
         if (pivot < 0) {
@@ -105,10 +134,12 @@ public final class BruteForceSolver implements TspSolver {
 
         int successor = permutation.length - 1;
         while (permutation[successor] <= permutation[pivot]) {
+            control.checkpoint(SolverExecutionControl.Phase.ITERATION);
             successor--;
         }
         swap(permutation, pivot, successor);
         for (int left = pivot + 1, right = permutation.length - 1; left < right; left++, right--) {
+            control.checkpoint(SolverExecutionControl.Phase.ITERATION);
             swap(permutation, left, right);
         }
         return true;
