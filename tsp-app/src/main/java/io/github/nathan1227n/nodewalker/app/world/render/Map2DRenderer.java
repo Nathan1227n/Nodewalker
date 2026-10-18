@@ -11,6 +11,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.text.Font;
 
 /**
@@ -32,6 +33,8 @@ final class Map2DRenderer extends Region implements WorldRenderer {
         this.state = state;
         this.selection = selection;
         getChildren().addAll(backdrop, overlay);
+        // A thick dashed outline must not close its own gaps with projecting square caps.
+        overlay.getGraphicsContext2D().setLineCap(StrokeLineCap.BUTT);
         overlay.setOnMouseClicked(event -> {
             for (var placement : placements) {
                 if (placement.bounds().contains(new LabelLayout.Rect(event.getX(), event.getY(), 0, 0))) {
