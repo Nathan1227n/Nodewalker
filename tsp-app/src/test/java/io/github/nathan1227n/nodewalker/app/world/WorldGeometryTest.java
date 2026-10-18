@@ -35,6 +35,27 @@ class WorldGeometryTest {
             assertTrue(world.triangleCount() < (simple ? 12000 : 48000), () -> "Triangle budget: " + world.triangleCount());
             assertTrue(world.numericBufferBytes() < 32 * 1024 * 1024);
             assertTrue(world.decoration().sites().size() <= 32);
+            assertTrue(world.vegetation().plants().size() <= 384);
+            assertFalse(world.vegetation().plants().isEmpty());
+            var plantIds = new HashSet<Integer>();
+            for (var plant : world.vegetation().plants()) {
+                assertTrue(plantIds.add(plant.id()));
+                for (var p : model.positions())
+                    assertTrue(Math.hypot(plant.position().x() - p.x(), plant.position().z() - p.z()) >= 120);
+                assertTrue(plant.height() > 0 && Double.isFinite(plant.height()));
+                var point = plant.position();
+                var terrain = world.terrain();
+                if (Math.abs(point.x()) < terrain.extent() && Math.abs(point.z()) < terrain.extent()) {
+                    int cells = simple ? 32 : 80;
+                    double gx = (point.x() + terrain.extent()) / (2 * terrain.extent()) * cells;
+                    double gz = (point.z() + terrain.extent()) / (2 * terrain.extent()) * cells;
+                    int ix = (int) gx, iz = (int) gz;
+                    var face = terrain.faces().get(2 * (iz * cells + ix) + (gx - ix >= gz - iz ? 0 : 1));
+                    var a = terrain.vertices().get(face.a());
+                    var normal = terrain.vertices().get(face.b()).subtract(a).cross(terrain.vertices().get(face.c()).subtract(a)).unit();
+                    assertEquals(0, point.subtract(a).dot(normal), 1e-8, "Vegetation must touch the actual rendered terrain");
+                }
+            }
             for (var site : world.decoration().sites())
                 for (var p : model.positions())
                     assertTrue(Math.hypot(site.position().x() - p.x(), site.position().z() - p.z()) >= 120);
@@ -60,10 +81,26 @@ class WorldGeometryTest {
             }
             // Exact boundary reuse avoids cracks between central terrain and distant geography.
             var boundary = new HashSet<>(world.horizon().vertices().subList(0, simple ? 128 : 320));
+            var boundaryNormals = new java.util.HashMap<Vec3, Vec3>();
+            for (int i = 0; i < (simple ? 128 : 320); i++)
+                boundaryNormals.put(world.horizon().vertices().get(i), world.horizon().normals().get(i));
             for (var p : world.terrain().vertices())
-                if (Math.abs(p.x()) == world.terrain().extent() || Math.abs(p.z()) == world.terrain().extent())
+                if (Math.abs(p.x()) == world.terrain().extent() || Math.abs(p.z()) == world.terrain().extent()) {
                     assertTrue(boundary.contains(p));
+                    int at = world.terrain().vertices().indexOf(p);
+                    assertEquals(boundaryNormals.get(p), world.terrain().normals().get(at), "Different mesh resolutions must not create a lighting seam");
+                }
         }
+        var detailedPlants = model.geometry(false).vegetation().plants().stream().collect(java.util.stream.Collectors.toMap(VegetationFactory.Plant::id, p -> p));
+        for (var plant : model.geometry(true).vegetation().plants()) {
+            var full = detailedPlants.get(plant.id());
+            assertNotNull(full);
+            assertEquals(full.kind(), plant.kind());
+            assertEquals(full.height(), plant.height());
+            assertEquals(full.position().x(), plant.position().x());
+            assertEquals(full.position().z(), plant.position().z());
+        }
+        assertThrows(UnsupportedOperationException.class, () -> model.geometry(false).vegetation().plants().clear());
         assertEquals(model.geometry(false), TspSceneModel.of(problem, Optional.empty()).geometry(false));
     }
 }

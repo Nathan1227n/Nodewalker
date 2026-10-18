@@ -11,6 +11,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.text.Font;
 
@@ -78,15 +79,24 @@ final class Map2DRenderer extends Region implements WorldRenderer {
         GraphicsContext g = backdrop.getGraphicsContext2D();
         double w = getWidth(), h = getHeight();
         paintedDecoration = state.decoration();
-        g.setFill(Color.web("#0b171f"));
+        g.setFill(new ImagePattern(WorldTextures.rock(), 0, 0, 220, 220, false));
+        g.fillRect(0, 0, w, h);
+        g.setFill(Color.web("#08131d", .5));
         g.fillRect(0, 0, w, h);
         var terrain = state.model().terrain(true);
         for (var face : terrain.faces()) {
             Vec3 a = project(terrain.vertices().get(face.a()));
             Vec3 b = project(terrain.vertices().get(face.b()));
             Vec3 c = project(terrain.vertices().get(face.c()));
-            g.setFill(ROCK[face.material()]);
+            g.setFill(ROCK[face.material()].deriveColor(0, .6, .65, .18));
             g.fillPolygon(new double[]{a.x(), b.x(), c.x()}, new double[]{a.y(), b.y(), c.y()}, 3);
+        }
+        if (state.decoration()) for (var plant : state.model().geometry(state.simplified()).vegetation().plants()) {
+            Vec3 p = project(plant.position());
+            boolean tree = plant.kind() == VegetationFactory.Kind.TREE || plant.kind() == VegetationFactory.Kind.DEAD_TREE;
+            double radius = tree ? 4 : plant.kind() == VegetationFactory.Kind.SHRUB ? 2.5 : 1.5;
+            g.setFill(Color.web(plant.kind() == VegetationFactory.Kind.DEAD_TREE ? ScenePalette.BARK.color() : ScenePalette.LEAVES.color(), .65));
+            g.fillOval(p.x() - radius, p.y() - radius, radius * 2, radius * 2);
         }
         g.setStroke(Color.web("#99c2bf", .08));
         g.setLineWidth(1);

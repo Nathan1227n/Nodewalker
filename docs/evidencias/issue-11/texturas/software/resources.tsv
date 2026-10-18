@@ -1,0 +1,5 @@
+capture	nodes	materials	triangleUpperBound	numericBuffers	heapUsedMiB	rssKiB	elapsedSinceReviewStartMs
+01-n5-software2d	4	0	0	5880040	133	338280	1050
+02-n3-software2d	4	0	0	5794216	203	366316	1248
+03-n8-software2d	4	0	0	6041512	273	402788	1460
+04-n12-software2d	4	0	0	6221320	344	460812	1696

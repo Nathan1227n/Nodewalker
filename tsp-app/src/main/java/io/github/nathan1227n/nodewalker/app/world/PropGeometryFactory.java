@@ -30,10 +30,10 @@ public final class PropGeometryFactory {
         for (int i = 0; i < count; i++) {
             // Sites form peripheral regions rather than filling the city group with random objects.
             double angle = i * 2.399963229728653;
-            double radius = extent * (.72 + (i % 4) * .16);
+            double radius = extent * (.62 + (i % 4) * .1);
             double x = Math.cos(angle) * radius, z = Math.sin(angle) * radius;
             if (anchors.stream().anyMatch(p -> Math.hypot(p.x() - x, p.z() - z) < 120)) continue;
-            Vec3 at = new Vec3(x, -TerrainFactory.heightAt(anchors, x, z), z);
+            Vec3 at = new Vec3(x, -TerrainFactory.meshHeightAt(anchors, x, z, simple), z);
             Kind kind = i < 3 ? Kind.values()[i] : Kind.ROCKS;
             sites.add(new Site(kind, at));
             if (kind == Kind.BROKEN_RELAY) {
@@ -53,7 +53,8 @@ public final class PropGeometryFactory {
             } else {
                 for (int j = 0; j < (simple ? 1 : 3); j++) {
                     Vec3 p = at.add(new Vec3(j * 15, -3 - j * 2, j * 9));
-                    b.cabin(j % 2 == 0 ? ScenePalette.ROCK_STONE : ScenePalette.ROCK_SHALE, p, 19 + i % 4 * 9, 12 + i % 3 * 8, 20 + j * 9);
+                    b.organic(j % 2 == 0 ? ScenePalette.ROCK_STONE : ScenePalette.ROCK_SHALE, p,
+                            new Vec3(14 + i % 4 * 5, 10 + i % 3 * 5, 15 + j * 4), i * 3 + j);
                 }
             }
         }

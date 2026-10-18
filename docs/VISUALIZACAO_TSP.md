@@ -9,7 +9,7 @@ Implementação em `tsp-app`, sobre o merge `29fc04c` da PR #33. JavaFX 3D está
 | Fonte de verdade | `TspProblem`, `City`, `TspResult`, `TspRoute` do núcleo, sem alterações |
 | Modelo | `world.TspSceneModel.of(problem, Optional<TspResult>)`: dados e coleções imutáveis, exatamente N refúgios, rota recebida, metadados e terreno preparado |
 | Matemática visual | `WorldTransform`, `MapProjection`, `SegmentGeometry`, `OrbitCamera`, `Vec3`: Java puro, sem toolkit ou janela |
-| Geometria | `WorldGeometry`, `TerrainFactory`, `RefugeGeometryFactory`, `PropGeometryFactory`: paisagem, quatro silhuetas e props imutáveis preparados no worker, agrupados por material |
+| Geometria | `WorldGeometry`, `TerrainFactory`, `RefugeGeometryFactory`, `PropGeometryFactory`, `VegetationFactory`: paisagem, quatro silhuetas, props e vegetação imutáveis preparados no worker, agrupados por material |
 | Apresentação | `ResultPresentation`: interpretação única de estado, incumbente e certificação; `LabelLayout`: prioridade/colisão em tela, sem mover cidades |
 | Navegação | `WorldViewState`: seleção, câmera e preferências independentes do renderer |
 | Entrada FX | `world.render.TspWorldView.setModel(model)` e `modelProperty()` somente na FX Application Thread |
@@ -61,11 +61,13 @@ A certificação replica a declaração contratual de `TspResult`; o visualizado
 
 ## Cena, navegação e fallback
 
-O terreno combina região central, vales, áreas abertas, altos platôs e cristas distantes. Um anel de malha mais grossa continua a geografia até **3,6× a extensão central**, sem a antiga saia vertical que parecia delimitar uma ilha. A fronteira dos dois grids é exatamente coincidente. Normais suaves e um pequeno mapa autoral de tonalidade contínua (256×128 RGBA) substituem faixas discretas de material: grafite, ardósia, verde-acinzentado e picos claros, com tons atmosféricos mais suaves à distância. Há um gradiente de fundo, luz ambiente e duas direcionais. A aproximação tonal **não é névoa física, bloom, shadow mapping ou PBR**.
+O terreno combina região central, vales, áreas abertas, altos platôs e cristas distantes. Um anel de malha mais grossa continua a geografia até **3,6× a extensão central**, sem a antiga saia vertical que parecia delimitar uma ilha. A fronteira dos dois grids é exatamente coincidente, inclusive nas normais derivadas da mesma superfície. Após a correção solicitada pela captura, o gradiente foi substituído por albedo de basalto/ardósia, com UVs por plano dominante para não esticar paredes, material fosco sem especular e iluminação fria mais escura. [Diagnóstico, origem do asset, prompt e limites](TEXTURAS.md). Há gradiente de fundo, luz ambiente e duas direcionais; **não é névoa física, bloom, shadow mapping ou PBR**.
 
 BASE 0 tem plataforma em dois níveis, comando modular chanfrado, ala de serviço, torre/radar, painéis, gerador, escada e luz âmbar. Os secundários alternam deterministicamente **comunicação**, **manutenção/suprimentos** e **monitoramento**, com beacons ciano. São exatamente N conjuntos: nenhum prop recebe índice ou marcador de cidade. Fundações podem ficar altas quando duas cidades próximas em XZ têm altitudes muito diferentes; os pontos de conexão nunca são movidos para disfarçar isso.
 
 Props incluem torre danificada, ruína industrial, depósito/gerador e grupos de rochas, em posições determinísticas periféricas, com exclusão de 120 unidades visuais em torno dos pontos XZ. Ocultar decoração só muda visibilidade, sem regenerar terreno. A variante simplificada remove detalhes e reduz terreno/props; ambas são preparadas uma vez por instância. Não há rebuild por frame nem assets externos. [Pesquisa de assets e avaliação de importação](ASSETS_VISUAIS.md).
+
+A vegetação adicional forma oito regiões: árvores de copas irregulares texturizadas, galhos mortos, arbustos, capim e cobertura vegetal. No máximo 384 candidatos são filtrados por inclinação e distância aos refúgios; rochas e plantas apoiam-se na malha detalhada realmente desenhada. A qualidade simplificada usa um subconjunto dos mesmos IDs/XZ e menos componentes. **D / Vegetação, rochas e ruínas** controla todo esse conjunto; nenhuma planta é um nó TSP. [Texturas, prompts e contratos de vegetação](TEXTURAS.md).
 
 A rota comprovada é contínua; a incumbente usa nove traços por aresta, com lacunas reais, sem halo contínuo fechando os intervalos. A espessura é ajustada em eventos de câmera, dentro de limites, sem mover extremidades. Trechos podem ficar ocultos pelo relevo; topo/2D permitem conferir o mesmo ciclo. Nenhuma conexão é deslocada para acompanhar a superfície.
 
@@ -141,9 +143,9 @@ Esse modo move o cursor, arrasta/clica e envia atalhos à janela. No Wayland dis
 
 ## Evidências, cobertura e limites
 
-[Galeria do refinamento, manifestos e ambiente reais](evidencias/issue-11/refinamento/README.md), Fedora 44 / kernel 7.2.11, NVIDIA RTX 5060 / driver 615.78.08, Temurin 21.0.12.1, Scene **1380×870**, viewport 3D **1008×717** na configuração padrão. Capturas incluem panorama, topo, inspeção da BASE e das três variantes, 2D, simplificação, N=3/8/12, rótulos reduzidos, estados/ausências e fallback automático por software sem Scene3D. A execução por software verifica também o botão 3D desabilitado. Isso não equivale a testar todos os drivers ou o caso de falha de inicialização nativa de uma SubScene já suportada. A [primeira galeria da #11](evidencias/issue-11/README.md) fica preservada como histórico.
+[Galeria atual de textura, manifestos e ambiente reais](evidencias/issue-11/vegetacao/README.md), Fedora 44 / kernel 7.2.11, NVIDIA RTX 5060 / driver 615.78.08, Temurin 21.0.12.1, Scene **1380×870**, viewport 3D **1008×717** na configuração padrão. O roteiro inclui panorama, topo, inspeção da BASE e das três variantes, 2D, simplificação, N=3/8/12, rótulos reduzidos, estados/ausências e fallback automático por software sem Scene3D. A execução por software verifica também o botão 3D desabilitado. Isso não equivale a testar todos os drivers ou o caso de falha de inicialização nativa de uma SubScene já suportada. A [primeira galeria](evidencias/issue-11/README.md) e o [primeiro refinamento](evidencias/issue-11/refinamento/README.md) ficam preservados como histórico.
 
-58 testes novos nesta PR (38 iniciais + 20 do refinamento), **62 no app e 1839 no produto** (1652 núcleo + 125 CLI + 62 app). Incluem 12 combinações N=3/5/8/12 × seeds 0/23/657, limites parciais, todos os estados terminais, ausência de rota/métricas, orientação recebida, custos zero/MAX, matriz divergente, imutabilidade, XYZ `int` extremos, extensões/projeções/segmentos degenerados, malhas válidas, enquadramento paisagem/retrato, polo da câmera, conexões limitadas, reutilização do terreno e solicitações obsoletas. O refinamento verifica textos exatos, transições, colisões/prioridades/ordem determinística dos rótulos, variantes/âncoras, orçamento, normais, continuidade do relevo e costura exata com o horizonte. O baseline de 1781 foi preservado. A spike mantém outros 20 testes separados.
+63 testes novos nesta PR (38 iniciais + 25 do refinamento), **67 no app e 1844 no produto** (1652 núcleo + 125 CLI + 67 app). Incluem 12 combinações N=3/5/8/12 × seeds 0/23/657, limites parciais, todos os estados terminais, ausência de rota/métricas, orientação recebida, custos zero/MAX, matriz divergente, imutabilidade, XYZ `int` extremos, extensões/projeções/segmentos degenerados, malhas válidas, enquadramento paisagem/retrato, polo da câmera, conexões limitadas, reutilização do terreno e solicitações obsoletas. O refinamento verifica textos exatos, transições, colisões/prioridades/ordem determinística dos rótulos, variantes/âncoras, orçamento, normais, continuidade do relevo e costura exata com o horizonte. O baseline de 1781 foi preservado. A spike mantém outros 20 testes separados.
 
 ```bash
 mvn -pl tsp-app -am test
@@ -156,13 +158,14 @@ git diff --check
 | Recurso (catálogo N≤12) | Orçamento | Observação na coleta real |
 | --- | --- | --- |
 | Triângulos centrais | 12800 normal / 2048 simplificado | Mais 5120 / 1024 do anel distante |
-| Cena inteira | ≤50000 como teto incluindo primitivas | N=12 parcial: **33492**; N=5: **24308**, simplificado sem decoração **6196** |
-| Nodes do viewport (inclui skins/labels/SubScene, exclui painel lateral) | ≤800 | N=12: **254**; N=5: **79**; Canvas 2D: **4** |
-| Materiais compartilhados | ≤20 | **11–12** nos casos capturados; terreno usa um mapa de tonalidade |
+| Cena inteira | ≤50000 como teto incluindo primitivas | N=12 parcial: **44213**; N=5: **37474**, simplificado sem decoração **7214** |
+| Nodes do viewport (inclui skins/labels/SubScene, exclui painel lateral) | ≤800 | N=12: **260**; N=5: **84**; Canvas 2D: **4** |
+| Materiais compartilhados | ≤20 | **16–18** nos casos capturados; albedo de rocha compartilhado |
 | Sítios decorativos | ≤32 | Até 24 candidatos normal / 7 simplificado, com exclusão de cidades |
-| Buffers numéricos + textura autoral | ≤32 MiB por qualidade | N=12: **1571888 B**, N=5 normal **1338320 B**, simplificado **396304 B** |
+| Vegetação | ≤384 candidatos, filtrados por inclinação e distância | N=12: 224 elementos; N=5: 271, reduzidos a 44 no simplificado |
+| Buffers numéricos + albedo compartilhado | ≤32 MiB por qualidade | N=12: **7980092 B**, N=5 normal **7811792 B**, simplificado **5681984 B** |
 
-O teto de triângulos de Cylinder/Sphere é conservador; `resources.tsv` e o runner documentam a contagem. O orçamento de buffers **não é limite de heap/RSS**: exclui listas/records preparados, segunda qualidade, toolkit, cópias nativas, snapshots e driver. Na sequência de 21 capturas, heap observado foi **67–439 MiB**, RSS **406252–777112 KiB**. São amostras pontuais durante carregamentos/trocas e snapshots completos, sem GC ou aquecimento controlado; não provam memória estabilizada nem ausência de vazamento. Não foi feito benchmark sustentado de FPS apresentados ou latências p95; não há promessa de 30 FPS. Tempo do solver não mede renderização.
+O teto de triângulos de Cylinder/Sphere é conservador; `resources.tsv` e o runner documentam a contagem. O orçamento de buffers **não é limite de heap/RSS**: exclui listas/records preparados, segunda qualidade, toolkit, mipmaps/cópias nativas, snapshots e driver. Na sequência de 21 capturas com a nova textura, heap observado foi **87–453 MiB**, RSS **442864–795708 KiB**. São amostras pontuais durante carregamentos/trocas e snapshots completos, sem GC ou aquecimento controlado; não provam memória estabilizada nem ausência de vazamento. Não foi feito benchmark sustentado de FPS apresentados ou latências p95; não há promessa de 30 FPS. Tempo do solver não mede renderização.
 
 Cidades e ciclo continuam O(N), rótulos limitados a 48 com prioridade da seleção e BASE 0, até 32 arestas opcionais, nunca grafo completo. Há malha distante fixa, sem LOD contínuo ou instancing. Renderização para N grande, importação GLB, empacotamento de runtimes e efeitos avançados não foram homologados. Pontos lógicos próximos/coincidentes podem compartilhar posição e arquitetura aparente; lista e 2D continuam disponíveis. Hardware fraco pode preferir simplificação ou 2D.
 

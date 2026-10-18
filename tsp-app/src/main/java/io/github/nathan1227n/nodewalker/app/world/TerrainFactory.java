@@ -35,7 +35,7 @@ public final class TerrainFactory {
                 face(faces, vertices, a, d, c);
             }
         }
-        return new TerrainData(vertices, faces, extent);
+        return terrain(anchors, vertices, faces, extent);
     }
 
     private static void face(List<TerrainData.Face> faces, List<Vec3> vertices, int a, int b, int c) {
@@ -106,11 +106,40 @@ public final class TerrainFactory {
                     faces.add(new TerrainData.Face(a, d, b, material));
                 }
             }
-        return new TerrainData(points, faces, outer);
+        return terrain(anchors, points, faces, outer);
+    }
+
+    private static TerrainData terrain(List<Vec3> anchors, List<Vec3> points, List<TerrainData.Face> faces, double extent) {
+        // Derive normals from the same continuous surface, independent of the size/aspect of a triangle.
+        // This also makes the central and distant meshes share exactly the same boundary normals.
+        var normals = points.stream().map(p -> normalAt(anchors, p.x(), p.z())).toList();
+        return new TerrainData(points, faces, extent, normals);
+    }
+
+    public static Vec3 normalAt(List<Vec3> anchors, double x, double z) {
+        double h = 1;
+        double dx = (heightAt(anchors, x + h, z) - heightAt(anchors, x - h, z)) / (2 * h);
+        double dz = (heightAt(anchors, x, z + h) - heightAt(anchors, x, z - h)) / (2 * h);
+        return new Vec3(-dx, -1, -dz).unit();
+    }
+
+    /**
+     * Barycentric height of the rendered central grid, so decoration does not float above a sloping cell.
+     */
+    static double meshHeightAt(List<Vec3> anchors, double x, double z, boolean simple) {
+        double extent = TerrainFactory.extent(anchors);
+        if (Math.abs(x) > extent || Math.abs(z) > extent) return TerrainFactory.heightAt(anchors, x, z);
+        int cells = simple ? 32 : 80;
+        double size = extent * 2 / cells, px = (x + extent) / size, pz = (z + extent) / size;
+        int ix = Math.clamp((int) px, 0, cells - 1), iz = Math.clamp((int) pz, 0, cells - 1);
+        double dx = px - ix, dz = pz - iz, ax = -extent + size * ix, az = -extent + size * iz;
+        double a = TerrainFactory.heightAt(anchors, ax, az), d = TerrainFactory.heightAt(anchors, ax + size, az + size);
+        return dx >= dz ? a * (1 - dx) + TerrainFactory.heightAt(anchors, ax + size, az) * (dx - dz) + d * dz
+                : a * (1 - dz) + d * dx + TerrainFactory.heightAt(anchors, ax, az + size) * (dz - dx);
     }
 
     private static double peak(double x, double z, double cx, double cz, double width, double height) {
         double r = Math.hypot(x - cx, z - cz) / width;
-        return height * Math.exp(-r * r * .65) * (1 + .1 * Math.cos(x * 28 + z * 19));
+        return height * Math.exp(-r * r * .65);
     }
 }

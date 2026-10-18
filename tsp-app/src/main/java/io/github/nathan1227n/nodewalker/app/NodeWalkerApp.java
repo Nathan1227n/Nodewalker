@@ -146,7 +146,7 @@ public final class NodeWalkerApp extends Application {
         focus.setOnAction(e -> world.focusSelection());
         var selected = new VBox(9, label("03 / INSPEÇÃO LÓGICA", "section-title"), refuges, coordinates, focus);
 
-        decoration = new CheckBox("Ruínas e ambientação [D]");
+        decoration = new CheckBox("Vegetação, rochas e ruínas [D]");
         decoration.setSelected(!raw.contains("--no-decoration"));
         decoration.setOnAction(e -> world.setDecoration(decoration.isSelected()));
         simplified = new CheckBox("Geometria simplificada [S]");

@@ -151,7 +151,7 @@ Dois protótipos Java 21/Maven em `spikes/renderer-comparison/` compartilham cen
 - Canvas 2D independente, alternância preservando modelo/seleção/câmera, complexidade reduzível e até 32 conexões opcionais do selecionado.
 - Catálogo N=3/5/8/12 com seeds fixas, geração e backtracking limitados, tokens distintos e descarte de entregas obsoletas. Não é o controlador operacional da #12.
 - Textos de certificação separados e sem quebra da negação; prioridade/colisão determinística de rótulos e modo de exploração limpa, sem mover posições lógicas.
-- 58 novos testes headless na PR (38 iniciais + 20 do refinamento; **1839 no produto**, 62 no app), [janelas/capturas Fedora reais e contagens de recursos](evidencias/issue-11/refinamento/README.md), fallback automático/forçado por Prism software. Navegação humana, desempenho sustentado e Windows gráfico ainda exigem homologação #13/#17.
+- 63 novos testes headless na PR (38 iniciais + 25 do refinamento; **1844 no produto**, 67 no app), [janelas/capturas Fedora reais e contagens de recursos](evidencias/issue-11/vegetacao/README.md), fallback por Prism software. A correção de superfície adiciona albedo rochoso fosco, UVs para encostas e normais coerentes entre resoluções, sem alterar dados TSP. Navegação humana, desempenho sustentado e Windows gráfico ainda exigem homologação #13/#17.
 - [Candidatos a assets, licenças específicas e limites de importação](ASSETS_VISUAIS.md) registrados; geometria do MVP continua autoral, sem importador ou dependência nova.
 
 As seções anteriores são registros históricos de cada entrega e mantêm suas contagens e limitações da época.

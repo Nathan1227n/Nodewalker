@@ -8,7 +8,7 @@ import java.util.stream.IntStream;
  */
 public record WorldGeometry(TerrainData terrain, TerrainData horizon,
                             List<RefugeGeometryFactory.RefugeGeometry> refuges,
-                            PropGeometryFactory.Decoration decoration) {
+                            PropGeometryFactory.Decoration decoration, VegetationFactory.Vegetation vegetation) {
     public WorldGeometry {
         refuges = List.copyOf(refuges);
     }
@@ -17,7 +17,7 @@ public record WorldGeometry(TerrainData terrain, TerrainData horizon,
         return new WorldGeometry(TerrainFactory.build(anchors, simple), TerrainFactory.horizon(anchors, simple),
                 IntStream.range(0, anchors.size()).mapToObj(i -> RefugeGeometryFactory.build(i, anchors.get(i),
                         -TerrainFactory.heightAt(anchors, anchors.get(i).x(), anchors.get(i).z()), simple)).toList(),
-                PropGeometryFactory.build(anchors, simple));
+                PropGeometryFactory.build(anchors, simple), VegetationFactory.prepare(anchors, simple));
     }
 
     public long triangleCount() {
@@ -25,15 +25,16 @@ public record WorldGeometry(TerrainData terrain, TerrainData horizon,
     }
 
     public List<GeometryMesh> meshes() {
-        return java.util.stream.Stream.concat(refuges.stream().flatMap(r -> r.meshes().stream()), decoration.meshes().stream()).toList();
+        return java.util.stream.Stream.of(refuges.stream().flatMap(r -> r.meshes().stream()), decoration.meshes().stream(), vegetation.meshes().stream())
+                .flatMap(s -> s).toList();
     }
 
     /**
-     * Numeric mesh buffers plus the 256x128 RGBA terrain ramp; excludes JVM/JavaFX/driver overhead.
+     * Numeric buffers plus shared RGBA rock (1024²) and foliage (512²); excludes JVM/JavaFX/driver overhead.
      */
     public long numericBufferBytes() {
-        return (terrain.vertices().size() + horizon.vertices().size()) * 32L
-                + (terrain.faces().size() + horizon.faces().size()) * 36L
-                + meshes().stream().mapToLong(GeometryMesh::bufferBytes).sum() + 256 * 128 * 4;
+        return (terrain.vertices().size() + horizon.vertices().size()) * 24L
+                + (terrain.faces().size() + horizon.faces().size()) * 60L
+                + meshes().stream().mapToLong(m -> m.bufferBytes() + m.triangles().size() * 24L).sum() + (1024 * 1024 + 512 * 512) * 4;
     }
 }

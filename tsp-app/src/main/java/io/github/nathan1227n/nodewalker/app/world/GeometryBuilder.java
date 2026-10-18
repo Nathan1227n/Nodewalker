@@ -117,6 +117,29 @@ final class GeometryBuilder {
         beam(ScenePalette.STEEL, center, center.add(new Vec3(0, 8, 0)), 1);
     }
 
+    /**
+     * Small irregular icosahedron, used for rock masses and clusters of foliage.
+     */
+    void organic(ScenePalette material, Vec3 center, Vec3 radii, int variant) {
+        double t = (1 + Math.sqrt(5)) / 2;
+        double[][] points = {{-1, t, 0}, {1, t, 0}, {-1, -t, 0}, {1, -t, 0}, {0, -1, t}, {0, 1, t},
+                {0, -1, -t}, {0, 1, -t}, {t, 0, -1}, {t, 0, 1}, {-t, 0, -1}, {-t, 0, 1}};
+        Vec3[] vertices = new Vec3[12];
+        for (int i = 0; i < 12; i++) {
+            double wobble = 1 + .17 * Math.sin(i * 8.71 + variant * 2.93);
+            Vec3 p = new Vec3(points[i][0], points[i][1], points[i][2]).unit();
+            vertices[i] = center.add(new Vec3(p.x() * radii.x() * wobble, p.y() * radii.y() * wobble, p.z() * radii.z() * wobble));
+        }
+        int[][] faces = {{0, 11, 5}, {0, 5, 1}, {0, 1, 7}, {0, 7, 10}, {0, 10, 11}, {1, 5, 9}, {5, 11, 4},
+                {11, 10, 2}, {10, 7, 6}, {7, 1, 8}, {3, 9, 4}, {3, 4, 2}, {3, 2, 6}, {3, 6, 8}, {3, 8, 9},
+                {4, 9, 5}, {2, 4, 11}, {6, 2, 10}, {8, 6, 7}, {9, 8, 1}};
+        Batch batch = batches.computeIfAbsent(material, ignored -> new Batch());
+        int base = batch.vertices.size();
+        for (Vec3 vertex : vertices) batch.vertices.add(origin.add(vertex.multiply(scale)));
+        for (int[] face : faces)
+            batch.faces.add(new GeometryMesh.Triangle(base + face[0], base + face[1], base + face[2]));
+    }
+
     List<GeometryMesh> build() {
         return batches.entrySet().stream().map(e -> new GeometryMesh(e.getKey(), e.getValue().vertices, e.getValue().faces)).toList();
     }

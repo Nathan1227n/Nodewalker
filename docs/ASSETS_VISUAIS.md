@@ -1,6 +1,6 @@
 # Assets visuais — avaliação para o MVP JavaFX
 
-Pesquisa da evolução visual da #11, em 17/10/2026. **Nenhum modelo externo foi incorporado ao produto.** Refúgios, torres, antenas, ruínas, painéis, geradores, rochas e a pequena textura de tonalidade são autorais/procedurais. Não há download em runtime, novo importador ou nova dependência.
+Pesquisa da evolução visual da #11, em 17/10/2026. **Nenhum modelo externo foi incorporado ao produto.** Refúgios, torres, antenas, ruínas, painéis, geradores, rochas e vegetação são autorais/procedurais. A correção posterior substituiu o gradiente por [texturas de basalto/ardósia e folhagem geradas para o projeto](TEXTURAS.md), com origem, prompts e hashes registrados. Não há download em runtime, novo importador ou nova dependência.
 
 ## Candidatos e licenças verificadas
 

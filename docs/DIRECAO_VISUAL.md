@@ -34,7 +34,9 @@ O usuário deve sentir escala, solidão, terreno inóspito e o contraste entre p
 
 Priorizar cenários legíveis em resolução de notebook e em 2D; o fundo não pode reduzir contraste da rota.
 
-A região se estende além da instância, com vales compartilhados e cristas periféricas. A câmera continua enquadrando as cidades; ampliar a decoração não reduz arbitrariamente o grupo TSP. O terreno não tem saia vertical de ilha. Gradiente de fundo e mapa tonal aproximam profundidade atmosférica, sem alegar névoa física, bloom, sombras projetadas ou PBR. [Capturas Fedora do refinamento](evidencias/issue-11/refinamento/README.md).
+A região se estende além da instância, com vales compartilhados e cristas periféricas. A câmera continua enquadrando as cidades; ampliar a decoração não reduz arbitrariamente o grupo TSP. O terreno não tem saia vertical de ilha. A [correção de textura](TEXTURAS.md) usa rocha fosca de basalto/ardósia gerada para o projeto, iluminação mais escura e normais consistentes; o gradiente fica somente no fundo. Não se alega névoa física, bloom, sombras projetadas ou PBR. [Capturas Fedora atuais](evidencias/issue-11/texturas/README.md).
+
+Vegetação da continuação de 18/10: bosques de copas irregulares, galhos mortos, arbustos, capim e rochas quebradas, em posições determinísticas e sem ocupar âncoras de refúgios. Folhagem usa textura local própria; a decoração pode ser ocultada e simplificada. [Cena atual com vegetação](evidencias/issue-11/vegetacao/README.md).
 
 ## 3. Linguagem dos refúgios
 Cada `City` é um **nó seguro**, não necessariamente uma cidade construída em tamanho real.

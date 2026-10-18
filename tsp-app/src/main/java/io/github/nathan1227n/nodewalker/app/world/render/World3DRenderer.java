@@ -50,6 +50,7 @@ final class World3DRenderer extends Region implements WorldRenderer {
         buildTerrain(geometry.terrain());
         for (var refuge : geometry.refuges()) buildRefuge(refuge);
         for (var mesh : geometry.decoration().meshes()) decoration.getChildren().add(mesh(mesh));
+        for (var mesh : geometry.vegetation().meshes()) decoration.getChildren().add(mesh(mesh));
         decoration.setMouseTransparent(true);
         buildRoute();
         routeGeometry.setMouseTransparent(true);
@@ -57,10 +58,10 @@ final class World3DRenderer extends Region implements WorldRenderer {
         selectionRing.setMouseTransparent(true);
         selectionRing.getChildren().add(ring(19, ScenePalette.SELECTED));
         world.getChildren().addAll(decoration, routeGeometry, secondaryEdges, selectionRing);
-        var ambient = new AmbientLight(Color.web("#606965"));
-        var key = new DirectionalLight(Color.web("#d4d7cb"));
-        key.setDirection(new Point3D(.8, 1, .35));
-        var rim = new DirectionalLight(Color.web("#586672"));
+        var ambient = new AmbientLight(Color.web("#657580"));
+        var key = new DirectionalLight(Color.web("#b4c0c8"));
+        key.setDirection(new Point3D(.6, 1, -.65));
+        var rim = new DirectionalLight(Color.web("#354b60"));
         rim.setDirection(new Point3D(-1, .25, -.5));
         subScene = new SubScene(new Group(world, ambient, key, rim), 800, 600, true, SceneAntialiasing.BALANCED);
         subScene.setFill(Color.TRANSPARENT);
@@ -69,7 +70,7 @@ final class World3DRenderer extends Region implements WorldRenderer {
         subScene.setCamera(camera);
         labels.setPickOnBounds(false);
         getChildren().addAll(subScene, labels);
-        setStyle("-fx-background-color: linear-gradient(to bottom, #0a1119 0%, #35434a 54%, #283337 100%);");
+        setStyle("-fx-background-color: linear-gradient(to bottom, #050910 0%, #1b2935 60%, #101b25 100%);");
         setPickOnBounds(true);
         setOnMousePressed(e -> {
             dragX = e.getSceneX();
@@ -93,21 +94,25 @@ final class World3DRenderer extends Region implements WorldRenderer {
 
     private void buildTerrain(TerrainData terrain) {
         int count = terrain.vertices().size();
-        float[] points = new float[count * 3], normals = new float[count * 3], uv = new float[count * 2];
-        double inner = state.model().terrain(false).extent();
+        float[] points = new float[count * 3], normals = new float[count * 3];
         for (int i = 0; i < count; i++) {
             Vec3 p = terrain.vertices().get(i), normal = terrain.normals().get(i);
             write(points, i, p);
             write(normals, i, normal);
-            double variation = Math.sin(p.x() * .012 + p.z() * .007) * .022;
-            uv[i * 2] = (float) Math.clamp((-p.y() + 550) / 1250 + (1 - Math.abs(normal.y())) * .06 + variation, .03, .94);
-            uv[i * 2 + 1] = (float) Math.clamp((Math.max(Math.abs(p.x()), Math.abs(p.z())) / inner - 1.25) / 2.2, 0, 1);
         }
         int[] indices = new int[terrain.faces().size() * 9];
+        float[] uv = new float[terrain.faces().size() * 6];
         for (int i = 0; i < terrain.faces().size(); i++) {
             var f = terrain.faces().get(i);
             int[] at = {f.a(), f.b(), f.c()};
-            for (int j = 0; j < 3; j++) for (int k = 0; k < 3; k++) indices[i * 9 + j * 3 + k] = at[j];
+            var mapping = SurfaceMapping.triangle(terrain.vertices().get(f.a()), terrain.vertices().get(f.b()), terrain.vertices().get(f.c()), 240);
+            for (int j = 0; j < 3; j++) {
+                indices[i * 9 + j * 3] = at[j];
+                indices[i * 9 + j * 3 + 1] = at[j];
+                indices[i * 9 + j * 3 + 2] = i * 3 + j;
+                uv[i * 6 + j * 2] = (float) mapping.get(j).u();
+                uv[i * 6 + j * 2 + 1] = (float) mapping.get(j).v();
+            }
         }
         var mesh = new TriangleMesh(VertexFormat.POINT_NORMAL_TEXCOORD);
         mesh.getPoints().setAll(points);
@@ -121,20 +126,10 @@ final class World3DRenderer extends Region implements WorldRenderer {
 
     private PhongMaterial terrainMaterial() {
         if (terrainMaterial != null) return terrainMaterial;
-        // A small author-generated albedo ramp, not a shader or physical fog. UVs interpolate continuously.
-        var ramp = new WritableImage(256, 128);
-        for (int y = 0; y < 128; y++)
-            for (int x = 0; x < 256; x++) {
-                double position = x / 255.0 * 5;
-                int first = Math.min(4, (int) position);
-                Color rock = Color.web(ScenePalette.rock(first).color()).interpolate(Color.web(ScenePalette.rock(first + 1).color()), position - first);
-                Color haze = Color.web("#65757b");
-                ramp.getPixelWriter().setColor(x, y, rock.interpolate(haze, y / 127.0 * .78));
-            }
-        terrainMaterial = new PhongMaterial(Color.WHITE);
-        terrainMaterial.setDiffuseMap(ramp);
-        terrainMaterial.setSpecularColor(Color.web("#131a17"));
-        terrainMaterial.setSpecularPower(5);
+        terrainMaterial = new PhongMaterial(Color.web("#bac5ce"));
+        terrainMaterial.setDiffuseMap(WorldTextures.rock());
+        // Basalt is matte: wide interpolated specular streaks made the former surface look melted.
+        terrainMaterial.setSpecularColor(Color.BLACK);
         return terrainMaterial;
     }
 
@@ -147,17 +142,26 @@ final class World3DRenderer extends Region implements WorldRenderer {
     private MeshView mesh(GeometryMesh data) {
         float[] points = new float[data.vertices().size() * 3];
         int[] faces = new int[data.triangles().size() * 6];
+        float[] uv = new float[data.triangles().size() * 6];
         for (int i = 0; i < data.vertices().size(); i++) write(points, i, data.vertices().get(i));
         for (int i = 0; i < data.triangles().size(); i++) {
             var f = data.triangles().get(i);
-            faces[i * 6] = f.a();
-            faces[i * 6 + 2] = f.b();
-            faces[i * 6 + 4] = f.c();
+            int[] at = {f.a(), f.b(), f.c()};
+            var mapping = SurfaceMapping.triangle(data.vertices().get(f.a()), data.vertices().get(f.b()), data.vertices().get(f.c()), 36);
+            for (int j = 0; j < 3; j++) {
+                faces[i * 6 + j * 2] = at[j];
+                faces[i * 6 + j * 2 + 1] = i * 3 + j;
+                uv[i * 6 + j * 2] = (float) mapping.get(j).u();
+                uv[i * 6 + j * 2 + 1] = (float) mapping.get(j).v();
+            }
         }
         var mesh = new TriangleMesh();
         mesh.getPoints().setAll(points);
-        mesh.getTexCoords().setAll(0, 0);
+        mesh.getTexCoords().setAll(uv);
         mesh.getFaces().setAll(faces);
+        int[] smoothing=new int[data.triangles().size()];
+        if(data.material()==ScenePalette.NEEDLES||data.material()==ScenePalette.LEAVES)java.util.Arrays.fill(smoothing,1);
+        mesh.getFaceSmoothingGroups().setAll(smoothing);
         var view = new MeshView(mesh);
         view.setMaterial(material(data.material()));
         // Thin panels and authored dishes intentionally expose both sides.
@@ -230,6 +234,17 @@ final class World3DRenderer extends Region implements WorldRenderer {
             var value = new PhongMaterial(Color.web(key.luminous() ? "#050707" : key.color()));
             value.setSpecularColor(Color.web(key.luminous() ? "#101613" : "#202622"));
             value.setSpecularPower(key.luminous() ? 20 : 8);
+            if (key == ScenePalette.CONCRETE || key.ordinal() <= ScenePalette.ROCK_PEAK.ordinal()) {
+                value.setDiffuseMap(WorldTextures.rock());
+                value.setDiffuseColor(Color.web(key == ScenePalette.CONCRETE ? "#c0c5ba" : "#9ca7ac"));
+                value.setSpecularColor(Color.BLACK);
+            }
+            if(key==ScenePalette.BARK||key==ScenePalette.NEEDLES||key==ScenePalette.LEAVES||key==ScenePalette.GRASS||key==ScenePalette.MOSS)
+                value.setSpecularColor(Color.BLACK);
+            if(key==ScenePalette.NEEDLES||key==ScenePalette.LEAVES||key==ScenePalette.MOSS) {
+                value.setDiffuseMap(WorldTextures.foliage());
+                value.setDiffuseColor(Color.web(key==ScenePalette.NEEDLES?"#aab9a4":"#d7dbba"));
+            }
             if (key.luminous()) {
                 var image = new WritableImage(1, 1);
                 image.getPixelWriter().setColor(0, 0, Color.web(key.color()));

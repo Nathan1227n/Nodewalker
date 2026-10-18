@@ -58,7 +58,7 @@ public final class VisualReview {
         Files.createDirectories(directory);
         started = System.nanoTime();
         stateFixtures = prepareStateFixtures();
-        resources.add("capture\tnodes\tmaterials\ttriangleUpperBound\tnumericBuffers\theapUsedMiB\trssKiB\telapsedSinceReviewStartMs");
+        resources.add("capture\tnodes\tmaterials\ttriangleUpperBound\tnumericBuffers\theapUsedMiB\trssKiB\telapsedSinceReviewStartMs\tplants\ttrees\tdeadTrees\tshrubs\tgrass\tboulders");
         rows.add("capture\tN\tseed\tstatus\tcost\tvisitedNodes\troute\tselected\tmode\twidth\theight");
         Platform.startup(() -> guarded(() -> {
             app = new NodeWalkerApp();
@@ -287,8 +287,12 @@ public final class VisualReview {
             rss = Files.readAllLines(Path.of("/proc/self/status")).stream().filter(l -> l.startsWith("VmRSS:"))
                     .map(l -> l.replaceAll("[^0-9]", "")).mapToLong(Long::parseLong).findFirst().orElse(-1);
         } catch (Exception ignored) { /* unavailable outside Linux; never report a fabricated zero */ }
+        var geometry = m.geometry(name.contains("simplified"));
+        StringBuilder vegetationCounts = new StringBuilder("\t" + geometry.vegetation().plants().size());
+        for (var kind : io.github.nathan1227n.nodewalker.app.world.VegetationFactory.Kind.values())
+            vegetationCounts.append('\t').append(geometry.vegetation().plants().stream().filter(p -> p.kind() == kind).count());
         return name + "\t" + stats.nodes + "\t" + stats.materials.size() + "\t" + stats.triangles + "\t" +
-                m.geometry(name.contains("simplified")).numericBufferBytes() + "\t" + heap + "\t" + rss + "\t" + (System.nanoTime() - started) / 1000000;
+                geometry.numericBufferBytes() + "\t" + heap + "\t" + rss + "\t" + (System.nanoTime() - started) / 1000000 + vegetationCounts;
     }
 
     private static final class ResourceStats {

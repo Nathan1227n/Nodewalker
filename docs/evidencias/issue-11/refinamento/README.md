@@ -1,5 +1,7 @@
 # Refinamento visual da #11 — janela real Fedora
 
+**Rodada histórica anterior à correção de textura.** A [galeria atual de superfície fosca e atmosfera mais escura](../texturas/README.md) preserva a comparação, sem substituir estes PNGs.
+
 Coleta em **17/10/2026, 22:55–22:59 America/Fortaleza**, na branch `feat/g3-real-tsp-world`, continuação da PR #34. Os PNG são snapshots sem edição da Scene visível, produzidos pela composição de produção. [SHA256SUMS](SHA256SUMS) identifica os arquivos. A [primeira rodada da #11](../README.md) permanece preservada para comparação histórica.
 
 Fedora 44 / kernel 7.2.11, Wayland/Xwayland, RTX 5060 / driver NVIDIA 615.78.08, Temurin 21.0.12.1, JavaFX 21.0.12. Scene **1380×870**, viewport padrão **1008×717**. [Ambiente/driver](desktop/environment.json), [execução gráfica](desktop/review-output.txt), [manifesto](desktop/manifest.tsv), [recursos](desktop/resources.tsv).
