@@ -23,3 +23,5 @@ jobs:
           cache: maven
       - name: Compile and test
         run: mvn --batch-mode --no-transfer-progress clean verify
+      - name: Compile renderer spike and test common scene (no display)
+        run: mvn --batch-mode --no-transfer-progress -f spikes/renderer-comparison/pom.xml clean verify

@@ -1,0 +1,12 @@
+{
+  "javafx-prototype": {
+    "adapterJarBytes": 15652,
+    "runtimeJarBytes": 8132083,
+    "runtimeJarCount": 9
+  },
+  "jme-prototype": {
+    "adapterJarBytes": 16054,
+    "runtimeJarBytes": 13081373,
+    "runtimeJarCount": 47
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "command": [
+    "java",
+    "-Xms64m",
+    "-Xmx512m",
+    "-cp",
+    "/home/nathan/Projetos/Nodewalker/spikes/renderer-comparison/jme-prototype/target/classes:/home/nathan/Projetos/Nodewalker/spikes/renderer-comparison/jme-prototype/target/dependency/*",
+    "io.github.nathan1227n.nodewalker.spike.jme.JmePrototype",
+    "--output=/home/nathan/Projetos/Nodewalker/spikes/renderer-comparison/target/final-20261017/benchmark/jme-3",
+    "--warmup=10",
+    "--duration=60",
+    "--benchmark"
+  ],
+  "rssMethod": "/proc/PID/status VmRSS; 250 ms polling; excludes VRAM",
+  "display": ":0",
+  "waylandDisplay": "wayland-0",
+  "sessionType": "wayland",
+  "samplePeriodSeconds": 0.25,
+  "pid": 19672,
+  "exitCode": 0,
+  "watchdogSeconds": 100,
+  "timedOut": false,
+  "launchToExitSeconds": 73.81310621900002,
+  "sampledPeakRssBytes": 211288064
+}

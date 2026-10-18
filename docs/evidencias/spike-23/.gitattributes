@@ -1,0 +1,3 @@
+# Keep reproducible raw data available while collapsing generated GitHub diffs.
+benchmark/** linguist-generated=true
+captures/** linguist-generated=true

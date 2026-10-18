@@ -140,6 +140,10 @@ A Etapa B de segurança do gerador foi **autorizada após o merge da PR #22** e 
 
 **Decisão de tecnologia:** [spike #23](https://github.com/Nathan1227n/Nodewalker/issues/23) comparará rapidamente **JavaFX 3D** (base atual) e **jMonkeyEngine** (candidato Java). Avaliar terrain/heightmap, iluminação/névoa, órbita, câmera, glTF, FPS real no Fedora, controle do HUD, Maven/Java 21, risco de integração e fallback 2D. Não migrar o app nem alterar o `tsp-core` antes de obter evidências e aceitar a ADR. Timebox inicial: cerca de quatro horas; se arriscar a entrega, usar JavaFX 3D estilizado.
 
+### Spike #23 — protótipos isolados (17/10/2026)
+
+Dois protótipos Java 21/Maven em `spikes/renderer-comparison/` compartilham cenário procedural, cinco refúgios, câmera e ciclo fixo validado. Janelas reais foram abertas na GPU NVIDIA do Fedora; capturas, método e resultados estão em [SPIKE_RENDERIZADORES.md](SPIKE_RENDERIZADORES.md). A recomendação **provisória** é JavaFX 3D estilizado para o MVP; a ADR permanece sem aceite até revisão gráfica humana. O app original e seu fallback 2D permanecem intactos. Compilação em CI não equivale a homologação visual. Esta spike não implementa #11/#12 nem conclui o G3.
+
 ### Escopo visual obrigatório para o MVP (G3)
 
 - **Issue #11:** terreno montanhoso estilizado e leve, vales/platôs, alguns props abandonados, refúgios luminosos nos índices reais, origem 0 distinta, câmera orbital/zoom/reset e rota ótima claramente desenhada e auditável.

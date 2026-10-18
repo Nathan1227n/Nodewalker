@@ -1,0 +1,65 @@
+$ mvn --batch-mode --no-transfer-progress clean verify
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.032 s -- in io.github.nathan1227n.nodewalker.core.SearchSpaceTest
+[INFO] Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.057 s -- in io.github.nathan1227n.nodewalker.core.generator.GenerationOptionsTest
+[INFO] Tests run: 46, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.127 s -- in io.github.nathan1227n.nodewalker.core.generator.TspBoundedGeneratorTest
+[INFO] Tests run: 12, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.023 s -- in io.github.nathan1227n.nodewalker.core.generator.TspGenerationCancellationTest
+[INFO] Tests run: 89, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.104 s -- in io.github.nathan1227n.nodewalker.core.generator.TspGeneratorTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 s -- in io.github.nathan1227n.nodewalker.core.model.CityTest
+[INFO] Tests run: 12, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.014 s -- in io.github.nathan1227n.nodewalker.core.model.CostMathTest
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.009 s -- in io.github.nathan1227n.nodewalker.core.model.TspProblemCheckpointTest
+[INFO] Tests run: 54, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.062 s -- in io.github.nathan1227n.nodewalker.core.model.TspProblemTest
+[INFO] Tests run: 31, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.043 s -- in io.github.nathan1227n.nodewalker.core.model.TspRouteTest
+[INFO] Tests run: 1062, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.480 s -- in io.github.nathan1227n.nodewalker.core.solver.BacktrackingSolverTest
+[INFO] Tests run: 49, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.022 s -- in io.github.nathan1227n.nodewalker.core.solver.BruteForceSolverTest
+[INFO] Tests run: 14, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.024 s -- in io.github.nathan1227n.nodewalker.core.solver.HeldKarpOracleTest
+[INFO] Tests run: 18, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.025 s -- in io.github.nathan1227n.nodewalker.core.solver.IndependentOptimalityAuditTest
+[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.008 s -- in io.github.nathan1227n.nodewalker.core.solver.PruningHistogramTest
+[INFO] Tests run: 102, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.074 s -- in io.github.nathan1227n.nodewalker.core.solver.SolverExecutionControlsTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 s -- in io.github.nathan1227n.nodewalker.core.solver.SolverExecutionOptionsTest
+[INFO] Tests run: 16, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.010 s -- in io.github.nathan1227n.nodewalker.core.solver.SolverInstrumentationTest
+[INFO] Tests run: 20, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.009 s -- in io.github.nathan1227n.nodewalker.core.solver.SolverMetricsTest
+[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.005 s -- in io.github.nathan1227n.nodewalker.core.solver.SolverPreflightTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 s -- in io.github.nathan1227n.nodewalker.core.solver.SolverRunMetricsTest
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in io.github.nathan1227n.nodewalker.core.solver.SolverStatusTest
+[INFO] Tests run: 49, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.022 s -- in io.github.nathan1227n.nodewalker.core.solver.TspResultTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s -- in io.github.nathan1227n.nodewalker.core.solver.TspSolverTest
+[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.005 s -- in io.github.nathan1227n.nodewalker.core.validation.RouteValidatorTest
+[INFO] Tests run: 1652, Failures: 0, Errors: 0, Skipped: 0
+[INFO] Tests run: 27, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.154 s -- in io.github.nathan1227n.nodewalker.cli.BenchmarkRunnerTest
+[INFO] Tests run: 48, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.058 s -- in io.github.nathan1227n.nodewalker.cli.CliOptionsTest
+[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.012 s -- in io.github.nathan1227n.nodewalker.cli.MedianTest
+[INFO] Tests run: 21, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.042 s -- in io.github.nathan1227n.nodewalker.cli.NodeWalkerCliTest
+[INFO] Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.013 s -- in io.github.nathan1227n.nodewalker.cli.PreflightTest
+[INFO] Tests run: 120, Failures: 0, Errors: 0, Skipped: 0
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.290 s -- in io.github.nathan1227n.nodewalker.cli.CliJarIT
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.027 s -- in io.github.nathan1227n.nodewalker.app.PreviewModeSelectorTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
+[INFO] Total time:  7.301 s
+
+$ mvn --batch-mode --no-transfer-progress -f spikes/renderer-comparison/pom.xml -pl javafx-prototype -am clean verify
+[INFO] Tests run: 12, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.153 s -- in io.github.nathan1227n.nodewalker.spike.MeasurementTest
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.096 s -- in io.github.nathan1227n.nodewalker.spike.SceneContractsTest
+[INFO] Tests run: 20, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
+[INFO] Total time:  2.896 s
+
+$ mvn --batch-mode --no-transfer-progress -f spikes/renderer-comparison/pom.xml -pl jme-prototype -am clean verify
+[INFO] Tests run: 12, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.125 s -- in io.github.nathan1227n.nodewalker.spike.MeasurementTest
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.047 s -- in io.github.nathan1227n.nodewalker.spike.SceneContractsTest
+[INFO] Tests run: 20, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
+[INFO] Total time:  2.402 s
+
+$ env -u DISPLAY -u WAYLAND_DISPLAY mvn --batch-mode --no-transfer-progress -f spikes/renderer-comparison/pom.xml -pl scene-common test
+[INFO] Tests run: 12, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.128 s -- in io.github.nathan1227n.nodewalker.spike.MeasurementTest
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.054 s -- in io.github.nathan1227n.nodewalker.spike.SceneContractsTest
+[INFO] Tests run: 20, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
+[INFO] Total time:  1.007 s
+
+tsp-core {'tests': 1652, 'failures': 0, 'errors': 0, 'skipped': 0}
+tsp-cli {'tests': 125, 'failures': 0, 'errors': 0, 'skipped': 0}
+tsp-app {'tests': 4, 'failures': 0, 'errors': 0, 'skipped': 0}
+spikes/renderer-comparison/scene-common {'tests': 20, 'failures': 0, 'errors': 0, 'skipped': 0}

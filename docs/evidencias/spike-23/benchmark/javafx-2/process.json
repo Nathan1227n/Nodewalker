@@ -1,0 +1,27 @@
+{
+  "command": [
+    "java",
+    "-Xms64m",
+    "-Xmx512m",
+    "-Dprism.verbose=true",
+    "-Dprism.vsync=true",
+    "-cp",
+    "/home/nathan/Projetos/Nodewalker/spikes/renderer-comparison/javafx-prototype/target/classes:/home/nathan/Projetos/Nodewalker/spikes/renderer-comparison/javafx-prototype/target/dependency/*",
+    "io.github.nathan1227n.nodewalker.spike.fx.FxLauncher",
+    "--output=/home/nathan/Projetos/Nodewalker/spikes/renderer-comparison/target/final-20261017/benchmark/javafx-2",
+    "--warmup=10",
+    "--duration=60",
+    "--benchmark"
+  ],
+  "rssMethod": "/proc/PID/status VmRSS; 250 ms polling; excludes VRAM",
+  "display": ":0",
+  "waylandDisplay": "wayland-0",
+  "sessionType": "wayland",
+  "samplePeriodSeconds": 0.25,
+  "pid": 19163,
+  "exitCode": 0,
+  "watchdogSeconds": 100,
+  "timedOut": false,
+  "launchToExitSeconds": 70.80835887700005,
+  "sampledPeakRssBytes": 546078720
+}

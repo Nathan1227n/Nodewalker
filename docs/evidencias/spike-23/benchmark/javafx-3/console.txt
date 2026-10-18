@@ -1,0 +1,34 @@
+Oct 17, 2026 9:08:08 PM com.sun.javafx.application.PlatformImpl startup
+WARNING: Unsupported JavaFX configuration: classes were loaded from 'unnamed module @627da31b'
+Prism pipeline init order: es2 sw
+Using Double Precision Marlin Rasterizer
+Using dirty region optimizations
+Not using texture mask for primitives
+Not forcing power of 2 sizes for textures
+Using hardware CLAMP_TO_ZERO mode
+Opting in for HiDPI pixel scaling
+Prism pipeline name = com.sun.prism.es2.ES2Pipeline
+Loading ES2 native library ... prism_es2
+	succeeded.
+GLFactory using com.sun.prism.es2.X11GLFactory
+(X) Got class = class com.sun.prism.es2.ES2Pipeline
+Initialized prism pipeline: com.sun.prism.es2.ES2Pipeline
+Maximum supported texture size: 32768
+Maximum texture size clamped to 4096
+Non power of two texture support = true
+Maximum number of vertex attributes = 16
+Maximum number of uniform vertex components = 4096
+Maximum number of uniform fragment components = 4096
+Maximum number of varying components = 124
+Maximum number of texture units usable in a vertex shader = 32
+Maximum number of texture units usable in a fragment shader = 32
+Graphics Vendor: NVIDIA Corporation
+       Renderer: NVIDIA GeForce RTX 5060/PCIe/SSE2
+        Version: 4.6.0 NVIDIA 615.78.08
+ vsync: true vpipe: true
+ES2ResourceFactory: Prism - createStockShader: FillPgram_Color.frag
+ES2ResourceFactory: Prism - createStockShader: Solid_TextureRGB.frag
+ES2ResourceFactory: Prism - createStockShader: Solid_TextureFirstPassLCD.frag
+ES2ResourceFactory: Prism - createStockShader: Solid_TextureSecondPassLCD.frag
+Metrics: /home/nathan/Projetos/Nodewalker/spikes/renderer-comparison/target/final-20261017/benchmark/javafx-3 | callback Hz=319.904 | samplingComplete=true
+QuantumRenderer: shutdown
