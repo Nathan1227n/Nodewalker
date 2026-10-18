@@ -1,0 +1,37 @@
+Oct 17, 2026 9:03:07 PM com.jme3.system.JmeDesktopSystem initialize
+INFO: Running on jMonkeyEngine 3.9.0-stable
+ * Branch: HEAD
+ * Git Hash: f44d59a
+ * Build Date: 2026-01-20
+Oct 17, 2026 9:03:07 PM com.jme3.system.lwjgl.LwjglWindow createContext
+INFO: Active X11 server for GLX management:
+ * Platform: GLFW_PLATFORM_X11|XWayland (393,220)
+Oct 17, 2026 9:03:07 PM com.jme3.system.lwjgl.LwjglContext printContextInitInfo
+INFO: LWJGL 3.3.6+1 context running on thread jME3 Main
+ * Graphics Adapter: GLFW 3.5.0 Wayland X11 GLX Null EGL OSMesa monotonic shared
+Oct 17, 2026 9:03:07 PM com.jme3.renderer.opengl.GLRenderer loadCapabilitiesCommon
+INFO: OpenGL Renderer Information
+ * Vendor: NVIDIA Corporation
+ * Renderer: NVIDIA GeForce RTX 5060/PCIe/SSE2
+ * OpenGL Version: 3.3.0 NVIDIA 615.78.08
+ * GLSL Version: 3.30 NVIDIA via Cg compiler
+ * Profile: Core
+Oct 17, 2026 9:03:07 PM com.jme3.asset.AssetConfig loadText
+WARNING: Cannot find loader com.jme3.scene.plugins.ogre.MeshLoader
+Oct 17, 2026 9:03:07 PM com.jme3.asset.AssetConfig loadText
+WARNING: Cannot find loader com.jme3.scene.plugins.ogre.SkeletonLoader
+Oct 17, 2026 9:03:07 PM com.jme3.asset.AssetConfig loadText
+WARNING: Cannot find loader com.jme3.scene.plugins.ogre.MaterialLoader
+Oct 17, 2026 9:03:07 PM com.jme3.asset.AssetConfig loadText
+WARNING: Cannot find loader com.jme3.scene.plugins.ogre.SceneLoader
+Oct 17, 2026 9:03:07 PM com.jme3.asset.AssetConfig loadText
+WARNING: Cannot find loader com.jme3.scene.plugins.fbx.FbxLoader
+Oct 17, 2026 9:03:07 PM com.jme3.asset.AssetConfig loadText
+WARNING: Cannot find loader com.jme3.scene.plugins.gltf.GltfLoader
+Oct 17, 2026 9:03:07 PM com.jme3.asset.AssetConfig loadText
+WARNING: Cannot find loader com.jme3.scene.plugins.gltf.BinLoader
+Oct 17, 2026 9:03:07 PM com.jme3.asset.AssetConfig loadText
+WARNING: Cannot find loader com.jme3.scene.plugins.gltf.GlbLoader
+Oct 17, 2026 9:03:07 PM com.jme3.asset.AssetConfig loadText
+WARNING: Cannot find loader com.jme3.audio.plugins.OGGLoader
+Metrics: /home/nathan/Projetos/Nodewalker/spikes/renderer-comparison/target/final-20261017/jme-capture | callback Hz=0.000 | samplingComplete=false

@@ -1,0 +1,190 @@
+[
+  {
+    "name": "jme3-core-3.9.0-stable.jar",
+    "bytes": 2147193
+  },
+  {
+    "name": "jme3-desktop-3.9.0-stable.jar",
+    "bytes": 237276
+  },
+  {
+    "name": "jme3-lwjgl3-3.9.0-stable.jar",
+    "bytes": 154672
+  },
+  {
+    "name": "lwjgl-3.3.6-natives-linux-arm32.jar",
+    "bytes": 88490
+  },
+  {
+    "name": "lwjgl-3.3.6-natives-linux-arm64.jar",
+    "bytes": 117172
+  },
+  {
+    "name": "lwjgl-3.3.6-natives-linux.jar",
+    "bytes": 121299
+  },
+  {
+    "name": "lwjgl-3.3.6-natives-macos-arm64.jar",
+    "bytes": 50369
+  },
+  {
+    "name": "lwjgl-3.3.6-natives-macos.jar",
+    "bytes": 75211
+  },
+  {
+    "name": "lwjgl-3.3.6-natives-windows-x86.jar",
+    "bytes": 144049
+  },
+  {
+    "name": "lwjgl-3.3.6-natives-windows.jar",
+    "bytes": 168988
+  },
+  {
+    "name": "lwjgl-3.3.6.jar",
+    "bytes": 823245
+  },
+  {
+    "name": "lwjgl-glfw-3.3.6-natives-linux-arm32.jar",
+    "bytes": 118670
+  },
+  {
+    "name": "lwjgl-glfw-3.3.6-natives-linux-arm64.jar",
+    "bytes": 141056
+  },
+  {
+    "name": "lwjgl-glfw-3.3.6-natives-linux.jar",
+    "bytes": 128137
+  },
+  {
+    "name": "lwjgl-glfw-3.3.6-natives-macos-arm64.jar",
+    "bytes": 146109
+  },
+  {
+    "name": "lwjgl-glfw-3.3.6-natives-macos.jar",
+    "bytes": 151479
+  },
+  {
+    "name": "lwjgl-glfw-3.3.6-natives-windows-x86.jar",
+    "bytes": 164971
+  },
+  {
+    "name": "lwjgl-glfw-3.3.6-natives-windows.jar",
+    "bytes": 171962
+  },
+  {
+    "name": "lwjgl-glfw-3.3.6.jar",
+    "bytes": 148078
+  },
+  {
+    "name": "lwjgl-jawt-3.3.6.jar",
+    "bytes": 24830
+  },
+  {
+    "name": "lwjgl-jemalloc-3.3.6-natives-linux-arm32.jar",
+    "bytes": 176503
+  },
+  {
+    "name": "lwjgl-jemalloc-3.3.6-natives-linux-arm64.jar",
+    "bytes": 222196
+  },
+  {
+    "name": "lwjgl-jemalloc-3.3.6-natives-linux.jar",
+    "bytes": 210549
+  },
+  {
+    "name": "lwjgl-jemalloc-3.3.6-natives-macos-arm64.jar",
+    "bytes": 126884
+  },
+  {
+    "name": "lwjgl-jemalloc-3.3.6-natives-macos.jar",
+    "bytes": 136797
+  },
+  {
+    "name": "lwjgl-jemalloc-3.3.6-natives-windows-x86.jar",
+    "bytes": 152110
+  },
+  {
+    "name": "lwjgl-jemalloc-3.3.6-natives-windows.jar",
+    "bytes": 181163
+  },
+  {
+    "name": "lwjgl-jemalloc-3.3.6.jar",
+    "bytes": 46636
+  },
+  {
+    "name": "lwjgl-openal-3.3.6-natives-linux-arm32.jar",
+    "bytes": 604338
+  },
+  {
+    "name": "lwjgl-openal-3.3.6-natives-linux-arm64.jar",
+    "bytes": 656568
+  },
+  {
+    "name": "lwjgl-openal-3.3.6-natives-linux.jar",
+    "bytes": 765147
+  },
+  {
+    "name": "lwjgl-openal-3.3.6-natives-macos-arm64.jar",
+    "bytes": 523209
+  },
+  {
+    "name": "lwjgl-openal-3.3.6-natives-macos.jar",
+    "bytes": 574093
+  },
+  {
+    "name": "lwjgl-openal-3.3.6-natives-windows-x86.jar",
+    "bytes": 697562
+  },
+  {
+    "name": "lwjgl-openal-3.3.6-natives-windows.jar",
+    "bytes": 761720
+  },
+  {
+    "name": "lwjgl-openal-3.3.6.jar",
+    "bytes": 153061
+  },
+  {
+    "name": "lwjgl-opencl-3.3.6.jar",
+    "bytes": 245542
+  },
+  {
+    "name": "lwjgl-opengl-3.3.6-natives-linux-arm32.jar",
+    "bytes": 58633
+  },
+  {
+    "name": "lwjgl-opengl-3.3.6-natives-linux-arm64.jar",
+    "bytes": 79414
+  },
+  {
+    "name": "lwjgl-opengl-3.3.6-natives-linux.jar",
+    "bytes": 80466
+  },
+  {
+    "name": "lwjgl-opengl-3.3.6-natives-macos-arm64.jar",
+    "bytes": 42551
+  },
+  {
+    "name": "lwjgl-opengl-3.3.6-natives-macos.jar",
+    "bytes": 53873
+  },
+  {
+    "name": "lwjgl-opengl-3.3.6-natives-windows-x86.jar",
+    "bytes": 89383
+  },
+  {
+    "name": "lwjgl-opengl-3.3.6-natives-windows.jar",
+    "bytes": 98896
+  },
+  {
+    "name": "lwjgl-opengl-3.3.6.jar",
+    "bytes": 935339
+  },
+  {
+    "name": "lwjgl3-awt-0.2.3.jar",
+    "bytes": 62242
+  },
+  {
+    "name": "scene-common-0.1.0-SNAPSHOT.jar",
+    "bytes": 23242
+  }
+]

@@ -1,0 +1,38 @@
+[
+  {
+    "name": "javafx-base-21.0.12-linux.jar",
+    "bytes": 753227
+  },
+  {
+    "name": "javafx-base-21.0.12.jar",
+    "bytes": 302
+  },
+  {
+    "name": "javafx-controls-21.0.12-linux.jar",
+    "bytes": 2582535
+  },
+  {
+    "name": "javafx-controls-21.0.12.jar",
+    "bytes": 306
+  },
+  {
+    "name": "javafx-graphics-21.0.12-linux.jar",
+    "bytes": 4682157
+  },
+  {
+    "name": "javafx-graphics-21.0.12.jar",
+    "bytes": 306
+  },
+  {
+    "name": "javafx-swing-21.0.12-linux.jar",
+    "bytes": 89705
+  },
+  {
+    "name": "javafx-swing-21.0.12.jar",
+    "bytes": 303
+  },
+  {
+    "name": "scene-common-0.1.0-SNAPSHOT.jar",
+    "bytes": 23242
+  }
+]

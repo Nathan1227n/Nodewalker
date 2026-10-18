@@ -1,0 +1,22 @@
+{
+  "spikes/renderer-comparison/javafx-prototype/pom.xml": "e3cab1b4ef11bde42aa0ed6d160b558a0f67c38d8b130b1e720bc23ca30fcf56",
+  "spikes/renderer-comparison/javafx-prototype/src/main/java/io/github/nathan1227n/nodewalker/spike/fx/FxLauncher.java": "29bdf107b3d9976f17c09b016acead7768c39792435c95732bb45dc8fddf8cfa",
+  "spikes/renderer-comparison/javafx-prototype/src/main/java/io/github/nathan1227n/nodewalker/spike/fx/FxPrototype.java": "51aeeb68f36f212dfbd81a4b9262be5f77e8112c911269ed591023fb7a3ec0c0",
+  "spikes/renderer-comparison/jme-prototype/pom.xml": "ae3ab7fcd15cbe98443780c428eac16423454c6025fee1aa749b2ceb4049febd",
+  "spikes/renderer-comparison/jme-prototype/src/main/java/io/github/nathan1227n/nodewalker/spike/jme/JmePrototype.java": "13c3a87f52e541cc3e1dbecd0b88c53ade03abc0edacb46c8454ef248450e8ba",
+  "spikes/renderer-comparison/pom.xml": "b2869f00767b6a5c6f06288843869f4de559bb2e5ead30de3d2b7899be5c2f5b",
+  "spikes/renderer-comparison/scene-common/pom.xml": "fd763792e324b8b17fce9449c4df9e0735554111a4236d3a85c7553c04caa8ec",
+  "spikes/renderer-comparison/scene-common/src/main/java/io/github/nathan1227n/nodewalker/spike/DisplayTransform.java": "c532ac149d871d9aa92a51955bb3f2157b268546673e7cf78d519bdfeab8e5b5",
+  "spikes/renderer-comparison/scene-common/src/main/java/io/github/nathan1227n/nodewalker/spike/FrameSamples.java": "2871f85a12579aa7a83fe8f5b122da9ac262096bb8089964ebf116d1d709bcbc",
+  "spikes/renderer-comparison/scene-common/src/main/java/io/github/nathan1227n/nodewalker/spike/OrbitCamera.java": "0205201ad276f5c8308b07a9f99dfe6dc61867a9955e3981a9d07b8373177353",
+  "spikes/renderer-comparison/scene-common/src/main/java/io/github/nathan1227n/nodewalker/spike/RunOptions.java": "65e169edcf6aef175ebca2098c9520c85a6cb54f245cf5bd07acadac2495f2f0",
+  "spikes/renderer-comparison/scene-common/src/main/java/io/github/nathan1227n/nodewalker/spike/RunRecorder.java": "f0ab866d29239a2a44cea5fa9ae7f2986100b7b294dcc158e2aeeefe89b780e6",
+  "spikes/renderer-comparison/scene-common/src/main/java/io/github/nathan1227n/nodewalker/spike/SceneGeometry.java": "25e20664f89a8ec6272f836465bfc55db9074343e15e0245bfea08f44a01a309",
+  "spikes/renderer-comparison/scene-common/src/main/java/io/github/nathan1227n/nodewalker/spike/SceneSnapshot.java": "72ec431a6ff1c8324faa48038c0bd6061a9c53c6098e2e4c078837e6f4beeaa7",
+  "spikes/renderer-comparison/scene-common/src/main/java/io/github/nathan1227n/nodewalker/spike/Vec3.java": "84f030f93d94d5119049c6ea03a7570de3993cd6aaba59d364ce106afc114886",
+  "spikes/renderer-comparison/scene-common/src/test/java/io/github/nathan1227n/nodewalker/spike/MeasurementTest.java": "fc8492a56f7fe02aa4eb65557f71e5525d39aa70d49dcb7aff735254d4d31bd0",
+  "spikes/renderer-comparison/scene-common/src/test/java/io/github/nathan1227n/nodewalker/spike/SceneContractsTest.java": "bf499331d95dcc1d0108f5244a1507051d613d9907c64b32176d9b707b3d1eec",
+  "spikes/renderer-comparison/scripts/compare.py": "a737b74ce57cb2038fa8b0a1278f2574bb7c1dc66d901e6191afe8aa764b80ed",
+  "spikes/renderer-comparison/scripts/run.py": "7e45667d07f6a0ec3ae0e046769b880725e446d68725bd5a28df5fc97c95eb44",
+  "spikes/renderer-comparison/scripts/summarize.py": "91c035d85d481c1a9fcf0761790de7e971c831f689b2a330101d3db812428708"
+}
