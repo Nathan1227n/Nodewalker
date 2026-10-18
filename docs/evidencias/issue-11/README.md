@@ -1,5 +1,7 @@
 # Evidências gráficas — issue #11
 
+**Registro histórico da primeira implementação.** A [galeria do refinamento na mesma PR #34](refinamento/README.md) mostra a paisagem ampliada, novas arquiteturas, rótulos e apresentação de estados; as imagens abaixo não foram substituídas.
+
 Coletadas em 17/10/2026 (America/Fortaleza), em janela real Fedora 44 / Wayland, RTX 5060 e driver NVIDIA 615.78.08, Java 21.0.12.1. Scene 1380×870; viewport padrão 1008×717. PNGs são snapshots JavaFX da janela visível, sem edição. [SHA256SUMS](SHA256SUMS) registra os arquivos. Não são imagens geradas por IA nem evidência de FPS apresentado.
 
 ![N=5, seed=23, resultado real concluído de custo 2875](01-n5-overview.png)

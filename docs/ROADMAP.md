@@ -147,10 +147,12 @@ Dois protótipos Java 21/Maven em `spikes/renderer-comparison/` compartilham cen
 ### Mapa real — issue #11 (esta PR)
 
 - Modelo visual imutável derivado de `TspProblem`/`TspResult`, transformação XYZ reversível e ciclo exato, inclusive retorno. Custos continuam na matriz original.
-- Terreno autoral preparado em background, terminal BASE 0 âmbar, abrigos ciano, ruína/antena, rota certificada ou incumbente identificada, seleção/XYZ, órbita, zoom, reset, topo e foco.
+- Terreno autoral preparado em background, vales e cristas distantes, terminal BASE 0 âmbar, três variantes de abrigos ciano, ruínas periféricas e materiais dessaturados. Rota certificada contínua ou incumbente tracejada, seleção/XYZ, órbita, zoom, reset, topo e foco.
 - Canvas 2D independente, alternância preservando modelo/seleção/câmera, complexidade reduzível e até 32 conexões opcionais do selecionado.
 - Catálogo N=3/5/8/12 com seeds fixas, geração e backtracking limitados, tokens distintos e descarte de entregas obsoletas. Não é o controlador operacional da #12.
-- 38 novos testes headless (1819 no produto), janelas/capturas Fedora reais e fallback automático por Prism software. Navegação humana, desempenho sustentado e Windows gráfico ainda exigem homologação #13/#17.
+- Textos de certificação separados e sem quebra da negação; prioridade/colisão determinística de rótulos e modo de exploração limpa, sem mover posições lógicas.
+- 58 novos testes headless na PR (38 iniciais + 20 do refinamento; **1839 no produto**, 62 no app), [janelas/capturas Fedora reais e contagens de recursos](evidencias/issue-11/refinamento/README.md), fallback automático/forçado por Prism software. Navegação humana, desempenho sustentado e Windows gráfico ainda exigem homologação #13/#17.
+- [Candidatos a assets, licenças específicas e limites de importação](ASSETS_VISUAIS.md) registrados; geometria do MVP continua autoral, sem importador ou dependência nova.
 
 As seções anteriores são registros históricos de cada entrega e mantêm suas contagens e limitações da época.
 

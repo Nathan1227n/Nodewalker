@@ -2,27 +2,49 @@ package io.github.nathan1227n.nodewalker.app.world;
 
 import java.util.List;
 
-/** Pure camera state shared across renderer replacement; no timer or JavaFX objects. */
+/**
+ * Pure camera state shared across renderer replacement; no timer or JavaFX objects.
+ */
 public final class OrbitCamera {
     private final double sceneRadius;
+    private final double landscapeRadius;
     private double azimuth = -.65;
-    private double elevation = .63;
+    private double elevation = .48;
     private double zoom = 1;
     private Vec3 target = Vec3.ZERO;
 
     public OrbitCamera(List<Vec3> points, double terrainExtent) {
-        sceneRadius = Math.max(500, Math.max(terrainExtent * .96,
-                points.stream().mapToDouble(Vec3::length).max().orElse(0) + 120));
+        sceneRadius = Math.max(560, points.stream().mapToDouble(Vec3::length).max().orElse(0) + 170);
+        landscapeRadius = terrainExtent * 3.6 * Math.sqrt(2) + 1200;
     }
 
     public void orbit(double dx, double dy) {
         azimuth = Math.IEEEremainder(azimuth - dx * .006, Math.PI * 2);
         elevation = Math.clamp(elevation + dy * .005, .12, Math.PI / 2);
     }
-    public void zoom(double scroll) { zoom = Math.clamp(zoom * Math.exp(-Math.clamp(scroll, -400, 400) * .0015), .32, 2.8); }
-    public void reset() { azimuth = -.65; elevation = .63; zoom = 1; target = Vec3.ZERO; }
-    public void top() { elevation = Math.PI / 2; azimuth = 0; target = Vec3.ZERO; zoom = 1; }
-    public void focus(Vec3 point) { target = point; zoom = .65; }
+
+    public void zoom(double scroll) {
+        zoom = Math.clamp(zoom * Math.exp(-Math.clamp(scroll, -400, 400) * .0015), .12, 2.8);
+    }
+
+    public void reset() {
+        azimuth = -.65;
+        elevation = .48;
+        zoom = 1;
+        target = Vec3.ZERO;
+    }
+
+    public void top() {
+        elevation = Math.PI / 2;
+        azimuth = 0;
+        target = Vec3.ZERO;
+        zoom = 1;
+    }
+
+    public void focus(Vec3 point) {
+        target = point;
+        zoom = .22;
+    }
 
     public Pose pose(double width, double height) {
         double verticalFov = Math.toRadians(38);
@@ -38,10 +60,11 @@ public final class OrbitCamera {
         Vec3 right = new Vec3(Math.cos(azimuth), 0, Math.sin(azimuth));
         Vec3 down = forward.cross(right).unit();
         return new Pose(eye, right, down, forward, Math.max(.1, radius / 10000),
-                radius + sceneRadius * 5 + target.length(), radius);
+                radius + landscapeRadius + target.length(), radius);
     }
 
-    public record Pose(Vec3 eye, Vec3 right, Vec3 down, Vec3 forward, double nearClip, double farClip, double distance) {
+    public record Pose(Vec3 eye, Vec3 right, Vec3 down, Vec3 forward, double nearClip, double farClip,
+                       double distance) {
         public Vec3 project(Vec3 world, double width, double height) {
             Vec3 relative = world.subtract(eye);
             double depth = relative.dot(forward);

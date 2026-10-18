@@ -20,7 +20,7 @@ Na raiz do repositório:
 mvn clean verify
 ```
 
-A suíte contém 1819 execuções de testes, incluindo casos parametrizados: 1652 do núcleo, 125 da CLI (120 unitários e cinco de integração do JAR) e 42 do aplicativo. Todos são executados sem abrir janela JavaFX. `verify` inclui os testes do JAR após o empacotamento; `test` executa somente os testes unitários. A spike possui outros 20 testes, em reactor separado.
+A suíte contém 1839 execuções de testes, incluindo casos parametrizados: 1652 do núcleo, 125 da CLI (120 unitários e cinco de integração do JAR) e 62 do aplicativo. Todos são executados sem abrir janela JavaFX. `verify` inclui os testes do JAR após o empacotamento; `test` executa somente os testes unitários. A spike possui outros 20 testes, em reactor separado.
 
 Para reproduzir uma instância no núcleo, use `TspGenerator.generate(4, 657L)`. As coordenadas, a matriz de referência e a tentativa rejeitada estão documentadas em [REVISAO_TECNICA.md](docs/REVISAO_TECNICA.md#gerador-determinístico-g1--issue-3-12102026).
 
@@ -132,7 +132,9 @@ mvn -f tsp-app/pom.xml javafx:run -Djavafx.args="--demo=12 --simplified"
 
 > Em máquinas Fedora sem bibliotecas gráficas e drivers configurados, o JavaFX pode não conseguir abrir janela. Isso é um requisito do ambiente, não do algoritmo TSP.
 
-Arraste para orbitar, use a roda para zoom e clique no refúgio/etiqueta ou escolha seu índice na lista. **R** reseta, **T** mostra o topo, **F** enquadra a seleção, **M** alterna 3D/2D, **D** alterna decoração e **S** simplifica. Em 2D, a projeção usa XZ e a inspeção conserva Y original. As linhas são arestas diretas do TSP; terreno e câmera não definem custos.
+Arraste para orbitar, use a roda para zoom e clique no refúgio/etiqueta ou escolha seu índice na lista. **R** reseta, **T** mostra o topo, **F** enquadra a seleção de perto, **M** alterna 3D/2D, **D** alterna decoração e **S** simplifica. A opção **Rótulos reduzidos / exploração limpa** conserva BASE 0 e selecionado; etiquetas secundárias sobrepostas são omitidas por prioridade determinística. Em 2D, a projeção usa XZ e a inspeção conserva Y original. As linhas são arestas diretas do TSP; terreno e câmera não definem custos.
+
+A paisagem autoral combina vales, cristas distantes, comando central e três variantes de refúgio, com ruínas periféricas e paleta rochosa dessaturada. Rota comprovada é contínua ciano clara; incumbente é âmbar tracejada com **ÓTIMO NÃO CERTIFICADO**, sem quebra dessa indicação. Sem incumbente, não há rota desenhada. [Capturas reais do refinamento e limites da validação](docs/evidencias/issue-11/refinamento/README.md); [avaliação de assets e pipeline futuro](docs/ASSETS_VISUAIS.md).
 
 Capturas de janela real e roteiro Fedora: [VISUALIZACAO_TSP.md](docs/VISUALIZACAO_TSP.md). Para repetir a coleta gráfica opcional (Python 3, desktop Linux e JDK 21):
 
@@ -141,7 +143,7 @@ python3 tools/review_world.py
 python3 tools/review_world.py --software-auto --output tsp-app/target/review-fallback
 ```
 
-O roteiro abre janelas e gera PNG, manifesto e dados do ambiente; não roda no CI. Ele exercita eventos controlados, sem certificar FPS apresentado ou conforto de navegação humana. O teste nativo via Robot ficou inconclusivo no Wayland disponível.
+O roteiro abre janelas e gera PNG, manifesto, contagens de recursos/heap/RSS pontuais e dados do ambiente; não roda no CI. Inclui fixtures de apresentação dos quatro estados, identificadas nos arquivos, além dos resultados reais do catálogo. Exercita eventos controlados, sem certificar FPS apresentado, memória estabilizada ou conforto de navegação humana. O teste nativo via Robot ficou inconclusivo no Wayland disponível.
 
 ## Estrutura
 

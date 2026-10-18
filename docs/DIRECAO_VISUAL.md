@@ -24,15 +24,17 @@ O usuário deve sentir escala, solidão, terreno inóspito e o contraste entre p
 | Movimento | Câmera orbital, foco, zoom, vista superior, reset | Sim |
 | Cinema | Flyover, animação de pulsos, chuva, volumetria pesada, partículas de atmosfera | Opcional G5 |
 
-### Paleta sugerida (ajustável após protótipo)
+### Paleta e composição do MVP (ajustadas após capturas reais)
 - Plano de fundo e sombras: `#0A1119`, `#15222B`, `#26343A`.
-- Rocha/terreno: `#4A5150`, `#71766F`, verde-acinzentado discreto `#465951`.
+- Rocha/terreno: grafite `#252C2B`, ardósia `#353C38`, verde-acinzentado `#474E44`, pedra `#5D655B`, cristas `#777E73`, picos `#9AA095`. Transições contínuas, normais suaves e horizonte dessaturado.
 - Refúgio central: âmbar `#FFBE64` e branco quente `#F5E5C2`.
-- Refúgios secundários: ciano frio `#58DAE5` e azul `#4C9FD6`.
+- Refúgios secundários: ciano frio `#58DAE5`, discreto em pequenos pontos; arquitetura de concreto, metal, ferrugem e painéis escuros.
 - Rota ótima concluída: ciano/branco luminoso; incumbente parcial: contraste distinto e legenda explícita.
 - Alertas (limite, erro, cancelado): padrões de ícone e texto; **não depender apenas de cor**.
 
 Priorizar cenários legíveis em resolução de notebook e em 2D; o fundo não pode reduzir contraste da rota.
+
+A região se estende além da instância, com vales compartilhados e cristas periféricas. A câmera continua enquadrando as cidades; ampliar a decoração não reduz arbitrariamente o grupo TSP. O terreno não tem saia vertical de ilha. Gradiente de fundo e mapa tonal aproximam profundidade atmosférica, sem alegar névoa física, bloom, sombras projetadas ou PBR. [Capturas Fedora do refinamento](evidencias/issue-11/refinamento/README.md).
 
 ## 3. Linguagem dos refúgios
 Cada `City` é um **nó seguro**, não necessariamente uma cidade construída em tamanho real.
@@ -42,6 +44,8 @@ Cada `City` é um **nó seguro**, não necessariamente uma cidade construída em
 - Geometrias devem escalar com zoom/distância para não desaparecerem entre montanhas; usar marcador vertical/billboard se necessário.
 
 Os refúgios não são novos vértices artificiais: há exatamente N cidades e a rota usa exatamente os índices de `TspRoute`.
+
+No MVP, BASE 0 combina comando modular, ala de serviço, plataforma, torre/radar, painéis e gerador. Três variantes secundárias repetíveis representam comunicação, manutenção/suprimentos e monitoramento. Componentes são agrupados em malhas por material. Props periféricos não recebem beacon/índice de cidade e podem ser ocultados. Rótulos usam prioridade de selecionado/BASE 0, evitam colisão e possuem modo reduzido; a lista lateral conserva acesso a todos os índices.
 
 ## 4. Fidelidade matemática obrigatória
 O projeto corrente **não calcula caminhos pedestres seguindo montanhas**. A distância lógica vem da matriz de `TspProblem`, calculada pelo gerador a partir de segmentos euclidianos 3D e arredondada conforme DOC 03. Isto não muda com o tema.
@@ -61,39 +65,37 @@ Evitar cruzamentos aparentes confusos por perspectiva: destacar caminho completo
 A rota escolhida pode receber pulso simples em G3 **apenas se custo baixo**; animação de flyover, clima e sequências cinematográficas ficam para G5.
 
 ## 6. HUD e fluxos
-HUD mínimo: algoritmo, N, seed, estado, custo da incumbente, indicador de ótima comprovada, rota, tempo, nós visitados, rotas completas avaliadas, folhas descartadas, espaço teórico `(N-1)!`, limites ativos, iniciar/cancelar/reexecutar. Métrica ausente deve aparecer como “não informado”, nunca zero inventado.
+**Previsto na #12:** algoritmo, N, seed, estado, custo da incumbente, indicador de ótima comprovada, rota, tempo, nós visitados, rotas completas avaliadas, folhas descartadas, espaço teórico `(N-1)!`, limites ativos, iniciar/cancelar/reexecutar. A #11 entrega um catálogo limitado e painel de apresentação para demonstrar o mapa; não implementa esse fluxo operacional completo. Métrica ausente aparece como “não informado”, nunca zero inventado.
 
 Fluxo separado: **configuração → preflight da geração → geração (assíncrona) → preflight do solver → busca (assíncrona) → resultado/visualização**. A geração controlada, sob implementação separada na Etapa B, deve proteger contra domínio finito, orçamento de tentativas e memória `O(N²)`; a issue #9 controla a busca (tempo/nós). Não confundir os dois cancelamentos.
 
-Sincronização de UI: nenhuma geração, busca fatorial ou renderização pesada na thread do HUD; render updates agregados. Implementação concreta após decisão de engine.
+Sincronização: geração, busca e preparação pura de geometria em background; criação/mutação/descarte de Nodes e recursos JavaFX somente na FX Application Thread. Entregas obsoletas são invalidadas por identificador. A #12 reutilizará o contrato de apresentação sem colocar solvers no renderizador.
 
 ## 7. Tecnologia e estratégia de risco
-**Atual:** Java 21 + Maven multimódulo, `tsp-core` separado de `tsp-app` JavaFX. O Java continua sendo uma escolha válida. O jMonkeyEngine é **candidato**, não decisão tomada.
+**Atual:** Java 21 + Maven multimódulo, `tsp-core` separado de `tsp-app`; **JavaFX 3D ACEITA PARA O MVP**, com Canvas 2D independente. [ADR 0001](ADR/0001-renderizador-3d.md). Integração, manutenção, fallback e prazo justificam a escolha; não se afirma superioridade gráfica/FPS sobre JME.
 
-A **issue #23** deve implementar protótipo isolado que compare:
-1. JavaFX 3D estilizado, aproveitando o app atual;
-2. jMonkeyEngine 3D com terreno/heightmap, iluminação, câmera e modelos importados.
+A PR #33 entregou os protótipos isolados e o [relatório histórico comparativo](SPIKE_RENDERIZADORES.md). Eles permanecem fora do reactor de produção. JME continua alternativa futura, não dependência do aplicativo.
 
-Medir FPS no Fedora, estabilidade de drivers, consumo de memória, tempo de implementação, pipeline de assets, suporte a Java 21/Maven, e dificuldade real de HUD e fallback 2D. Se embutir motor jMonkeyEngine na janela JavaFX introduzir risco, usar módulos/janelas separados ou preservar JavaFX como renderizador principal. Não afirmar integração antes de testá-la.
-
-**Aceite da spike:** documento `docs/ADR/0001-renderizador-3d.md` com decisão e justificativa, capturas, riscos, resultado comparativo e plano incremental. Até lá, não iniciar uma migração irreversível.
+Build/CI não homologam aparência ou FPS. O mapa tem capturas reais Fedora e amostras pontuais de recursos; navegação humana, desempenho sustentado e Windows gráfico continuam em #13/#17.
 
 ## 8. Asset pipeline e licenças
-- Modelar props autorais (torres, refúgios, antenas) em Blender; exportar como **glTF/GLB** quando compatível com o motor escolhido.
+- O MVP usa malhas autorais preparadas em Java puro; Blender é opção futura de modelagem/conversão offline. JavaFX 21 não importa glTF/GLB nativamente.
 - Usar heightmaps gerados proceduralmente ou autorizados; terreno e props devem ser leves, com malhas/colisões simplificadas se necessário.
 - Consultar bibliotecas como Poly Haven para texturas/HDRI **conferindo licença por asset**; preferir CC0. Guardar autores/licenças em arquivo de créditos se usar assets externos.
 - Não inserir assets, screenshots, personagens, logotipos ou modelos extraídos de *Death Stranding* ou outros jogos.
 - Evitar dependência de downloads externos em tempo de execução ou assets grandes que prejudiquem o clone limpo e o CI.
 
-**Estrutura candidata após decisão técnica** (não criar módulos sem evidência):
+**Estrutura implementada** (nenhum novo módulo de produção):
 ```text
 tsp-core/                 lógica TSP (inalterada)
-tsp-app/                  aplicação e alternativa 2D existentes
-tsp-visual-3d/            opcional: renderizador Java isolado, se spike justificar
-assets/                   modelos/texturas com licenças verificadas
+tsp-app/.../world/        apresentação, transformações e geometria pura
+tsp-app/.../world/render/ adaptadores JavaFX 3D e Canvas 2D
+spikes/renderer-comparison/ protótipos históricos isolados
 docs/DIRECAO_VISUAL.md
 docs/ADR/0001-renderizador-3d.md
 ```
+
+[Pesquisa por asset, autor, licença, formatos, polígonos, materiais e tamanho](ASSETS_VISUAIS.md). Nenhum candidato externo foi adotado nesta PR; importação e preservação de materiais não são presumidas.
 
 ## 9. Execução por gates e cortes de escopo
 | Etapa | Entrega | Prioridade |
@@ -120,11 +122,9 @@ docs/ADR/0001-renderizador-3d.md
 - [ ] `mvn clean verify` e CI continuam verdes, sem JavaFX/jMonkeyEngine no `tsp-core`.
 - [ ] Documentação de licenças e diferenças entre distância TSP e rota topográfica está acessível.
 
-## 11. Questões abertas (resolver na spike)
-1. JavaFX 3D estilizado ou jMonkeyEngine para o renderizador principal?
-2. HUD e renderização na mesma janela, ou módulos/janelas distintos?
-3. Como acomodar visualmente refúgios com altitude lógica arbitrária sem falsear coordenadas?
-4. Quais texturas/modelos entregam o melhor resultado visual pelo menor custo de manutenção?
-5. Qual nível de detalhes mantém FPS e estabilidade suficientes no computador de demonstração?
-
-**Decisão final de engine:** não tomada nesta versão. Avaliar na issue #23 antes de atualizar dependências gráficas.
+## 11. Decisões e questões ainda abertas
+1. Engine do MVP decidida: JavaFX 3D, HUD na mesma janela e fallback 2D independente.
+2. Altitudes lógicas preservadas por transformação uniforme; fundações decorativas podem ser altas em projeções próximas. Não mover cidades para melhorar uma captura.
+3. Arquitetura e props autorais entregues; pipeline externo só após benefício demonstrado e homologação de licença/importação.
+4. Homologar conforto, resize, leitura em notebook e janela Windows; medir frames apresentados/memória estabilizada separadamente se necessário.
+5. #12 implementará configuração e controle operacional; #13/#17 homologam o conjunto. Efeitos caros e refinamentos cinematográficos adicionais continuam na #15.

@@ -7,16 +7,19 @@ import io.github.nathan1227n.nodewalker.core.model.TspProblem;
 import io.github.nathan1227n.nodewalker.core.model.TspRoute;
 import io.github.nathan1227n.nodewalker.core.solver.*;
 import io.github.nathan1227n.nodewalker.core.validation.RouteValidator;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.OptionalLong;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class WorldContractsTest {
@@ -25,7 +28,8 @@ class WorldContractsTest {
                 Stream.of(0L, 23L, 657L).map(seed -> Arguments.of(n, seed)));
     }
 
-    @ParameterizedTest @MethodSource("instances")
+    @ParameterizedTest
+    @MethodSource("instances")
     void exactInstanceRouteProjectionAndFit(int n, long seed) {
         TspProblem problem = TspGenerator.generate(n, seed, new GenerationOptions(10_000, 1_000_000));
         var result = new BacktrackingSolver().solve(problem, SolverExecutionOptions.nodeLimit(20_000), new SolverCancellationToken());
@@ -62,7 +66,8 @@ class WorldContractsTest {
         }
     }
 
-    @Test void fullIntegerExtremesAndDegenerateBoundsAreReversible() {
+    @Test
+    void fullIntegerExtremesAndDegenerateBoundsAreReversible() {
         for (List<City> cities : List.of(
                 List.of(new City(0, Integer.MIN_VALUE, Integer.MAX_VALUE, 0),
                         new City(1, Integer.MAX_VALUE, Integer.MIN_VALUE, Integer.MAX_VALUE),
@@ -70,14 +75,16 @@ class WorldContractsTest {
                 List.of(new City(0, 7, 7, 7), new City(1, 7, 7, 7), new City(2, 7, 7, 7)),
                 List.of(new City(0, 0, -5, 0), new City(1, 0, 0, 0), new City(2, 0, 5, 0)))) {
             var model = TspSceneModel.of(new TspProblem(cities, new long[3][3]), Optional.empty());
-            for (var refuge : model.refuges()) assertVector(refuge.logical(), model.transform().toLogical(refuge.position()));
+            for (var refuge : model.refuges())
+                assertVector(refuge.logical(), model.transform().toLogical(refuge.position()));
             assertCameraFit(model, 400, 800);
             for (var p : model.positions()) assertTrue(Double.isFinite(model.projection().project(p, 1, 1, 60).x()));
             for (var p : model.terrain(false).vertices()) assertTrue(Double.isFinite(p.y()));
         }
     }
 
-    @ParameterizedTest @EnumSource(value = SolverStatus.class, names = {"CONCLUIDO", "CANCELADO", "LIMITE_ATINGIDO", "ERRO"})
+    @ParameterizedTest
+    @EnumSource(value = SolverStatus.class, names = {"CONCLUIDO", "CANCELADO", "LIMITE_ATINGIDO", "ERRO"})
     void terminalTruthAndMissingMetrics(SolverStatus status) {
         var problem = zeroProblem();
         var route = new TspRoute(List.of(0, 1, 2, 0));
@@ -91,11 +98,12 @@ class WorldContractsTest {
         assertTrue(model.metrics().visitedNodes().isEmpty());
         assertTrue(model.metrics().discardedRoutes().isEmpty());
         assertTrue(model.metrics().completeRoutesEvaluated().isEmpty());
-        if (!model.certified()) assertTrue(model.routeLabel().contains("NÃO ÓTIMO CERTIFICADO"));
+        if (!model.certified()) assertTrue(model.routeLabel().contains("ÓTIMO NÃO CERTIFICADO"));
         for (var segment : model.segments()) assertEquals(0, segment.geometry().length());
     }
 
-    @ParameterizedTest @EnumSource(value = SolverStatus.class, names = {"CANCELADO", "LIMITE_ATINGIDO", "ERRO"})
+    @ParameterizedTest
+    @EnumSource(value = SolverStatus.class, names = {"CANCELADO", "LIMITE_ATINGIDO", "ERRO"})
     void noIncumbentMeansNoRoute(SolverStatus status) {
         var p = zeroProblem();
         var result = TspResult.interrupted(p, status, Optional.empty(), OptionalLong.empty(), SolverMetrics.empty(), "reason");
@@ -106,7 +114,8 @@ class WorldContractsTest {
         assertFalse(model.certified());
     }
 
-    @Test void maximumLongCostIsLegitimateAndGeometryDoesNotDefineCost() {
+    @Test
+    void maximumLongCostIsLegitimateAndGeometryDoesNotDefineCost() {
         var p = new TspProblem(zeroProblem().cities(), new long[][]{{0, Long.MAX_VALUE, 0}, {Long.MAX_VALUE, 0, 0}, {0, 0, 0}});
         var r = new TspRoute(List.of(0, 1, 2, 0));
         var model = TspSceneModel.of(p, Optional.of(TspResult.completed(p, r, Long.MAX_VALUE, SolverMetrics.empty())));
@@ -115,7 +124,8 @@ class WorldContractsTest {
         assertTrue(model.segments().stream().allMatch(s -> s.geometry().length() == 0));
     }
 
-    @Test void suppliedInterruptedOrientationIsNotCanonicalized() {
+    @Test
+    void suppliedInterruptedOrientationIsNotCanonicalized() {
         var p = zeroProblem();
         var r = new TspRoute(List.of(0, 2, 1, 0));
         var model = TspSceneModel.of(p, Optional.of(TspResult.interrupted(p, SolverStatus.CANCELADO,
@@ -123,7 +133,8 @@ class WorldContractsTest {
         assertEquals(r.indices(), model.routeIndices());
     }
 
-    @Test void incompatibleResultIsRejectedAndUpdatesShareTerrain() {
+    @Test
+    void incompatibleResultIsRejectedAndUpdatesShareTerrain() {
         var p = zeroProblem();
         var model = TspSceneModel.of(p, Optional.empty());
         assertEquals("SEM RESULTADO", model.statusLabel());
@@ -136,7 +147,8 @@ class WorldContractsTest {
         assertThrows(UnsupportedOperationException.class, () -> model.withResult(Optional.of(result)).segments().clear());
     }
 
-    @Test void exactNodeBoundedN12HasAnHonestIncumbent() {
+    @Test
+    void exactNodeBoundedN12HasAnHonestIncumbent() {
         var p = TspGenerator.generate(12, 23, new GenerationOptions(1000, 1_000_000));
         var result = new BacktrackingSolver().solve(p, SolverExecutionOptions.nodeLimit(12), new SolverCancellationToken());
         var model = TspSceneModel.of(p, Optional.of(result));
@@ -146,7 +158,8 @@ class WorldContractsTest {
         assertEquals(12, model.metrics().visitedNodes().orElseThrow());
     }
 
-    @Test void zeroOppositeAndParallelSegmentsHaveFiniteOrientations() {
+    @Test
+    void zeroOppositeAndParallelSegmentsHaveFiniteOrientations() {
         for (Vec3 end : List.of(Vec3.ZERO, new Vec3(0, -3, 0), new Vec3(0, 3, 0), new Vec3(1, 2, -4))) {
             var g = new SegmentGeometry(Vec3.ZERO, end);
             assertEquals(1, g.rotationAxis().length(), 1e-12);
@@ -155,7 +168,8 @@ class WorldContractsTest {
         }
     }
 
-    @Test void terrainBudgetsAndFacesAreStable() {
+    @Test
+    void terrainBudgetsAndFacesAreStable() {
         var model = TspSceneModel.of(zeroProblem(), Optional.empty());
         assertEquals(12_800, model.terrain(false).faces().size());
         assertEquals(2048, model.terrain(true).faces().size());
@@ -172,7 +186,8 @@ class WorldContractsTest {
         }
     }
 
-    @Test void optionalConnectionsAreBoundedAndExcludeRoute() {
+    @Test
+    void optionalConnectionsAreBoundedAndExcludeRoute() {
         var p = TspGenerator.generate(50, 23, new GenerationOptions(10_000, 1_000_000));
         var model = TspSceneModel.of(p, Optional.empty());
         assertEquals(32, model.secondaryConnections(0).size());
@@ -199,6 +214,7 @@ class WorldContractsTest {
             }
         }
     }
+
     private static void assertVector(City expected, Vec3 actual) {
         assertEquals(expected.x(), actual.x(), 1e-5);
         assertEquals(expected.y(), actual.y(), 1e-5);

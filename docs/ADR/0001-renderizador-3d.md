@@ -68,6 +68,8 @@ A spike está em `spikes/renderer-comparison/`, fora do reactor de produção. O
 
 As [evidências da visualização real](../VISUALIZACAO_TSP.md) incluem janelas e capturas Fedora de N=3/5/8/12 e fallback por software sem Scene3D. Homologação humana de navegação/legibilidade e execução gráfica Windows permanecem explicitamente pendentes em #13/#17; o aceite da tecnologia não as substitui.
 
+O refinamento da #11 mantém essa decisão: malhas autorais preparadas em background, horizonte de complexidade fixa, materiais compartilhados e rótulos com prioridade determinística. A [avaliação de assets](../ASSETS_VISUAIS.md) não justificou adicionar um importador ao MVP. Há [capturas reais e amostras de recursos](../evidencias/issue-11/refinamento/README.md), sem medição de frames apresentados ou declaração de superioridade sobre JME. O relatório da spike permanece histórico e não foi reescrito com essas novas observações.
+
 ## Consequências e tarefas após decisão
 - Atualizar issue #11 com renderizador decidido, câmera, terreno, refúgios e fallback.
 - Atualizar issue #12 com threading, HUD e comunicação com `tsp-core`.

@@ -5,6 +5,7 @@ import io.github.nathan1227n.nodewalker.core.model.TspProblem;
 import io.github.nathan1227n.nodewalker.core.solver.SolverMetrics;
 import io.github.nathan1227n.nodewalker.core.solver.TspResult;
 import io.github.nathan1227n.nodewalker.core.validation.RouteValidator;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -25,16 +26,19 @@ public final class TspSceneModel {
     private final TerrainData detailedTerrain;
     private final TerrainData simpleTerrain;
     private final MapProjection projection;
+    private final WorldGeometry detailedGeometry, simpleGeometry;
 
     private TspSceneModel(TspProblem problem, Optional<TspResult> result, WorldTransform transform,
-                          List<Refuge> refuges, TerrainData detailedTerrain, TerrainData simpleTerrain) {
+                          List<Refuge> refuges, WorldGeometry detailedGeometry, WorldGeometry simpleGeometry) {
         this.problem = Objects.requireNonNull(problem);
         this.result = Objects.requireNonNull(result);
         this.transform = transform;
         this.refuges = List.copyOf(refuges);
         this.positions = this.refuges.stream().map(Refuge::position).toList();
-        this.detailedTerrain = detailedTerrain;
-        this.simpleTerrain = simpleTerrain;
+        this.detailedGeometry = detailedGeometry;
+        this.simpleGeometry = simpleGeometry;
+        this.detailedTerrain = detailedGeometry.terrain();
+        this.simpleTerrain = simpleGeometry.terrain();
         this.projection = MapProjection.fit(positions());
         var edges = new ArrayList<RouteSegment>();
         result.flatMap(TspResult::route).ifPresent(route -> {
@@ -58,33 +62,83 @@ public final class TspSceneModel {
         List<Refuge> refuges = problem.cities().stream().map(city -> new Refuge(city, transform.toVisual(city))).toList();
         List<Vec3> positions = refuges.stream().map(Refuge::position).toList();
         return new TspSceneModel(problem, result, transform, refuges,
-                TerrainFactory.build(positions, false), TerrainFactory.build(positions, true));
+                WorldGeometry.prepare(positions, false), WorldGeometry.prepare(positions, true));
     }
 
-    /** Shares the prepared terrain for a new result of the same immutable problem. */
+    /**
+     * Shares all prepared geometry for a new result of the same immutable problem.
+     */
     public TspSceneModel withResult(Optional<TspResult> result) {
-        return new TspSceneModel(problem, result, transform, refuges, detailedTerrain, simpleTerrain);
+        return new TspSceneModel(problem, result, transform, refuges, detailedGeometry, simpleGeometry);
     }
 
-    public TspProblem problem() { return problem; }
-    public Optional<TspResult> result() { return result; }
-    public WorldTransform transform() { return transform; }
-    public List<Refuge> refuges() { return refuges; }
-    public List<Vec3> positions() { return positions; }
-    public List<RouteSegment> segments() { return segments; }
-    public List<Integer> routeIndices() { return result.flatMap(TspResult::route).map(r -> r.indices()).orElse(List.of()); }
-    public TerrainData terrain(boolean simplified) { return simplified ? simpleTerrain : detailedTerrain; }
-    public MapProjection projection() { return projection; }
-    public boolean certified() { return result.map(TspResult::optimalityGuaranteed).orElse(false); }
-    public OptionalLong cost() { return result.map(TspResult::cost).orElse(OptionalLong.empty()); }
-    public SolverMetrics metrics() { return result.map(TspResult::metrics).orElseGet(SolverMetrics::empty); }
+    public TspProblem problem() {
+        return problem;
+    }
+
+    public Optional<TspResult> result() {
+        return result;
+    }
+
+    public WorldTransform transform() {
+        return transform;
+    }
+
+    public List<Refuge> refuges() {
+        return refuges;
+    }
+
+    public List<Vec3> positions() {
+        return positions;
+    }
+
+    public List<RouteSegment> segments() {
+        return segments;
+    }
+
+    public List<Integer> routeIndices() {
+        return result.flatMap(TspResult::route).map(r -> r.indices()).orElse(List.of());
+    }
+
+    public TerrainData terrain(boolean simplified) {
+        return simplified ? simpleTerrain : detailedTerrain;
+    }
+
+    public WorldGeometry geometry(boolean simplified) {
+        return simplified ? simpleGeometry : detailedGeometry;
+    }
+
+    public MapProjection projection() {
+        return projection;
+    }
+
+    public ResultPresentation presentation() {
+        return ResultPresentation.of(result);
+    }
+
+    public boolean certified() {
+        return presentation().certified();
+    }
+
+    public OptionalLong cost() {
+        return result.map(TspResult::cost).orElse(OptionalLong.empty());
+    }
+
+    public SolverMetrics metrics() {
+        return result.map(TspResult::metrics).orElseGet(SolverMetrics::empty);
+    }
+
     public String routeLabel() {
-        if (segments.isEmpty()) return "SEM ROTA DISPONÍVEL";
-        return certified() ? "ÓTIMO CERTIFICADO PELO SOLVER" : "MELHOR ROTA CONHECIDA · NÃO ÓTIMO CERTIFICADO";
+        return presentation().routeLabel();
     }
-    public String statusLabel() { return result.map(r -> r.status().name()).orElse("SEM RESULTADO"); }
 
-    /** At most 32 incident non-route edges; never construct the complete O(N²) graph. */
+    public String statusLabel() {
+        return result.map(r -> r.status().name()).orElse("SEM RESULTADO");
+    }
+
+    /**
+     * At most 32 incident non-route edges; never construct the complete O(N²) graph.
+     */
     public List<RouteSegment> secondaryConnections(int selected) {
         if (selected < 0 || selected >= refuges.size()) throw new IllegalArgumentException("Invalid selection");
         var edges = new ArrayList<RouteSegment>();
@@ -98,6 +152,12 @@ public final class TspSceneModel {
         return List.copyOf(edges);
     }
 
-    public record Refuge(City logical, Vec3 position) { public int index() { return logical.index(); } }
-    public record RouteSegment(int order, int from, int to, long matrixCost, SegmentGeometry geometry) { }
+    public record Refuge(City logical, Vec3 position) {
+        public int index() {
+            return logical.index();
+        }
+    }
+
+    public record RouteSegment(int order, int from, int to, long matrixCost, SegmentGeometry geometry) {
+    }
 }

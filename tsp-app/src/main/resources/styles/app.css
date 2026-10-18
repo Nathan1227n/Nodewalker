@@ -16,7 +16,8 @@
 .section-title { -fx-font-family: "Monospaced"; -fx-font-size: 10px; -fx-font-weight: bold; -fx-text-fill: #98ac9b; }
 .muted-small { -fx-font-size: 10px; -fx-text-fill: #8da6af; -fx-line-spacing: 3; }
 .status-label { -fx-font-family: "Monospaced"; -fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #dce7cf; }
-.certification { -fx-font-size: 11px; -fx-font-weight: bold; }
+.certification { -fx-font-family: "Monospaced"; -fx-font-size: 11px; -fx-font-weight: bold; }
+.route-kind { -fx-font-size: 11px; -fx-text-fill: #bac5ad; }
 .cost-value { -fx-font-family: "Monospaced"; -fx-font-size: 37px; -fx-text-fill: #f0edda; }
 .route-sequence { -fx-font-family: "Monospaced"; -fx-font-size: 12px; -fx-text-fill: #b4d7d4; -fx-line-spacing: 4; }
 .reason { -fx-font-size: 10px; -fx-text-fill: #b6b798; -fx-line-spacing: 2; }

@@ -1,0 +1,32 @@
+# Assets visuais — avaliação para o MVP JavaFX
+
+Pesquisa da evolução visual da #11, em 17/10/2026. **Nenhum modelo externo foi incorporado ao produto.** Refúgios, torres, antenas, ruínas, painéis, geradores, rochas e a pequena textura de tonalidade são autorais/procedurais. Não há download em runtime, novo importador ou nova dependência.
+
+## Candidatos e licenças verificadas
+
+Valores em bytes são tamanhos dos arquivos/arquivos compactados consultados; MB anunciados pelo fornecedor estão identificados como tal. Triângulos foram contados nos OBJ ou nos accessors de índices glTF selecionados, sem presumir que o número informado para uma coleção descreva cada peça. Licença da plataforma não foi usada como substituto da licença do asset.
+
+| Candidato / origem / autor | Licença específica | Formatos disponíveis | Complexidade e materiais da seleção | Tamanho observado | Avaliação JavaFX 21 |
+| --- | --- | --- | --- | --- | --- |
+| [Space Kit](https://kenney.nl/assets/space-kit), **Kenney**: `satelliteDish`, `machine_generator`, `structure_closed` | CC0, confirmada no `License.txt` do pacote | OBJ/MTL, FBX, GLB, DAE, STL | Antena: **274 tri**, 5 materiais, nenhum mapa referenciado pelo MTL; gerador: **406 tri**, 5 materiais, nenhum mapa; módulo: **264 tri**, 3 materiais, nenhum mapa | ZIP **6.677.531 B**. OBJ+MTL: antena **19.059 B**, gerador **30.809 B**, módulo **11.751 B** | Bom candidato a conversão offline. Sem homologação de importação/renderização; cores precisam de mapeamento explícito para Phong |
+| [Space Station Kit](https://kenney.nl/assets/space-station-kit), **Kenney**: `container` | CC0, confirmada no `License.txt` do pacote | OBJ/MTL, FBX, GLB | Contêiner: **176 tri**, 1 material `colormap`, 1 textura referenciada | ZIP **1.835.875 B**; OBJ **6.713 B**, PNG de colormap **7.440 B**, além do MTL | Leve; exige preservar UV, textura e grupos de material. Não testado em JavaFX |
+| [Modular Sci-Fi MegaKit](https://quaternius.com/packs/modularscifimegakit.html), **Quaternius** | CC0 declarada para o pack; distribuição Standard gratuita contém somente parte do catálogo de 277 modelos | Standard: OBJ, FBX, glTF; Blender editável na edição Source paga | Polígonos, materiais e texturas por peça **não medidos**; não adotar o total da coleção como tamanho do download gratuito | [Distribuição](https://quaternius.itch.io/modular-sci-fi-megakit/purchase) anuncia Standard **46 MB**, Pro 187 MB, Source 899 MB | Interessante como referência de módulos, mas sem arquivo selecionado/homologado. Não justifica um pipeline novo neste MVP |
+| [Portable Generator](https://polyhaven.com/a/portable_generator), **James Ray Cock / Poly Haven** | CC0 explícita na página do asset | glTF, Blender, FBX, USD | glTF 1K selecionado: **26.419 tri**, 2 materiais, 5 imagens (7 slots de textura no glTF) | glTF 1K + dependências **3.434.440 B** | Muito mais pesado que a alternativa autoral; mapas PBR não equivalem a Phong. Precisa reduzir/bake/converter offline |
+| [Coast Land Rocks 02](https://polyhaven.com/a/coast_land_rocks_02), **Rob Tuytel** (fotografia/processamento), **Rico Cilliers** (limpeza), Poly Haven | CC0 explícita na página do asset | glTF, Blender, FBX, USD | glTF 1K selecionado: **1.291.146 tri**, 1 material, 3 imagens | glTF 1K + dependências **39.612.026 B** | Recusado para o MVP nesse formato. O custo geométrico excede em muito o orçamento da cena inteira |
+
+Fontes reproduzíveis de arquivos: [ZIP Space Kit](https://kenney.nl/media/pages/assets/space-kit/20874c75ac-1677698978/kenney_space-kit.zip), [ZIP Space Station Kit](https://kenney.nl/media/pages/assets/space-station-kit/6475288f2e-1712749919/kenney_space-station-kit.zip), [API do gerador](https://api.polyhaven.com/files/portable_generator), [API das rochas](https://api.polyhaven.com/files/coast_land_rocks_02). O ZIP de Space Kit identifica versão 2.0 no manifesto, embora a página mantenha metadados históricos diferentes. No caso das rochas, o polígono total do asset original na API difere dos triângulos do glTF selecionado; a tabela relata somente o arquivo efetivamente inspecionado. Nenhum desses downloads é requisito de build ou execução.
+
+## Pipeline compatível e limites conhecidos
+
+JavaFX 21 oferece [TriangleMesh](https://openjfx.io/javadoc/21/javafx.graphics/javafx/scene/shape/TriangleMesh.html), UV/normais e [PhongMaterial](https://openjfx.io/javadoc/21/javafx.graphics/javafx/scene/paint/PhongMaterial.html). Não oferece importador glTF/GLB nativo. `metallicRoughness`, ambientes HDRI e outras propriedades PBR desses pacotes não se transferem automaticamente para um material Phong.
+
+O [FXyz](https://github.com/FXyz/FXyz) tem importadores [OBJ, Maya e FXML](https://github.com/FXyz/FXyz/blob/master/FXyz-Importers/src/main/java/org/fxyz3d/importers/Importer3D.java); essa lista não constitui suporte glTF. A última release encontrada foi 0.6.0, de 04/10/2023; o repositório não estava arquivado e tinha atividade posterior. Isso **não comprova** compatibilidade homologada com esta aplicação/JavaFX 21 nem continuidade de manutenção suficiente para introduzi-lo na presente PR. Nenhum importador foi adicionado ou declarado validado.
+
+Se uma peça pronta justificar o custo numa entrega futura, o caminho preferido é **offline**, sem dependência do Blender em runtime:
+
+1. Arquivar origem, autor, licença individual, versão, hash e alterações da peça escolhida.
+2. Em Blender, reduzir malha, aplicar transformações, triangulação, UV e normais; separar por material e remover dados sem uso. [A documentação de OBJ](https://docs.blender.org/manual/en/4.1/files/import_export/obj.html) descreve a exportação e suas limitações.
+3. Converter o resultado para buffers de malha próprios versionados, com escala/eixos documentados e materiais Phong explícitos. Usar albedo/normal ou bake apenas quando reproduzíveis e necessários; não anunciar preservação de PBR.
+4. Testar índices, bounds, finitude, custo de memória, materiais, carregamento em JavaFX 21 e distribuição Linux/Windows. Registrar créditos mesmo quando atribuição não for obrigação de CC0.
+
+Não implementamos esse conversor nem adotamos arquivos OBJ/glTF nesta PR. `GeometryBuilder` já produz malhas imutáveis próprias, agrupadas por material, adequadas às quatro silhuetas necessárias. Modelar esses poucos componentes diretamente evita um pipeline desproporcional, mantém orçamento e reprodução e permite evolução posterior por Blender sem acoplar o núcleo ao renderizador.
