@@ -4,7 +4,7 @@
 
 Aplicação desktop Java para comparar **força bruta** e **backtracking com poda**, com visualização JavaFX 3D e alternativa 2D.
 
-> **Estado atual — G2 em andamento:** o repositório contém uma demonstração gráfica ilustrativa, o modelo TSP, o gerador determinístico com proteção operacional e os solvers exatos `BruteForceSolver` e `BacktrackingSolver`, com métricas de trabalho e tempo. A CLI permite resolver e medir instâncias por força bruta sem JavaFX. **Mapa conectado ao TSP e controle de execução dos solvers ainda não estão implementados.** Não confundir a rota ilustrativa do G0 com um resultado ótimo.
+> **Estado atual — G3 em andamento:** núcleo exato auditado, geração e busca controladas; mapa JavaFX 3D/2D ligado a `TspProblem` e resultados reais, com terreno/refúgios autorais, seleção e câmera. JavaFX 3D está aceito para o MVP; JME continua somente na spike. O catálogo é limitado e reproduzível; configuração operacional/HUD completo (#12) e homologação final (#13/#17) permanecem pendentes. Incumbentes interrompidas nunca aparecem como ótimo certificado.
 
 ## Requisitos
 
@@ -20,7 +20,7 @@ Na raiz do repositório:
 mvn clean verify
 ```
 
-A suíte contém 1630 execuções de testes, incluindo casos parametrizados: 1501 do núcleo, 125 da CLI (120 unitários e cinco de integração do JAR) e quatro da seleção inicial 3D/2D. Todos são executados sem abrir uma janela JavaFX. `verify` inclui os testes do JAR após o empacotamento; `test` executa somente os testes unitários.
+A suíte contém 1819 execuções de testes, incluindo casos parametrizados: 1652 do núcleo, 125 da CLI (120 unitários e cinco de integração do JAR) e 42 do aplicativo. Todos são executados sem abrir janela JavaFX. `verify` inclui os testes do JAR após o empacotamento; `test` executa somente os testes unitários. A spike possui outros 20 testes, em reactor separado.
 
 Para reproduzir uma instância no núcleo, use `TspGenerator.generate(4, 657L)`. As coordenadas, a matriz de referência e a tentativa rejeitada estão documentadas em [REVISAO_TECNICA.md](docs/REVISAO_TECNICA.md#gerador-determinístico-g1--issue-3-12102026).
 
@@ -112,7 +112,7 @@ Contratos, precedência, fronteiras, exemplos, benchmark reproduzível e consumo
 
 O conjunto de testes também audita o ótimo com Held–Karp independente em `BigInteger`, restrito a `src/test/java` e N≤12. As 1020 configurações diferenciais existentes comparam custo e rota dos dois solvers com essa referência; N=25 usa somente backtracking controlado e contagens analíticas. Recorrência, desempate, overflow, cobertura TSP-01..13 e reprodução: [AUDITORIA_OTIMO.md](docs/AUDITORIA_OTIMO.md).
 
-## Executar a demonstração do G0
+## Executar o mapa real 3D/2D
 
 O primeiro comando instala o módulo `tsp-core` no repositório local do Maven; o segundo abre a UI de `tsp-app`.
 
@@ -121,15 +121,27 @@ mvn clean install
 mvn -f tsp-app/pom.xml javafx:run
 ```
 
-Clique em **Alternativa 2D** para verificar a versão bidimensional mesmo se a placa de vídeo suportar Scene3D. Se não suportar, o app inicia automaticamente em 2D. O G0 apenas detecta a capacidade; não substitui os testes manuais no Fedora e no Windows.
+O catálogo oferece N=3/5/8/12 com seeds fixas. Usa geração controlada e backtracking em background, sempre com limites explícitos de nós/tempo; N=12 pode mostrar uma incumbente sem prova de ótimo. Clique em **MAPA 2D** para alternar preservando a instância e a seleção. Sem Scene3D, inicia em Canvas 2D e desabilita 3D. Um desktop continua necessário para abrir qualquer janela.
 
 Para iniciar explicitamente em 2D:
 
 ```bash
 mvn -f tsp-app/pom.xml javafx:run -Djavafx.args="--2d"
+mvn -f tsp-app/pom.xml javafx:run -Djavafx.args="--demo=12 --simplified"
 ```
 
 > Em máquinas Fedora sem bibliotecas gráficas e drivers configurados, o JavaFX pode não conseguir abrir janela. Isso é um requisito do ambiente, não do algoritmo TSP.
+
+Arraste para orbitar, use a roda para zoom e clique no refúgio/etiqueta ou escolha seu índice na lista. **R** reseta, **T** mostra o topo, **F** enquadra a seleção, **M** alterna 3D/2D, **D** alterna decoração e **S** simplifica. Em 2D, a projeção usa XZ e a inspeção conserva Y original. As linhas são arestas diretas do TSP; terreno e câmera não definem custos.
+
+Capturas de janela real e roteiro Fedora: [VISUALIZACAO_TSP.md](docs/VISUALIZACAO_TSP.md). Para repetir a coleta gráfica opcional (Python 3, desktop Linux e JDK 21):
+
+```bash
+python3 tools/review_world.py
+python3 tools/review_world.py --software-auto --output tsp-app/target/review-fallback
+```
+
+O roteiro abre janelas e gera PNG, manifesto e dados do ambiente; não roda no CI. Ele exercita eventos controlados, sem certificar FPS apresentado ou conforto de navegação humana. O teste nativo via Robot ficou inconclusivo no Wayland disponível.
 
 ## Estrutura
 
@@ -149,10 +161,10 @@ NodeWalker/
 - **G0:** Maven multimódulo, Java 21, JavaFX 21.0.12, JUnit 5.14.3, hello 3D + fallback 2D. **Compilação corrigida e sete testes aprovados; demonstração original validada no Fedora. Evidências e pendências finais de CI/interface: [roadmap](docs/ROADMAP.md).**
 - **G1:** modelo do grafo completo, custos, geração por seed, força bruta, testes e CLI de benchmark.
 - **G2:** backtracking com poda exata, métricas, limites, cancelamento, teste diferencial.
-- **G3:** MVP visual funcional com mapa **pós-apocalíptico** (refúgios, terreno montanhoso estilizado e ruínas leves), rota fiel ao TSP, HUD, câmera e execução assíncrona. O motor 3D será decidido após a [spike #23](https://github.com/Nathan1227n/Nodewalker/issues/23); o 2D continua obrigatório.
+- **G3:** mapa real 3D/2D e demonstrações limitadas na #11; HUD e fluxo operacional #12, homologação #13/#17 pendentes. JavaFX 3D aceito para o MVP após [spike #23](https://github.com/Nathan1227n/Nodewalker/issues/23), com fallback 2D obrigatório.
 - **G4/G5:** camada didática e efeitos, apenas após o MVP estar estável.
 
-Leia [docs/ROADMAP.md](docs/ROADMAP.md), [docs/REVISAO_TECNICA.md](docs/REVISAO_TECNICA.md), [docs/DIRECAO_VISUAL.md](docs/DIRECAO_VISUAL.md) e a [ADR do renderizador 3D](docs/ADR/0001-renderizador-3d.md) antes de expandir o escopo. A ADR ainda é **proposta**: jMonkeyEngine não foi adotado nem está integrado à aplicação.
+Leia [docs/ROADMAP.md](docs/ROADMAP.md), [docs/REVISAO_TECNICA.md](docs/REVISAO_TECNICA.md), [docs/DIRECAO_VISUAL.md](docs/DIRECAO_VISUAL.md) e a [ADR do renderizador 3D](docs/ADR/0001-renderizador-3d.md) antes de expandir o escopo. A ADR está **ACEITA PARA O MVP** por integração, prazo, manutenção e fallback; não declara superioridade gráfica/FPS. JME não está integrado à produção.
 
 ## Fonte das especificações
 

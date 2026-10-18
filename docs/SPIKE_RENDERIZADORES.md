@@ -1,5 +1,7 @@
 # Spike #23 — JavaFX 3D × jMonkeyEngine
 
+> **Nota posterior à spike:** a PR #33 foi mesclada e o responsável aprovou JavaFX 3D para o MVP ao autorizar a issue #11. A [ADR 0001](ADR/0001-renderizador-3d.md) está **ACEITA PARA O MVP**, por integração, prazo, manutenção e fallback. O relatório abaixo preserva o estado histórico da spike, inclusive sua recomendação então provisória, medições e limitações. A implementação orientada por dados reais está documentada em [VISUALIZACAO_TSP.md](VISUALIZACAO_TSP.md). O aceite não declara superioridade de FPS ou qualidade gráfica sobre JME.
+
 Data: 17/10/2026. Referência: [issue #23](https://github.com/Nathan1227n/Nodewalker/issues/23).
 
 **Recomendação provisória: JavaFX 3D estilizado para o MVP de 19/10.** A composição comum já produz relevo, refúgios e rota legíveis nos dois motores. A spike não demonstrou um ganho visual exclusivo do JME que compense uma segunda janela, outro ciclo de execução e a distribuição de bibliotecas nativas neste prazo. A decisão definitiva depende da revisão das capturas e da navegação pelo responsável pela demonstração. A [ADR 0001](ADR/0001-renderizador-3d.md) permanece pendente de aceite.

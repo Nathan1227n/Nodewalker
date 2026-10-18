@@ -1,8 +1,8 @@
 # ADR 0001 — Renderizador 3D do NodeWalker
 
-- **Status:** PROPOSTA / RECOMENDAÇÃO PROVISÓRIA — aceite pendente
+- **Status:** ACEITA PARA O MVP
 - **Data:** 12/10/2026; evidências da spike atualizadas em 17/10/2026 (horário local do projeto)
-- **Responsável pela decisão:** equipe do NodeWalker após prova de conceito
+- **Responsável pela decisão:** responsável pelo NodeWalker, por aprovação explícita do plano da issue #11 após o merge da PR #33
 - **Issue de avaliação:** [#23 — Spike jMonkeyEngine vs JavaFX](https://github.com/Nathan1227n/Nodewalker/issues/23)
 - **Requisitos artísticos:** [Direção Visual](../DIRECAO_VISUAL.md)
 - **Issues impactadas:** #11, #12, #13, #15 e #17
@@ -57,14 +57,16 @@ Registre hardware, sistema, JVM, método de medição, N/seed da cena e limitaç
 1. Executar a spike **com tempo limitado** (alvo inicial de 4 horas), sem comprometer G1/G2 ou o MVP.
 2. Se jMonkeyEngine trouxer ganho visual claro com risco de integração aceitável, planejar migração incremental em PR separada; manter 2D JavaFX.
 3. Se a integração ou o desempenho forem arriscados, **continuar com JavaFX 3D estilizado**, reduzindo a complexidade de cena para a entrega.
-4. Não converter esta proposta em “ACEITA” até registrar comparativo real e impacto nos módulos/issues.
+4. Registrar separadamente o aceite da tecnologia e a homologação gráfica do produto. O comparativo real está preservado no relatório da spike; o aceite para o MVP foi autorizado no plano da issue #11.
 
 ## Decisão
-**Recomendação provisória: continuar com JavaFX 3D estilizado para o MVP de 19/10/2026.** A cena comum ficou comparável nos dois motores; o experimento básico não demonstrou ganho visual exclusivo de JME que justifique, neste prazo, integração de outra janela/ciclo e nova estratégia operacional de fallback.
+**JavaFX 3D ACEITA PARA O MVP de 19/10/2026, com JavaFX 2D independente como fallback.** A escolha prioriza a integração com a janela e os controles existentes, o prazo, a manutenção de um único toolkit e a continuidade do fallback. O experimento básico não demonstrou ganho visual exclusivo de JME que justifique, neste prazo, integração de outra janela/ciclo e nova estratégia operacional de fallback.
 
-A spike está em `spikes/renderer-comparison/`, fora do reactor de produção. O [relatório comparativo](../SPIKE_RENDERIZADORES.md) registra comandos, dados matemáticos, imagens reais, métricas com escopo explícito, dependências, limitações e estimativas. Nenhum módulo do produto foi migrado.
+A spike está em `spikes/renderer-comparison/`, fora do reactor de produção. O [relatório comparativo](../SPIKE_RENDERIZADORES.md) preserva a recomendação provisória da época, comandos, dados matemáticos, imagens reais, métricas, dependências e limitações. A issue #11 promove conceitos procedurais para `tsp-app`, sem dependência dos módulos experimentais, sem jMonkeyEngine e sem mudanças em `tsp-core` ou nos POMs.
 
-**Esta ADR não está ACEITA.** Abertura e capturas reais não substituem revisão humana da navegação, seleção, foco e legibilidade, nem homologação gráfica Windows/fallback. Também não houve medição de apresentações da GPU: callbacks não certificam FPS. Após essa revisão, registrar o aceite ou revisar a recomendação com as novas evidências. O teto visual de cada motor e recursos avançados de JME não foram avaliados por este preset comum.
+**O aceite não afirma superioridade gráfica ou de FPS sobre jMonkeyEngine.** Não houve medição de apresentações da GPU: callbacks não certificam FPS. O teto visual das engines e os recursos avançados de JME não foram comparados. JME continua alternativa futura, mediante nova investigação e PR própria.
+
+As [evidências da visualização real](../VISUALIZACAO_TSP.md) incluem janelas e capturas Fedora de N=3/5/8/12 e fallback por software sem Scene3D. Homologação humana de navegação/legibilidade e execução gráfica Windows permanecem explicitamente pendentes em #13/#17; o aceite da tecnologia não as substitui.
 
 ## Consequências e tarefas após decisão
 - Atualizar issue #11 com renderizador decidido, câmera, terreno, refúgios e fallback.

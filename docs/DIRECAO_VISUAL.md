@@ -1,5 +1,5 @@
 # NodeWalker — direção visual e experiência 3D
-**Status:** proposta de design para G3; implementação condicionada à spike #23 e à preservação do MVP de 19/10/2026.  
+**Status:** direção de design do G3; JavaFX 3D aceito para o MVP após PR #33. Mapa real implementado na issue #11; HUD/fluxo operacional #12, homologação #13/#17 e efeitos #15 continuam separados. Contratos e evidências: [VISUALIZACAO_TSP.md](VISUALIZACAO_TSP.md).
 **Referências de rastreio:** issues #11 (mapa), #12 (UI/HUD), #13 (aceite), #15 (polimento), #23 (decisão de engine) e #17 (verificação 2D/Windows).  
 **Fonte da verdade algorítmica:** DOC 02, DOC 03, `tsp-core` e testes.
 

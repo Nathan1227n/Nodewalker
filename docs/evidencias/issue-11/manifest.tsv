@@ -1,0 +1,9 @@
+capture	N	seed	status	cost	visitedNodes	route	selected	mode	width	height
+01-n5-overview	5	23	CONCLUIDO	2875	65	[0, 1, 4, 2, 3, 0]	0	3D	1380	870
+02-n5-top-selection	5	23	CONCLUIDO	2875	65	[0, 1, 4, 2, 3, 0]	2	3D	1380	870
+03-n5-map2d	5	23	CONCLUIDO	2875	65	[0, 1, 4, 2, 3, 0]	2	2D	1380	870
+04-n5-simplified	5	23	CONCLUIDO	2875	65	[0, 1, 4, 2, 3, 0]	2	3D	1380	870
+05-n5-base-detail	5	23	CONCLUIDO	2875	65	[0, 1, 4, 2, 3, 0]	0	3D	1380	870
+06-n3	3	23	CONCLUIDO	1828	5	[0, 1, 2, 0]	0	3D	1380	870
+07-n8	8	657	CONCLUIDO	3574	7151	[0, 3, 5, 4, 1, 2, 7, 6, 0]	0	3D	1380	870
+08-n12-incumbent	12	23	LIMITE_ATINGIDO	6362	50000	[0, 1, 2, 3, 7, 9, 8, 5, 10, 11, 6, 4, 0]	0	3D	1380	870
