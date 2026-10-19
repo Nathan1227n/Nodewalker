@@ -2,6 +2,7 @@ package io.github.nathan1227n.nodewalker.app.world.render;
 
 import io.github.nathan1227n.nodewalker.app.PreviewModeSelector;
 import io.github.nathan1227n.nodewalker.app.world.TspSceneModel;
+import io.github.nathan1227n.nodewalker.app.world.WorldSceneModel;
 import io.github.nathan1227n.nodewalker.app.world.WorldViewState;
 
 import java.util.Objects;
@@ -24,6 +25,7 @@ public final class TspWorldView extends StackPane implements AutoCloseable {
     private boolean threeD;
     private boolean closed;
     private WorldRenderer renderer;
+    private final ReadOnlyObjectWrapper<WorldSceneModel> presentedScene = new ReadOnlyObjectWrapper<>();
     private final ReadOnlyObjectWrapper<TspSceneModel> presentedModel = new ReadOnlyObjectWrapper<>();
     private IntConsumer onSelection = ignored -> {
     };
@@ -35,17 +37,20 @@ public final class TspWorldView extends StackPane implements AutoCloseable {
         this.supports3d = supports3d;
         this.threeD = PreviewModeSelector.use3d(supports3d, force2d);
         getStyleClass().add("world-view");
+        setFocusTraversable(true);
+        setOnMousePressed(e -> requestFocus());
         setMinSize(320, 300);
     }
 
-    public void setModel(TspSceneModel model) {
+    public void setModel(WorldSceneModel model) {
         requireOpen();
         boolean sameProblem = state.model() != null && state.model().problem() == Objects.requireNonNull(model).problem();
         state.setModel(Objects.requireNonNull(model));
         if (sameProblem && renderer != null) renderer.resultChanged();
         else rebuild();
         onSelection.accept(state.selected());
-        presentedModel.set(model);
+        presentedScene.set(model);
+        presentedModel.set(model instanceof TspSceneModel tsp ? tsp : null);
     }
 
     /**
@@ -56,6 +61,7 @@ public final class TspWorldView extends StackPane implements AutoCloseable {
         disposeRenderer();
         state.clear();
         presentedModel.set(null);
+        presentedScene.set(null);
         var label = new Label(message);
         label.getStyleClass().add("loading-message");
         getChildren().setAll(label);
@@ -80,6 +86,13 @@ public final class TspWorldView extends StackPane implements AutoCloseable {
         requireFx();
         return presentedModel.getReadOnlyProperty();
     }
+
+    public ReadOnlyObjectProperty<WorldSceneModel> sceneModelProperty() {
+        requireFx();
+        return presentedScene.getReadOnlyProperty();
+    }
+
+    public boolean isReady() { requireFx(); return renderer != null && renderer.ready(); }
 
     public boolean isThreeD() {
         requireFx();
@@ -178,8 +191,10 @@ public final class TspWorldView extends StackPane implements AutoCloseable {
         requireFx();
         if (closed) return;
         disposeRenderer();
+        setOnMousePressed(null);
         state.clear();
         presentedModel.set(null);
+        presentedScene.set(null);
         onSelection = ignored -> {
         };
         onMode = ignored -> {

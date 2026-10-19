@@ -16,11 +16,16 @@ public final class TerrainFactory {
     }
 
     public static TerrainData build(List<Vec3> anchors, boolean simplified) {
+        return build(anchors, simplified, () -> { });
+    }
+
+    public static TerrainData build(List<Vec3> anchors, boolean simplified, Runnable checkpoint) {
         int cells = simplified ? 32 : 80;
         double extent = extent(anchors);
         var vertices = new ArrayList<Vec3>((cells + 1) * (cells + 1));
         var faces = new ArrayList<TerrainData.Face>(cells * cells * 2);
         for (int z = 0; z <= cells; z++) {
+            checkpoint.run();
             for (int x = 0; x <= cells; x++) {
                 double px = -extent + 2 * extent * x / cells;
                 double pz = -extent + 2 * extent * z / cells;
@@ -35,7 +40,7 @@ public final class TerrainFactory {
                 face(faces, vertices, a, d, c);
             }
         }
-        return terrain(anchors, vertices, faces, extent);
+        return terrain(anchors, vertices, faces, extent, checkpoint);
     }
 
     private static void face(List<TerrainData.Face> faces, List<Vec3> vertices, int a, int b, int c) {
@@ -78,11 +83,16 @@ public final class TerrainFactory {
      * Coarse static annulus, sharing the exact central boundary; no per-frame LOD or exposed skirt.
      */
     public static TerrainData horizon(List<Vec3> anchors, boolean simplified) {
+        return horizon(anchors, simplified, () -> { });
+    }
+
+    public static TerrainData horizon(List<Vec3> anchors, boolean simplified, Runnable checkpoint) {
         int cells = simplified ? 32 : 80, levels = simplified ? 4 : 8, perimeter = cells * 4;
         double inner = extent(anchors), outer = inner * 3.6;
         var points = new ArrayList<Vec3>();
         var faces = new ArrayList<TerrainData.Face>();
         for (int ring = 0; ring <= levels; ring++) {
+            checkpoint.run();
             double fraction = ring / (double) levels;
             double radius = inner + (outer - inner) * fraction * fraction;
             for (int side = 0; side < 4; side++)
@@ -106,13 +116,13 @@ public final class TerrainFactory {
                     faces.add(new TerrainData.Face(a, d, b, material));
                 }
             }
-        return terrain(anchors, points, faces, outer);
+        return terrain(anchors, points, faces, outer, checkpoint);
     }
 
-    private static TerrainData terrain(List<Vec3> anchors, List<Vec3> points, List<TerrainData.Face> faces, double extent) {
+    private static TerrainData terrain(List<Vec3> anchors, List<Vec3> points, List<TerrainData.Face> faces, double extent, Runnable checkpoint) {
         // Derive normals from the same continuous surface, independent of the size/aspect of a triangle.
         // This also makes the central and distant meshes share exactly the same boundary normals.
-        var normals = points.stream().map(p -> normalAt(anchors, p.x(), p.z())).toList();
+        var normals = points.stream().peek(p -> checkpoint.run()).map(p -> normalAt(anchors, p.x(), p.z())).toList();
         return new TerrainData(points, faces, extent, normals);
     }
 

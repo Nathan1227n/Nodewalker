@@ -63,7 +63,7 @@ public final class VisualReview {
         Platform.startup(() -> guarded(() -> {
             app = new NodeWalkerApp();
             stage = new Stage();
-            app.start(stage, forced2d ? List.of("--2d") : List.of(), Map.of());
+            app.start(stage, forced2d ? List.of("--2d") : List.of(), Map.of("demo", "5"));
             view = (TspWorldView) stage.getScene().lookup("#tsp-world");
             if (fallbackOnly) {
                 require(!Platform.isSupported(javafx.application.ConditionalFeature.SCENE3D), "Software fallback check unexpectedly supports 3D");
@@ -327,10 +327,19 @@ public final class VisualReview {
 
     private static void onModel(int n, Runnable action) {
         var listener = new javafx.beans.value.ChangeListener<TspSceneModel>() {
+            boolean executionRequested;
             @Override
             public void changed(javafx.beans.value.ObservableValue<? extends TspSceneModel> source,
                                 TspSceneModel old, TspSceneModel next) {
                 if (next != null && next.problem().size() == n) {
+                    if (next.result().isEmpty()) {
+                        if (!executionRequested) {
+                            executionRequested = true;
+                            ((javafx.scene.control.CheckBox) stage.getScene().lookup("#acknowledge-expensive")).setSelected(true);
+                            ((javafx.scene.control.Button) stage.getScene().lookup("#execute")).fire();
+                        }
+                        return;
+                    }
                     view.modelProperty().removeListener(this);
                     afterPulse(action);
                 }
@@ -347,7 +356,7 @@ public final class VisualReview {
 
             @Override
             public void handle(long now) {
-                if (++pulses == 3) {
+                if (++pulses >= 3 && view.isReady()) {
                     stop();
                     guarded(action);
                 }

@@ -1,6 +1,5 @@
 package io.github.nathan1227n.nodewalker.app.world;
 
-import io.github.nathan1227n.nodewalker.core.model.City;
 import io.github.nathan1227n.nodewalker.core.model.TspProblem;
 import io.github.nathan1227n.nodewalker.core.solver.SolverMetrics;
 import io.github.nathan1227n.nodewalker.core.solver.TspResult;
@@ -16,11 +15,12 @@ import java.util.OptionalLong;
  * Immutable presentation input. Construct in background: validation and terrain preparation use no FX objects.
  * The original immutable problem/result remain authoritative. This class does not prove optimality.
  */
-public final class TspSceneModel {
+public final class TspSceneModel implements WorldSceneModel {
+    private final PreparedWorld preparedWorld;
     private final TspProblem problem;
     private final Optional<TspResult> result;
     private final WorldTransform transform;
-    private final List<Refuge> refuges;
+    private final List<PreparedWorld.Refuge> refuges;
     private final List<Vec3> positions;
     private final List<RouteSegment> segments;
     private final TerrainData detailedTerrain;
@@ -28,18 +28,18 @@ public final class TspSceneModel {
     private final MapProjection projection;
     private final WorldGeometry detailedGeometry, simpleGeometry;
 
-    private TspSceneModel(TspProblem problem, Optional<TspResult> result, WorldTransform transform,
-                          List<Refuge> refuges, WorldGeometry detailedGeometry, WorldGeometry simpleGeometry) {
-        this.problem = Objects.requireNonNull(problem);
+    private TspSceneModel(PreparedWorld world, Optional<TspResult> result) {
+        this.preparedWorld = Objects.requireNonNull(world);
+        this.problem = world.problem();
         this.result = Objects.requireNonNull(result);
-        this.transform = transform;
-        this.refuges = List.copyOf(refuges);
-        this.positions = this.refuges.stream().map(Refuge::position).toList();
-        this.detailedGeometry = detailedGeometry;
-        this.simpleGeometry = simpleGeometry;
+        this.transform = world.transform();
+        this.refuges = world.refuges();
+        this.positions = world.positions();
+        this.detailedGeometry = world.geometry(false);
+        this.simpleGeometry = world.geometry(true);
         this.detailedTerrain = detailedGeometry.terrain();
         this.simpleTerrain = simpleGeometry.terrain();
-        this.projection = MapProjection.fit(positions());
+        this.projection = world.projection();
         var edges = new ArrayList<RouteSegment>();
         result.flatMap(TspResult::route).ifPresent(route -> {
             long actual = RouteValidator.validateAndCost(problem, route);
@@ -57,20 +57,19 @@ public final class TspSceneModel {
     }
 
     public static TspSceneModel of(TspProblem problem, Optional<TspResult> result) {
-        Objects.requireNonNull(problem);
-        WorldTransform transform = WorldTransform.fit(problem.cities());
-        List<Refuge> refuges = problem.cities().stream().map(city -> new Refuge(city, transform.toVisual(city))).toList();
-        List<Vec3> positions = refuges.stream().map(Refuge::position).toList();
-        return new TspSceneModel(problem, result, transform, refuges,
-                WorldGeometry.prepare(positions, false), WorldGeometry.prepare(positions, true));
+        return new TspSceneModel(PreparedWorld.prepare(problem), result);
     }
 
-    /**
-     * Shares all prepared geometry for a new result of the same immutable problem.
-     */
-    public TspSceneModel withResult(Optional<TspResult> result) {
-        return new TspSceneModel(problem, result, transform, refuges, detailedGeometry, simpleGeometry);
+    public static TspSceneModel of(PreparedWorld world, Optional<TspResult> result) {
+        return new TspSceneModel(world, result);
     }
+
+    /** Shares all geometry and precomputed buffers with the same immutable instance. */
+    public TspSceneModel withResult(Optional<TspResult> result) {
+        return new TspSceneModel(preparedWorld, result);
+    }
+    @Override public PreparedWorld preparedWorld() { return preparedWorld; }
+    @Override public boolean solidPath() { return certified(); }
 
     public TspProblem problem() {
         return problem;
@@ -84,7 +83,7 @@ public final class TspSceneModel {
         return transform;
     }
 
-    public List<Refuge> refuges() {
+    public List<PreparedWorld.Refuge> refuges() {
         return refuges;
     }
 
@@ -152,12 +151,6 @@ public final class TspSceneModel {
         return List.copyOf(edges);
     }
 
-    public record Refuge(City logical, Vec3 position) {
-        public int index() {
-            return logical.index();
-        }
-    }
-
-    public record RouteSegment(int order, int from, int to, long matrixCost, SegmentGeometry geometry) {
+    public record RouteSegment(int order, int from, int to, long matrixCost, SegmentGeometry geometry) implements WorldSceneModel.Edge {
     }
 }

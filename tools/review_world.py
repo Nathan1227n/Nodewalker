@@ -25,6 +25,7 @@ def main():
     software = parser.add_mutually_exclusive_group()
     software.add_argument("--software-2d", action="store_true", help="Force Prism software + --2d; never create Scene3D")
     software.add_argument("--software-auto", action="store_true", help="Force Prism software without --2d; assert automatic fallback and disabled 3D button")
+    parser.add_argument("--operational", action="store_true", help="Exercise the real generation/solver/cancellation panel; no presentation fixtures")
     parser.add_argument("--native-input", action="store_true", help="Use Robot to drag, scroll, click and test T/R in the visible 3D window")
     parser.add_argument("--maven-repo", type=pathlib.Path, default=pathlib.Path.home() / ".m2/repository")
     args = parser.parse_args()
@@ -40,13 +41,13 @@ def main():
     metadata = {"system": platform.system(), "release": platform.release(), "architecture": platform.machine(),
                 "session": os.environ.get("XDG_SESSION_TYPE", "unknown"), "java": run_metadata(["java", "-version"]),
                 "graphics": run_metadata(["glxinfo", "-B"]), "software2d": args.software_2d,
-                "automaticFallback": args.software_auto, "nativeInput": args.native_input,
+                "operational": args.operational, "automaticFallback": args.software_auto, "nativeInput": args.native_input,
                 "method": "Real visible window; JavaFX Scene.snapshot after pulse barriers. API-driven controls. No presented FPS measurement."}
     (args.output / "environment.json").write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8")
     classpath = os.pathsep.join(str(ROOT / p) for p in ("tsp-core/target/classes", "tsp-app/target/classes", "tsp-app/target/test-classes"))
     command = ["java"] + (["-Dprism.order=sw"] if args.software_2d or args.software_auto else [])
     command += ["--module-path", os.pathsep.join(map(str, jars)), "--add-modules", "javafx.controls", "-cp", classpath,
-                "io.github.nathan1227n.nodewalker.app.VisualReview", str(args.output.resolve())]
+                "io.github.nathan1227n.nodewalker.app." + ("OperationalVisualReview" if args.operational else "VisualReview"), str(args.output.resolve())]
     if args.software_2d:
         command.append("--2d-only")
     if args.software_auto:

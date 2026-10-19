@@ -4,7 +4,7 @@ package io.github.nathan1227n.nodewalker.app.world;
  * Renderer-independent navigation/selection/settings. Owned by the presentation thread.
  */
 public final class WorldViewState {
-    private TspSceneModel model;
+    private WorldSceneModel model;
     private OrbitCamera camera;
     private int selected;
     private boolean simplified;
@@ -12,7 +12,7 @@ public final class WorldViewState {
     private boolean connections;
     private boolean reducedLabels;
 
-    public void setModel(TspSceneModel next) {
+    public void setModel(WorldSceneModel next) {
         if (model == null || model.problem() != next.problem()) {
             camera = new OrbitCamera(next.positions(), next.terrain(false).extent());
             selected = 0;
@@ -20,7 +20,7 @@ public final class WorldViewState {
         model = next;
     }
 
-    public TspSceneModel model() {
+    public WorldSceneModel model() {
         return model;
     }
 

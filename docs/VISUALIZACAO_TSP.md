@@ -175,3 +175,11 @@ Cidades e ciclo continuam O(N), rótulos limitados a 48 com prioridade da seleç
 - Comprovado em janela real Fedora: renderização/capturas dos presets, seleção e topo por API, alternância 3D/2D mantendo seleção, simplificação/decoração, fallback automático e forçado por software. Handlers de órbita/zoom foram exercitados por eventos sintéticos; isso é distinto da tentativa nativa inconclusiva.
 - Pendente de revisão humana (#13/#17): arrastar e orbitar em ambos os eixos, usar roda até os limites e reset, clicar abrigos/etiquetas, focar pontos extremos, conferir identificadores/XYZ/rota, trocar presets rapidamente e fechar durante carregamento, comparar topo/2D e simplificação, testar resize e legibilidade em notebook. Registrar hardware/resolução e travamentos; medir desempenho de apresentação separadamente se necessário.
 - Pendente: janela real Windows, hardware 3D fraco e revisão artística/conforto pelo responsável. CI Ubuntu/Windows comprova build/testes, não aparência, FPS ou usabilidade. #12 e aceite final de #13 não estão concluídos por esta entrega.
+
+
+## Integração operacional — issue #12 — 19/10/2026
+
+O fluxo operacional substitui a execução automática do catálogo por geração e busca explícitas.
+Força bruta/backtracking permanecem TSP; Dijkstra clássico mantém contratos próprios de caminhos mínimos.
+As seções anteriores ficam preservadas como histórico. Arquitetura, uso, limites e validação desta entrega:
+[PAINEL_OPERACIONAL.md](PAINEL_OPERACIONAL.md). A homologação completa da #13 continua separada.

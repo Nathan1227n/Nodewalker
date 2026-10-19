@@ -36,3 +36,14 @@
 .loading-message { -fx-text-fill: #b6cac6; -fx-font-size: 13px; }
 .scroll-bar { -fx-background-color: #11212a; -fx-pref-width: 8; }
 .scroll-bar .thumb { -fx-background-color: #3b555d; -fx-background-radius: 3; }
+
+/* Operational controls retain the existing amber/cyan world palette. */
+.split-pane { -fx-background-color: transparent; -fx-padding: 0; }
+.split-pane-divider { -fx-background-color: #17282f; -fx-padding: 0 3 0 3; }
+.titled-pane > .title { -fx-background-color: #14242d; -fx-padding: 10; }
+.titled-pane > .title > .text { -fx-fill: #9fccc8; }
+.titled-pane > .content { -fx-background-color: #0c1921; -fx-border-color: #23373e; -fx-padding: 10; }
+.text-field, .text-area { -fx-text-fill: #d5e5df; -fx-control-inner-background: #0b151d; -fx-background-color: #0b151d; -fx-border-color: #31484f; }
+.text-area .content { -fx-background-color: #0b151d; }
+.text-field:focused, .text-area:focused, .combo-box:focused, .button:focused { -fx-border-color: #77e2df; }
+.text-area { -fx-font-family: "Monospaced"; -fx-font-size: 11px; }
