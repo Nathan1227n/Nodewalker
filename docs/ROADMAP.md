@@ -2,6 +2,8 @@
 
 **Entrega planejada:** 19/10/2026. **Escopo do MVP oficial:** G0–G3. Não tratar G1 ou G2 isoladamente como MVP visual.
 
+**Revisão de escopo em 19/10/2026, após o merge da PR #34:** dois problemas separados. TSP permanece com força bruta/backtracking; caminhos mínimos passam a usar Dijkstra clássico sobre conexões completas, esparsas reproduzíveis ou manuais, com custos da matriz original. Sequência: PR A (núcleo/testes/documentação), PR B (#12: painel assíncrono e adaptação 3D/2D), PR C (#13: validação/demonstração). Isso não declara o painel concluído. A tabela e os registros históricos abaixo são preservados. Detalhes: [CAMINHOS_MINIMOS.md](CAMINHOS_MINIMOS.md).
+
 | Gate | Conteúdo | Critério de saída | Situação em 17/10/2026 (incluindo esta PR) |
 | --- | --- | --- | --- |
 | G0 | Maven multimódulo, Java 21, JavaFX 21.0.12, JUnit 5.14.3, hello 3D/fallback | Compilação, testes e demonstração no Fedora; verificações gráficas complementares no Windows/sem Scene3D | Concluído — issue #1 encerrada e PR #16 mesclada; verificações complementares na issue #17 |
