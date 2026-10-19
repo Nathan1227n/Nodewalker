@@ -1,5 +1,7 @@
 # Revisão técnica das fontes — 11/10/2026
 
+**Revisão acadêmica de 19/10/2026:** após a PR #34, Dijkstra clássico foi acrescentado para um problema separado de caminhos mínimos, com grafo/topologia e contratos próprios no `tsp-core`. Força bruta/backtracking continuam resolvendo TSP; Dijkstra não produz ciclo hamiltoniano nem usa `TspResult`. A proposta de estados expandidos não foi implementada. Topologias, exatidão `BigInteger`, desempate, controles, recursos e auditoria Floyd–Warshall: [CAMINHOS_MINIMOS.md](CAMINHOS_MINIMOS.md). Os registros históricos abaixo e os contratos TSP são preservados; painel #12 e homologação #13 permanecem entregas separadas.
+
 ## Referências normativas
 
 1. DOC 01 — Visão, Objetivos e Escopo, v0.4 (06/10/2026): escopo, prioridades P0–P3 e gates G0–G5.
