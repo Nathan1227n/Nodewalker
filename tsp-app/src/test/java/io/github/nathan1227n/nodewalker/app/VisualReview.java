@@ -357,6 +357,7 @@ public final class VisualReview {
             @Override
             public void handle(long now) {
                 if (++pulses >= 3 && view.isReady()) {
+                    view.finishPlayback();
                     stop();
                     guarded(action);
                 }

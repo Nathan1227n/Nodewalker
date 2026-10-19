@@ -22,7 +22,7 @@ Na raiz do repositório:
 mvn clean verify
 ```
 
-A suíte contém 2273 execuções de testes, incluindo casos parametrizados: 2032 do núcleo, 125 da CLI (120 unitários e cinco de integração do JAR) e 116 do aplicativo. Os 380 casos de caminhos mínimos preservam os 1844 anteriores. Todos são executados sem abrir janela JavaFX. `verify` inclui os testes do JAR após o empacotamento; `test` executa somente os testes unitários. A spike possui outros 20 testes, em reactor separado.
+A suíte contém 2287 execuções de testes, incluindo casos parametrizados: 2032 do núcleo, 125 da CLI (120 unitários e cinco de integração do JAR) e 130 do aplicativo. Os 380 casos de caminhos mínimos preservam os 1844 anteriores. Todos são executados sem abrir janela JavaFX. `verify` inclui os testes do JAR após o empacotamento; `test` executa somente os testes unitários. A spike possui outros 20 testes, em reactor separado.
 
 Para reproduzir uma instância no núcleo, use `TspGenerator.generate(4, 657L)`. As coordenadas, a matriz de referência e a tentativa rejeitada estão documentadas em [REVISAO_TECNICA.md](docs/REVISAO_TECNICA.md#gerador-determinístico-g1--issue-3-12102026).
 
@@ -123,7 +123,7 @@ mvn clean install
 mvn -f tsp-app/pom.xml javafx:run
 ```
 
-A aplicação inicia sem instância. Informe N/seed ou carregue os presets N=3/5/8/12, clique **GERAR**, escolha TSP/Força Bruta, TSP/Backtracking ou Caminhos mínimos/Dijkstra e clique **EXECUTAR**. Geração e busca usam workers e limites explícitos. **CANCELAR** conserva o resultado parcial válido; **REEXECUTAR** reutiliza a matriz. [Manual do painel e preflight](docs/PAINEL_OPERACIONAL.md). Clique em **MAPA 2D** para alternar preservando a instância e a seleção. Sem Scene3D, inicia em Canvas 2D e desabilita 3D. Um desktop continua necessário para abrir qualquer janela.
+A aplicação inicia sem instância. Informe N/seed ou carregue os presets N=3/5/8/12, clique **GERAR**, escolha TSP/Força Bruta, TSP/Backtracking ou Caminhos mínimos/Dijkstra e clique **EXECUTAR**. Geração e busca usam workers e limites explícitos. **CANCELAR** conserva o resultado parcial válido; **REEXECUTAR** reutiliza a matriz. [Manual do painel e preflight](docs/PAINEL_OPERACIONAL.md). O HUD principal mantém apenas a operação e o resultado; informações técnicas ficam em **Detalhes e ajustes**. O mapa revela os refúgios e desenha o caminho gradualmente, com pausa, velocidade e repetição, separados do tempo real do cálculo. Clique em **MAPA 2D** para alternar preservando a instância, a seleção e a animação. Sem Scene3D, inicia em Canvas 2D e desabilita 3D. Um desktop continua necessário para abrir qualquer janela.
 
 Para iniciar explicitamente em 2D:
 
@@ -142,6 +142,7 @@ Capturas de janela real e roteiro Fedora: [VISUALIZACAO_TSP.md](docs/VISUALIZACA
 
 ```bash
 python3 tools/review_world.py --operational
+python3 tools/review_world.py --playback --output tsp-app/target/review-playback
 python3 tools/review_world.py --software-auto --output tsp-app/target/review-fallback
 ```
 

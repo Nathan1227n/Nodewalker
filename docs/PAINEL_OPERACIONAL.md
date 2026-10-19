@@ -8,16 +8,16 @@ Os algoritmos e contratos matemáticos do `tsp-core` não foram alterados nesta 
 
 ## Operação
 
-1. Abra a aplicação com os comandos do README. Ela inicia **SEM INSTÂNCIA**.
-2. Expanda **Instância**, informe N e seed e clique **GERAR**. Alternativamente selecione
-   um preset N=3/5/8/12. Presets geram a instância, sem executar busca automaticamente.
-3. Escolha o problema/algoritmo e consulte o preflight. Ajuste os limites e use
-   **ATUALIZAR PREFLIGHT**. Valores pendentes nos campos não regeneram a instância.
+1. Abra a aplicação com os comandos do README. Ela inicia sem instância, com a indicação **Crie uma instância**.
+2. Informe **Refúgios (N)** e **Seed** nos controles principais e clique **Gerar**. Alternativamente selecione
+   um preset N=3/5/8/12 no seletor **Exemplos**. Presets geram a instância, sem executar busca automaticamente.
+3. Escolha o problema/algoritmo e consulte **Detalhes e ajustes → Ajustes** para o preflight. Ajuste os limites e use
+   **Aplicar ajustes**. Valores pendentes nos campos não regeneram a instância.
 4. Clique **EXECUTAR**. Alterações de configuração ainda não aplicadas são validadas
    antes da busca. Fora da faixa TSP recomendada, confirme explicitamente a busca limitada.
 5. **CANCELAR** solicita o token cooperativo e aguarda o resultado do núcleo.
-   **REEXECUTAR** cria outro identificador de execução sobre a mesma matriz.
-6. Resultados e métricas ficam em seções expansíveis. O histórico mantém até oito execuções
+   **EXECUTAR NOVAMENTE** cria outro identificador de execução sobre a mesma matriz.
+6. O resultado principal fica sempre à vista após a busca; métricas e histórico ficam em **Detalhes e ajustes**. O histórico mantém até oito execuções
    da instância atual. Geração substitui a instância e limpa seu histórico.
 
 Ações incompatíveis ficam desabilitadas durante trabalho. Campos N/seed podem ser editados
@@ -150,3 +150,45 @@ O roteiro operacional usa a composição de produção, controles e algoritmos r
 histórico mantém fixtures de apresentação explicitamente identificadas. Nenhum deles equivale
 a entrada humana, benchmark de FPS ou homologação completa da issue #13.
 [Evidências da janela Fedora e pendência de entrada nativa](evidencias/issue-12/README.md).
+
+
+## HUD simplificado e reprodução visual — 19/10/2026
+
+Após revisão de usabilidade, o fluxo principal reúne N/seed, exemplos, algoritmo e executar,
+sem a pilha de seções/caixas vazias. Origem/destino e topologia aparecem somente no Dijkstra.
+O botão **EXECUTAR NOVAMENTE** reutiliza a instância; **Cancelar busca** aparece durante
+o trabalho. Uma única área **Detalhes e ajustes** contém as abas Ajustes, Dados, Comparar,
+Mapa e Refúgio. Os IDs de instância/execução continuam disponíveis em Ajustes.
+
+Ao gerar uma instância, seus refúgios são revelados gradualmente em ordem de índice.
+Ao receber o resultado, o mapa desenha cada ligação da sequência retornada e um marcador
+percorre o trecho. **Pausar/Continuar**, **Repetir desenho**, **Mostrar tudo** e velocidade
+0,25×…4× controlam somente essa apresentação. Conexões secundárias ficam desligadas por
+padrão no TSP; entram ao escolher Dijkstra e podem ser ocultadas na aba Mapa.
+
+**Esta é uma reprodução da resposta calculada**, não uma trilha da árvore de busca, das
+fixações ou dos relaxamentos do solver. Instâncias pequenas realmente terminam em milissegundos.
+O resultado conserva seu status verdadeiro durante toda a animação, com o tempo interno
+indicado como **Cálculo**. Nenhum sleep ou atraso foi adicionado aos algoritmos. A formação
+visual dos refúgios também não representa a ordem de visita de Dijkstra.
+
+`WorldPlayback` é Java puro e recebe deltas de tempo nos testes. Um único AnimationTimer
+da view avança a reprodução enquanto ativa; pausa, conclusão, substituição da instância e
+fechamento interrompem o relógio correspondente. O desenho compartilha coordenadas, custo,
+resultado, terreno e câmera. Os cilindros existentes crescem sem reconstruir terreno ou
+criar um resultado TSP parcial. O Canvas 2D usa as mesmas frações de aresta.
+
+A 1×, a revelação dura aproximadamente 1,5–3 s e a reprodução do caminho 2,4–10 s conforme
+o tamanho. Esses valores são ritmo de apresentação, não estimativa de busca ou benchmark.
+O avanço por frame é limitado para evitar saltos após uma pausa longa do desktop.
+
+Roteiro específico de captura de estados intermediários reais:
+
+```bash
+python3 tools/review_world.py --playback --output tsp-app/target/review-playback
+python3 tools/review_world.py --playback --software-auto --output tsp-app/target/review-playback-2d
+```
+
+O roteiro verifica pausa, cilindro parcial real na SubScene, continuidade 3D/2D, velocidade,
+repetição sem nova busca e descarte da reprodução ao gerar outra instância.
+[Capturas do HUD simplificado e da animação](evidencias/issue-12/simplificacao/README.md).

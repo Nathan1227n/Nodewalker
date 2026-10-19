@@ -86,12 +86,12 @@ public final class OperationalVisualReview {
         ((CheckBox)node("acknowledge-expensive")).setSelected(true);
         ready(()->{
             click("execute"); when(()->s().phase()==EXECUTANDO_ALGORITMO,()->after(()->{
-                click("cancel"); when(()->s().phase()==CANCELADO && s().result()!=null,()->{
+                click("cancel"); when(()->s().phase()==CANCELADO && s().result()!=null && !view.isAnimating(),()->{
                     var r=((ExecutionRecord.Tsp)s().result()).result(); check(r.route().isPresent(),"real cancellation preserves incumbent"); check(!r.optimalityGuaranteed(),"no optimality on cancellation");
                     capture("08-n12-cancelled-incumbent-real");
                     stage.setWidth(960); stage.setHeight(680); view.setDecoration(false); view.setSimplified(true); view.select(3); view.focusSelection();
                     after(()->{capture("09-n12-small-window-simplified-real");
-                        click("rerun"); when(()->s().phase()==EXECUTANDO_ALGORITMO,()->{
+                        click("execute"); when(()->s().phase()==EXECUTANDO_ALGORITMO,()->{
                             long start=System.nanoTime(); app.stop(); stage.close();
                             check(System.nanoTime()-start<TimeUnit.SECONDS.toNanos(1),"close must not wait for solver"); finish();
                         });
@@ -101,9 +101,9 @@ public final class OperationalVisualReview {
         });
     }
     private static void preset(DemoCatalog demo,Runnable next){combo("demo-catalog",demo);ready(next);}
-    private static void ready(Runnable next){when(()->s().phase()==INSTANCIA_PRONTA && s().scene()!=null && view.isReady(),next);}
-    private static void done(Runnable next){when(()->s().phase()==CONCLUIDO && s().result()!=null && view.isReady(),next);}
-    private static void after(Runnable next){final int[] pulses={0};when(()->++pulses[0]>=5 && view.isReady(),next);}
+    private static void ready(Runnable next){when(()->s().phase()==INSTANCIA_PRONTA && s().scene()!=null && view.isReady() && !view.isAnimating(),next);}
+    private static void done(Runnable next){when(()->s().phase()==CONCLUIDO && s().result()!=null && view.isReady() && !view.isAnimating(),next);}
+    private static void after(Runnable next){final int[] pulses={0};when(()->++pulses[0]>=5 && view.isReady() && !view.isAnimating(),next);}
     private static void when(BooleanSupplier condition,Runnable next){
         new AnimationTimer(){final long start=System.nanoTime();public void handle(long now){
             try{if(condition.getAsBoolean()){stop();afterLayout(next);}else if(System.nanoTime()-start>TimeUnit.SECONDS.toNanos(30)){stop();throw new AssertionError("Wait timed out: "+s());}}

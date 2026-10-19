@@ -47,3 +47,19 @@
 .text-area .content { -fx-background-color: #0b151d; }
 .text-field:focused, .text-area:focused, .combo-box:focused, .button:focused { -fx-border-color: #77e2df; }
 .text-area { -fx-font-family: "Monospaced"; -fx-font-size: 11px; }
+
+/* Simple operating surface: advanced data is opt-in; playback stays on the map. */
+.simple-controls-scroll, .simple-controls-scroll > .viewport, .route-scroll, .route-scroll > .viewport {
+    -fx-background-color: transparent; -fx-background-insets: 0; -fx-padding: 0; -fx-border-width: 0;
+}
+.primary-action { -fx-background-color: #285158; -fx-border-color: #68b8b3; -fx-font-weight: bold; }
+.primary-action:hover { -fx-background-color: #376b70; }
+.quiet-button { -fx-font-size: 10px; -fx-padding: 5 9; }
+.playback-bar { -fx-background-color: rgba(8, 22, 29, .95); -fx-border-color: #3f646b; -fx-border-radius: 5; -fx-background-radius: 5; -fx-padding: 9 12; }
+.playback-caption { -fx-text-fill: #c5ece5; -fx-font-size: 11px; }
+.playback-bar .button { -fx-font-size: 11px; -fx-padding: 6 9; }
+.tab-pane > .tab-header-area > .tab-header-background { -fx-background-color: #101e27; }
+.tab { -fx-background-color: #172b34; -fx-padding: 6 8; }
+.tab:selected { -fx-background-color: #2b4650; }
+.tab .tab-label { -fx-text-fill: #b9d6d3; -fx-font-size: 10px; }
+.tab-content-area { -fx-padding: 8 0 0 0; }

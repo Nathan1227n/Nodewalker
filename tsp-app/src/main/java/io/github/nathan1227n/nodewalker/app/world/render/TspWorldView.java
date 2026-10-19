@@ -4,12 +4,14 @@ import io.github.nathan1227n.nodewalker.app.PreviewModeSelector;
 import io.github.nathan1227n.nodewalker.app.world.TspSceneModel;
 import io.github.nathan1227n.nodewalker.app.world.WorldSceneModel;
 import io.github.nathan1227n.nodewalker.app.world.WorldViewState;
+import io.github.nathan1227n.nodewalker.app.world.WorldPlayback;
 
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 
 import javafx.application.Platform;
+import javafx.animation.AnimationTimer;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.scene.control.Label;
@@ -25,6 +27,19 @@ public final class TspWorldView extends StackPane implements AutoCloseable {
     private boolean threeD;
     private boolean closed;
     private WorldRenderer renderer;
+    private long lastFrame;
+    private Consumer<String> onPlayback = ignored -> { };
+    private String lastPlaybackLabel = "";
+    private final AnimationTimer playbackTimer = new AnimationTimer() {
+        @Override public void handle(long now) {
+            if (renderer == null || !renderer.ready()) { lastFrame = 0; return; }
+            if (lastFrame != 0) state.playback().advance(Math.min(now - lastFrame, 100_000_000));
+            lastFrame = now;
+            renderer.playbackChanged();
+            announcePlayback();
+            if (!state.playback().active() || state.playback().paused()) { stop(); lastFrame = 0; }
+        }
+    };
     private final ReadOnlyObjectWrapper<WorldSceneModel> presentedScene = new ReadOnlyObjectWrapper<>();
     private final ReadOnlyObjectWrapper<TspSceneModel> presentedModel = new ReadOnlyObjectWrapper<>();
     private IntConsumer onSelection = ignored -> {
@@ -48,6 +63,7 @@ public final class TspWorldView extends StackPane implements AutoCloseable {
         state.setModel(Objects.requireNonNull(model));
         if (sameProblem && renderer != null) renderer.resultChanged();
         else rebuild();
+        startPlayback();
         onSelection.accept(state.selected());
         presentedScene.set(model);
         presentedModel.set(model instanceof TspSceneModel tsp ? tsp : null);
@@ -58,13 +74,41 @@ public final class TspWorldView extends StackPane implements AutoCloseable {
      */
     public void clear(String message) {
         requireOpen();
+        playbackTimer.stop(); lastFrame = 0;
         disposeRenderer();
         state.clear();
+        announcePlayback();
         presentedModel.set(null);
         presentedScene.set(null);
         var label = new Label(message);
         label.getStyleClass().add("loading-message");
         getChildren().setAll(label);
+    }
+
+    public void setOnPlayback(Consumer<String> consumer) { requireOpen(); onPlayback = Objects.requireNonNull(consumer); }
+    private void announcePlayback() {
+        String next = state.model() == null ? "" : state.playback().label();
+        if (!next.equals(lastPlaybackLabel)) { lastPlaybackLabel = next; onPlayback.accept(next); }
+    }
+    private void startPlayback() {
+        lastFrame = 0;
+        if (state.playback().active() && !state.playback().paused()) playbackTimer.start();
+        else playbackTimer.stop();
+        announcePlayback();
+    }
+    public boolean hasPlaybackPath() { requireFx(); return state.playback().edgeCount() > 0; }
+    public boolean isAnimating() { requireFx(); return state.playback().active(); }
+    public boolean isPlaybackPaused() { requireFx(); return state.playback().paused(); }
+    public WorldPlayback.Stage playbackStage() { requireFx(); return state.playback().stage(); }
+    public int visibleRefuges() { requireFx(); return state.playback().completedCities(); }
+    public double pathEdgeFraction(int edge) { requireFx(); return state.edgeFraction(edge); }
+    public int visiblePathEdges() { requireFx(); return state.playback().completedEdges(); }
+    public void pausePlayback() { requireOpen(); state.playback().togglePause(); startPlayback(); }
+    public void replayPath() { requireOpen(); state.playback().replay(); if (renderer != null) renderer.playbackChanged(); startPlayback(); }
+    public void setPlaybackSpeed(double speed) { requireOpen(); state.playback().speed(speed); }
+    public void finishPlayback() {
+        requireOpen(); state.playback().finish(); playbackTimer.stop(); lastFrame = 0;
+        if (renderer != null) renderer.playbackChanged(); announcePlayback();
     }
 
     public void setOnSelection(IntConsumer consumer) {
@@ -103,6 +147,8 @@ public final class TspWorldView extends StackPane implements AutoCloseable {
         requireOpen();
         if (state.model() == null) return;
         state.select(index);
+        state.playback().revealCities();
+        startPlayback();
         renderer.refresh();
         onSelection.accept(index);
     }
@@ -110,13 +156,13 @@ public final class TspWorldView extends StackPane implements AutoCloseable {
     public void setThreeD(boolean value) {
         requireOpen();
         threeD = value && supports3d;
-        if (state.model() != null) rebuild();
+        if (state.model() != null) { rebuild(); startPlayback(); }
     }
 
     public void setSimplified(boolean value) {
         requireOpen();
         state.setSimplified(value);
-        if (state.model() != null) rebuild();
+        if (state.model() != null) { rebuild(); startPlayback(); }
     }
 
     public void setDecoration(boolean value) {
@@ -190,6 +236,7 @@ public final class TspWorldView extends StackPane implements AutoCloseable {
     public void close() {
         requireFx();
         if (closed) return;
+        playbackTimer.stop(); lastFrame = 0;
         disposeRenderer();
         setOnMousePressed(null);
         state.clear();
@@ -199,6 +246,7 @@ public final class TspWorldView extends StackPane implements AutoCloseable {
         };
         onMode = ignored -> {
         };
+        onPlayback = ignored -> { };
         closed = true;
     }
 

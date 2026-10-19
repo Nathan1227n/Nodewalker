@@ -1,5 +1,8 @@
 # Evidências — painel operacional / issue #12
 
+**Versão atual:** [HUD simplificado e animação gradual](simplificacao/README.md).
+A primeira versão operacional abaixo fica preservada como histórico da revisão.
+
 19/10/2026, Fedora 44, Wayland/Xwayland, Java 21.0.12.1, JavaFX 21.0.12,
 NVIDIA RTX 5060 / driver 615.78.08. [Ambiente desktop](desktop/environment.json).
 PNG são snapshots **sem edição da aplicação real**, não mockups. As texturas históricas

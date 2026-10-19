@@ -39,9 +39,29 @@ public final class NodeWalkerApp extends Application {
         mapTitle.getStyleClass().add("map-title"); mapSubtitle.getStyleClass().add("map-subtitle"); mapSubtitle.setWrapText(true);
         var heading = new VBox(5, mapTitle, mapSubtitle); heading.setMouseTransparent(true); heading.setMaxWidth(550);
         StackPane.setAlignment(heading, Pos.TOP_LEFT); StackPane.setMargin(heading, new Insets(23));
-        var legend = label("BASE 0 · [O] ORIGEM · [D] DESTINO · SELEÇÃO / ANEL\nCUSTOS DA MATRIZ · TERRENO APENAS VISUAL", "map-legend");
+        var legend = label("BASE 0 · [O] ORIGEM · [D] DESTINO · CUSTOS DA MATRIZ", "map-legend");
         legend.setMouseTransparent(true); StackPane.setAlignment(legend, Pos.BOTTOM_LEFT); StackPane.setMargin(legend, new Insets(22));
         var mapCard = new StackPane(world, heading, legend); mapCard.getStyleClass().add("map-card");
+        var playbackText = label("", "playback-caption");
+        var pause = new Button("Pausar"); pause.setId("playback-pause"); pause.setOnAction(e -> world.pausePlayback());
+        var replay = new Button("Repetir desenho"); replay.setId("playback-replay"); replay.setOnAction(e -> world.replayPath());
+        var finish = new Button("Mostrar tudo"); finish.setId("playback-finish"); finish.setOnAction(e -> world.finishPlayback());
+        var speed = new ComboBox<Double>(); speed.setId("playback-speed"); speed.getItems().setAll(.25, .5, 1.0, 2.0, 4.0); speed.setValue(1.0);
+        speed.setConverter(new javafx.util.StringConverter<>() {
+            public String toString(Double value) { return value == null ? "" : new java.text.DecimalFormat("0.##").format(value) + "×"; }
+            public Double fromString(String value) { throw new UnsupportedOperationException(); }
+        });
+        speed.setOnAction(e -> world.setPlaybackSpeed(speed.getValue())); speed.setTooltip(new Tooltip("Velocidade da animação. Não altera o algoritmo ou o tempo do cálculo."));
+        var playbackControls = new FlowPane(6, 6, pause, replay, finish, speed); playbackControls.setAlignment(Pos.CENTER);
+        var playbackBar = new VBox(6, playbackText, playbackControls); playbackBar.setId("playback-bar"); playbackBar.setAlignment(Pos.CENTER);
+        playbackBar.getStyleClass().add("playback-bar"); playbackBar.setMaxSize(540, Region.USE_PREF_SIZE); playbackBar.setVisible(false); playbackBar.setManaged(false);
+        StackPane.setAlignment(playbackBar, Pos.BOTTOM_CENTER); StackPane.setMargin(playbackBar, new Insets(0, 12, 43, 12)); mapCard.getChildren().add(playbackBar);
+        world.setOnPlayback(text -> {
+            playbackText.setText(text); pause.setText(world.isPlaybackPaused() ? "Continuar" : "Pausar");
+            pause.setDisable(!world.isAnimating()); finish.setDisable(!world.isAnimating()); replay.setDisable(!world.hasPlaybackPath());
+            boolean visible = !text.isEmpty() && (world.isAnimating() || world.hasPlaybackPath());
+            playbackBar.setVisible(visible); playbackBar.setManaged(visible);
+        });
         refuges.setId("refuge-selection"); refuges.setMaxWidth(Double.MAX_VALUE);
         refuges.setOnAction(e -> { if (!updatingSelection && refuges.getSelectionModel().getSelectedIndex() >= 0) world.select(refuges.getSelectionModel().getSelectedIndex()); });
         coordinates.setWrapText(true); coordinates.getStyleClass().add("coordinates");
@@ -49,7 +69,7 @@ public final class NodeWalkerApp extends Application {
         var inspection = new VBox(9, refuges, coordinates, focus);
         decoration = new CheckBox("Vegetação, rochas e ruínas [D]"); decoration.setSelected(!raw.contains("--no-decoration")); decoration.setOnAction(e -> world.setDecoration(decoration.isSelected()));
         simplified = new CheckBox("Geometria simplificada [S]"); simplified.setSelected(raw.contains("--simplified")); simplified.setOnAction(e -> world.setSimplified(simplified.isSelected()));
-        connections = new CheckBox("Conexões disponíveis (filtro visual)"); connections.setSelected(true); connections.setOnAction(e -> world.setConnections(connections.isSelected()));
+        connections = new CheckBox("Conexões disponíveis (filtro visual)"); connections.setSelected(false); connections.setOnAction(e -> world.setConnections(connections.isSelected()));
         var reduced = new CheckBox("Rótulos reduzidos"); reduced.setOnAction(e -> world.setReducedLabels(reduced.isSelected()));
         var reset = new Button("Reset [R]"); reset.setOnAction(e -> world.resetCamera());
         var top = new Button("Superior [T]"); top.setOnAction(e -> world.topView());
@@ -57,7 +77,7 @@ public final class NodeWalkerApp extends Application {
         var exploration = new VBox(9, new HBox(8, reset, top), decoration, simplified, connections, reduced, mode);
         panel = new OperationalPanel(inspection, exploration);
         controller = OperationalController.create(Platform::runLater, this::accept); panel.bind(controller); panel.accept(controller.snapshot());
-        var split = new SplitPane(mapCard, panel); split.setDividerPositions(.72); SplitPane.setResizableWithParent(panel, false);
+        var split = new SplitPane(mapCard, panel); split.setDividerPositions(.75); SplitPane.setResizableWithParent(panel, false);
         var root = new BorderPane(split, header, null, label("ARRASTE / ORBITAR · RODA / ZOOM · CLIQUE / INSPECIONAR · M / 3D–2D", "footer"), null); root.setPadding(new Insets(18));
         scene = new Scene(root, 1380, 870); scene.getStylesheets().add(getClass().getResource("/styles/app.css").toExternalForm());
         scene.setOnKeyPressed(e -> {
@@ -68,7 +88,7 @@ public final class NodeWalkerApp extends Application {
             e.consume();
         });
         world.setDecoration(decoration.isSelected()); world.setSimplified(simplified.isSelected()); world.setConnections(connections.isSelected());
-        stage.setScene(scene); stage.setTitle("NodeWalker | TSP e caminhos mínimos"); stage.setMinWidth(960); stage.setMinHeight(680); stage.show();
+        stage.setScene(scene); stage.setTitle("NodeWalker | Laboratório interativo"); stage.setMinWidth(960); stage.setMinHeight(680); stage.show();
         if (named.containsKey("demo")) panel.load(DemoCatalog.forSize(Integer.parseInt(named.get("demo"))));
     }
     private static boolean editingControl(Node node) {
@@ -86,7 +106,10 @@ public final class NodeWalkerApp extends Application {
         if (next.scene() != null && next.scene() != model) show(next.scene());
     }
     private void show(WorldSceneModel prepared) {
-        boolean newInstance = model == null || model.problem() != prepared.problem(); model = prepared;
+        boolean newInstance = model == null || model.problem() != prepared.problem();
+        boolean pathMode = prepared instanceof ShortestPathSceneModel;
+        if (pathMode != (model instanceof ShortestPathSceneModel)) { connections.setSelected(pathMode); world.setConnections(pathMode); }
+        model = prepared;
         if (newInstance) {
             updatingSelection = true;
             refuges.getItems().setAll(prepared.refuges().stream().map(r -> r.index() == 0 ? "00 / BASE" : String.format("%02d / REFÚGIO", r.index())).toList());
@@ -99,7 +122,7 @@ public final class NodeWalkerApp extends Application {
     // Explicit presentation fixture adapter retained for the opt-in graphical regression runner.
     void present(TspSceneModel prepared) {
         if (!Platform.isFxApplicationThread()) throw new IllegalStateException("Present on FX Application Thread");
-        panel.presentFixture(prepared); show(prepared);
+        panel.presentFixture(prepared); show(prepared); world.finishPlayback();
     }
     private void selected(int index) {
         if (model == null) return;
