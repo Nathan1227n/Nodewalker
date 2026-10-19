@@ -149,14 +149,20 @@ public final class DijkstraShortestPathSolver {
                 }
             }
             var metrics = new ShortestPathMetrics(elapsed, processed, examined, attempts, improvements, peak);
-            try {
-                return ShortestPathResult.create(graph, origin, status, labels, parents, rank, metrics, reason);
-            } catch (RuntimeException failure) {
-                return ShortestPathResult.create(graph, origin,
-                        status == ShortestPathStatus.CONCLUIDO ? ShortestPathStatus.ERRO : status,
-                        null, null, null, metrics,
-                        append(reason, "Result validation failure: " + diagnostic(failure)));
-            }
+            return finishResult(graph, origin, status, labels, parents, rank, metrics, reason);
+        }
+    }
+
+    /** Validation failure is an internal error, even after a previously observed cancellation or limit. */
+    static ShortestPathResult finishResult(RefugeGraph graph, int origin, ShortestPathStatus status,
+                                            BigInteger[] labels, int[] parents, int[] rank,
+                                            ShortestPathMetrics metrics, String reason) {
+        try {
+            return ShortestPathResult.create(graph, origin, status, labels, parents, rank, metrics, reason);
+        } catch (RuntimeException failure) {
+            return ShortestPathResult.create(graph, origin, ShortestPathStatus.ERRO,
+                    null, null, null, metrics,
+                    append(reason, "Result validation failure (previous status=" + status + "): " + diagnostic(failure)));
         }
     }
 

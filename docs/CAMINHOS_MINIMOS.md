@@ -94,7 +94,7 @@ Opções exigem limites não negativos de vértices, entradas examinadas e milis
 - Tempo expira em `elapsed >= millis*1_000_000`. A subtração modular aceita passagem de `nanoTime` pelo limite numérico; duração negativa/não representável é erro.
 - Checkpoints coletam token, sinal da thread, tempo e orçamento pertinente. Falhas reais nessa coleta resultam em `ERRO`. Entre condições coletadas: cancelamento → tempo → vértices → entradas.
 - Há checkpoints na preparação, alocação, fixação, adjacências e finalização. Alocações, somas e cópia/validação de resultado são indivisíveis: não há garantia de latência máxima ou encerramento forçado.
-- `RuntimeException` durante execução resulta em `ERRO`, com confirmações válidas quando disponíveis. Falhas secundárias são diagnosticadas; dados inválidos são omitidos. `Error` da JVM, inclusive OOME, é propagado.
+- `RuntimeException` durante execução resulta em `ERRO`, com confirmações válidas quando disponíveis. Falha real na validação do resultado é sempre `ERRO`, inclusive após cancelamento ou limite; o diagnóstico conserva o estado anterior e a exceção, e todo o snapshot inválido é omitido. Interrupções com snapshot válido conservam seu estado e suas distâncias confirmadas. Falhas secundárias de medição são diagnosticadas. `Error` da JVM, inclusive OOME, é propagado.
 
 Recusa de preflight/argumento inválido ocorre antes da execução e do relógio, sem fabricar resultado interrompido. O pedido posterior ao último checkpoint pode coincidir com conclusão; um resultado já publicado é imutável.
 
@@ -149,6 +149,8 @@ O experimento opcional usa dois aquecimentos/cinco medições, N=8/32/128, seeds
 ### Evidência local da PR A
 
 Em 19/10/2026, Fedora 44/Linux amd64, Temurin 21.0.12.1 e Maven 3.9.11: `env -u DISPLAY -u WAYLAND_DISPLAY mvn --batch-mode --no-transfer-progress clean verify` passou com **2214 testes** (2022 core, 125 CLI, 67 app), zero falhas/erros/ignorados, cerca de 9,2 s no Maven. São **370 casos novos**, preservando os 1844 anteriores. O workflow continua executando o mesmo produto e a spike separada em Ubuntu/Windows. Os oráculos e asserções de teste não entram no JAR de produção.
+
+Revisão da PR #35: dez testes adicionais exercitam falhas reais do validador (distância inconsistente e predecessor cíclico) em todos os estados terminais, exigindo sempre `ERRO` sem publicar o snapshot inválido; interrupções válidas preservam estado e confirmações. A suíte passa a **2224 testes** (2032 core, 125 CLI, 67 app). A comparação dos DOC 01/02/03 com a main, incluindo os dez parágrafos adicionados e preservação byte a byte do XML histórico, está em [REVISAO_DOCX_PR35.md](REVISAO_DOCX_PR35.md).
 
 O experimento executou 84 buscas (12 combinações, sete chamadas cada), todas concluídas. Em N=128, as medianas internas observadas foram aproximadamente 0,779–1,142 ms no completo e 0,028–0,044 ms no esparso. São poucas amostras locais, com aquecimento curto e topologias diferentes; não demonstram desempenho universal. Não houve medição de heap real.
 
