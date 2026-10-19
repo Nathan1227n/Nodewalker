@@ -2,12 +2,12 @@
 
 **Entrega planejada:** 19/10/2026. **Escopo do MVP oficial:** G0–G3. Não tratar G1 ou G2 isoladamente como MVP visual.
 
-| Gate | Conteúdo | Critério de saída | Situação em 12/10 (atualizada) |
+| Gate | Conteúdo | Critério de saída | Situação em 17/10/2026 (incluindo esta PR) |
 | --- | --- | --- | --- |
 | G0 | Maven multimódulo, Java 21, JavaFX 21.0.12, JUnit 5.14.3, hello 3D/fallback | Compilação, testes e demonstração no Fedora; verificações gráficas complementares no Windows/sem Scene3D | Concluído — issue #1 encerrada e PR #16 mesclada; verificações complementares na issue #17 |
-| G1 | Modelo, gerador, contratos, custos, força bruta e CLI de benchmark | Correção e determinismo, testes sem UI | Em andamento — modelo, gerador e contratos integrados (PRs #19–#22); força bruta pendente; proteção da geração autorizada em etapa separada |
-| G2 | Backtracking, poda, métricas, limites e cancelamento | Resultados iguais aos da força bruta e invariantes preservadas | Pendente |
-| G3 | Mapa 3D pós-apocalíptico (refúgios, relevo e ruínas), 2D seguro, câmera, HUD e execução assíncrona | UI responsiva, visual marcante e rota auditável; renderizador definido após spike #23 | Pendente — direção visual documentada, tecnologia 3D em avaliação |
+| G1 | Modelo, gerador, contratos, custos, força bruta e CLI de benchmark | Correção e determinismo, testes sem UI | Implementado, incluindo geração controlada e CLI sem JavaFX |
+| G2 | Backtracking, poda, métricas, limites e cancelamento | Resultados iguais aos da força bruta e invariantes preservadas | Núcleo implementado e auditado; PR #31 de controles e PR #32 de Held–Karp mescladas; baseline anterior 1781 testes |
+| G3 | Mapa 3D pós-apocalíptico, 2D seguro, câmera, HUD e execução assíncrona | UI responsiva, visual marcante e rota auditável | Em andamento — spike PR #33 mesclada; JavaFX 3D aceito; mapa real #11 nesta PR; #12/#13 pendentes |
 | G4 | Modo Aula e recursos didáticos | Testes do MVP continuam passando | Posterior |
 | G5 | Efeitos opcionais | Não interferem no TSP | Opcional |
 
@@ -136,13 +136,25 @@ A Etapa B de segurança do gerador foi **autorizada após o merge da PR #22** e 
 
 **Visão:** explorar rotas ótimas entre os últimos refúgios seguros de um mundo montanhoso em colapso, com identidade própria inspirada na atmosfera de travessia e isolamento da ficção científica. Não é um jogo nem altera a matemática do TSP.
 
-**Documentos oficiais de planejamento:** [DIRECAO_VISUAL.md](DIRECAO_VISUAL.md), que registra atmosfera, cores, refúgios, malha/terreno, ruínas, rota, HUD, assets, precisão matemática e fases; e [ADR 0001 — Renderizador 3D](ADR/0001-renderizador-3d.md), mantida com status **PROPOSTA** até o teste técnico.
+**Documentos oficiais:** [DIRECAO_VISUAL.md](DIRECAO_VISUAL.md) e [ADR 0001 — Renderizador 3D](ADR/0001-renderizador-3d.md), **ACEITA PARA O MVP** por aprovação explícita após a PR #33. O detalhamento implementado está em [VISUALIZACAO_TSP.md](VISUALIZACAO_TSP.md).
 
-**Decisão de tecnologia:** [spike #23](https://github.com/Nathan1227n/Nodewalker/issues/23) comparará rapidamente **JavaFX 3D** (base atual) e **jMonkeyEngine** (candidato Java). Avaliar terrain/heightmap, iluminação/névoa, órbita, câmera, glTF, FPS real no Fedora, controle do HUD, Maven/Java 21, risco de integração e fallback 2D. Não migrar o app nem alterar o `tsp-core` antes de obter evidências e aceitar a ADR. Timebox inicial: cerca de quatro horas; se arriscar a entrega, usar JavaFX 3D estilizado.
+**Decisão de tecnologia:** JavaFX 3D estilizado, com 2D independente. Integração existente, prazo, manutenção e fallback justificam o aceite; o comparativo não demonstrou superioridade gráfica ou de FPS de uma engine. JME permanece isolado e pode ser reavaliado após o MVP.
 
 ### Spike #23 — protótipos isolados (17/10/2026)
 
-Dois protótipos Java 21/Maven em `spikes/renderer-comparison/` compartilham cenário procedural, cinco refúgios, câmera e ciclo fixo validado. Janelas reais foram abertas na GPU NVIDIA do Fedora; capturas, método e resultados estão em [SPIKE_RENDERIZADORES.md](SPIKE_RENDERIZADORES.md). A recomendação **provisória** é JavaFX 3D estilizado para o MVP; a ADR permanece sem aceite até revisão gráfica humana. O app original e seu fallback 2D permanecem intactos. Compilação em CI não equivale a homologação visual. Esta spike não implementa #11/#12 nem conclui o G3.
+Dois protótipos Java 21/Maven em `spikes/renderer-comparison/` compartilham cenário procedural, cinco refúgios, câmera e ciclo fixo validado. A PR #33 foi mesclada em `29fc04c`. Janelas e capturas NVIDIA/Fedora, medições e a recomendação então provisória estão preservadas em [SPIKE_RENDERIZADORES.md](SPIKE_RENDERIZADORES.md). A aceitação posterior de JavaFX para o MVP não altera esses resultados históricos. Compilação em CI não equivale a homologação visual.
+
+### Mapa real — issue #11 (esta PR)
+
+- Modelo visual imutável derivado de `TspProblem`/`TspResult`, transformação XYZ reversível e ciclo exato, inclusive retorno. Custos continuam na matriz original.
+- Terreno autoral preparado em background, vales e cristas distantes, terminal BASE 0 âmbar, três variantes de abrigos ciano, ruínas periféricas e materiais dessaturados. Rota certificada contínua ou incumbente tracejada, seleção/XYZ, órbita, zoom, reset, topo e foco.
+- Canvas 2D independente, alternância preservando modelo/seleção/câmera, complexidade reduzível e até 32 conexões opcionais do selecionado.
+- Catálogo N=3/5/8/12 com seeds fixas, geração e backtracking limitados, tokens distintos e descarte de entregas obsoletas. Não é o controlador operacional da #12.
+- Textos de certificação separados e sem quebra da negação; prioridade/colisão determinística de rótulos e modo de exploração limpa, sem mover posições lógicas.
+- 63 novos testes headless na PR (38 iniciais + 25 do refinamento; **1844 no produto**, 67 no app), [janelas/capturas Fedora reais e contagens de recursos](evidencias/issue-11/vegetacao/README.md), fallback por Prism software. A correção de superfície adiciona albedo rochoso fosco, UVs para encostas e normais coerentes entre resoluções, sem alterar dados TSP. Navegação humana, desempenho sustentado e Windows gráfico ainda exigem homologação #13/#17.
+- [Candidatos a assets, licenças específicas e limites de importação](ASSETS_VISUAIS.md) registrados; geometria do MVP continua autoral, sem importador ou dependência nova.
+
+As seções anteriores são registros históricos de cada entrega e mantêm suas contagens e limitações da época.
 
 ### Escopo visual obrigatório para o MVP (G3)
 
@@ -159,9 +171,9 @@ A [issue #15](https://github.com/Nathan1227n/Nodewalker/issues/15) fica reservad
 
 ### Sequência recomendada e corte de riscos
 
-1. Concluir segurança do gerador na Etapa B e solvers exatos das issues #5–#10; seguir um PR funcional por vez.
-2. Validar a spike #23 sem bloquear algoritmos; decidir engine por ADR antes de mudar a #11 para um motor definitivo.
-3. Implementar #11–#12 com mapa/HUD úteis e fallback 2D; reservar tempo para testes manuais de renderização.
+1. Preservar o núcleo, a geração controlada e as auditorias já integradas pelas issues #5–#10.
+2. Revisar esta PR da #11 com a ADR aceita, capturas e reprodução do mapa real.
+3. Implementar #12 em outra branch: configuração, HUD completo e coordenação operacional assíncrona; reservar tempo para testes manuais.
 4. Fechar #13 e entregar até 19/10/2026; se necessário, reduzir detalhes do terreno/ruínas/efeitos, **nunca** correção do TSP, legibilidade, cancelamento ou fallback.
 
 **Controle de mudanças:** a presente direção artística é evolução de apresentação, não alteração das especificações normativas DOC 01–03. Custos por caminhos topográficos ou jogabilidade exigiriam especificação futura própria.
