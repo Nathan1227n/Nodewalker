@@ -36,6 +36,12 @@ geometria/configuração; isso detecta uma camada que não tenha sido redesenhad
 
 ## Cancelamento por etapa
 
+Antes da geração efetiva, o roteiro solicita cancelamento e comprova ausência de instância,
+resultado e cena. O mapa passa a dizer **Preparação cancelada**, sem continuar anunciando
+que a geração está em andamento.
+
+![Geração cancelada, sem instância admitida nem resultado fabricado](desktop/00-generation-cancelled-before-start.png)
+
 Preparação cancela o token cooperativo e invalida epoch/revisão, inclusive callbacks já
 na UI. Publica explicitamente CANCELAMENTO SOLICITADO → CANCELADO. Não fabrica resultado
 de solver, não admite uma instância ainda pendente e não volta a INSTÂNCIA PRONTA por uma
@@ -74,8 +80,8 @@ alterados. [Log completo](headless-verify.txt). `git diff --check` também foi e
 
 Os roteiros de transição passaram em 3D e 2D de software:
 
-- [Manifesto 3D — todas as 16 etapas](desktop/transitions-manifest.tsv), [ambiente](desktop/environment.json), [resultado](desktop/review-output.txt).
-- [Manifesto 2D — todas as 16 etapas](software-2d/transitions-manifest.tsv), [ambiente](software-2d/environment.json), [resultado](software-2d/review-output.txt).
+- [Manifesto 3D — todas as 17 etapas](desktop/transitions-manifest.tsv), [ambiente](desktop/environment.json), [resultado](desktop/review-output.txt).
+- [Manifesto 2D — todas as 17 etapas](software-2d/transitions-manifest.tsv), [ambiente](software-2d/environment.json), [resultado](software-2d/review-output.txt).
 
 As capturas selecionadas estão neste diretório; os manifestos enumeram também as outras
 etapas verificadas/capturadas pelo roteiro. A regressão adicional passou em

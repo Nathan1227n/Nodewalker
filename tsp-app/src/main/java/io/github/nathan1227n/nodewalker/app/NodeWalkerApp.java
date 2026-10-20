@@ -105,7 +105,13 @@ public final class NodeWalkerApp extends Application {
     private void accept(OperationalSnapshot next) {
         panel.accept(next);
         if (next.problem() == null) {
-            if (model != null) { model = null; refuges.getItems().clear(); world.clear("Gerando instância em background…"); }
+            model = null; refuges.getItems().clear();
+            world.clear(switch (next.phase()) {
+                case CANCELADO -> "Preparação cancelada. Gere uma instância para continuar.";
+                case ERRO -> "Falha ao preparar a instância. Consulte o diagnóstico no painel.";
+                case SEM_INSTANCIA -> "Configure N e seed; clique GERAR.";
+                default -> "Gerando instância em background…";
+            });
             return;
         }
         if (next.scene() != null && next.scene() != model) show(next.scene());

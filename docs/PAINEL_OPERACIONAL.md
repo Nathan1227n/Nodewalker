@@ -290,4 +290,5 @@ python3 tools/review_world.py --transitions --software-2d --output tsp-app/targe
 ```
 
 [Política, manifestos e capturas das duas correções](evidencias/issue-12/transicoes/README.md).
+O mapa também identifica cancelamento de geração sem manter a mensagem de geração em andamento.
 Entrada humana com mouse/teclado continua pendente; essa automação não substitui a issue #13.

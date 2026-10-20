@@ -1,17 +1,18 @@
 capture	method	instance	run	algorithm	phase	snapshotSegments	actual3DRouteChildren	selected	worldPreserved
-00-backtracking-real-before-switch	real-solver-controlled-workers-api-ui	1	1	TSP / Backtracking	CONCLUIDO	5	5	3	true
-01-backtracking-to-dijkstra-workers-held	real-solver-controlled-workers-api-ui	1	1	Caminhos mínimos / Dijkstra clássico	VALIDANDO_EXECUCAO	0	0	3	true
-02-topology-done-presentation-held	real-solver-controlled-workers-api-ui	1	1	Caminhos mínimos / Dijkstra clássico	VALIDANDO_EXECUCAO	0	0	3	true
-03-cancel-preparation-ui-callback-held	real-solver-controlled-workers-api-ui	1	1	Caminhos mínimos / Dijkstra clássico	CANCELADO	0	0	3	true
-04-dijkstra-real-after-retry	real-solver-controlled-workers-api-ui	1	2	Caminhos mínimos / Dijkstra clássico	CONCLUIDO	1	1	3	true
-05-dijkstra-to-bruteforce-presentation-held	real-solver-controlled-workers-api-ui	1	2	TSP / Força Bruta	VALIDANDO_EXECUCAO	0	0	3	true
-06-new-config-old-presentation-queued	real-solver-controlled-workers-api-ui	1	2	Caminhos mínimos / Dijkstra clássico	VALIDANDO_EXECUCAO	0	0	3	true
-07-old-presentation-callback-rejected	real-solver-controlled-workers-api-ui	1	2	Caminhos mínimos / Dijkstra clássico	VALIDANDO_EXECUCAO	0	0	3	true
-08-bruteforce-real-before-rerun	real-solver-controlled-workers-api-ui	1	3	TSP / Força Bruta	CONCLUIDO	5	5	3	true
-09-rerun-workers-held	real-solver-controlled-workers-api-ui	1	4	TSP / Força Bruta	VALIDANDO_EXECUCAO	0	0	3	true
-10-completed-solver-presentation-held	real-solver-controlled-workers-api-ui	1	4	TSP / Força Bruta	CANCELAMENTO_SOLICITADO	0	0	3	true
-11-completed-result-after-late-cancel	real-solver-controlled-workers-api-ui	1	4	TSP / Força Bruta	CONCLUIDO	5	5	3	true
-12-new-destination-presentation-held	real-solver-controlled-workers-api-ui	1	5	Caminhos mínimos / Dijkstra clássico	CONCLUIDO	0	0	3	true
-13-new-destination-real-result	real-solver-controlled-workers-api-ui	1	5	Caminhos mínimos / Dijkstra clássico	CONCLUIDO	2	2	3	true
-14-old-fx-route-installation-held	real-solver-controlled-workers-api-ui	1	6	TSP / Força Bruta	VALIDANDO_EXECUCAO	0	0	3	true
-15-old-fx-route-installation-rejected	real-solver-controlled-workers-api-ui	1	6	TSP / Força Bruta	VALIDANDO_EXECUCAO	0	0	3	true
+00-generation-cancelled-before-start	real-generation-api-ui	1	0	TSP / Backtracking	CANCELADO	0	no-renderer	0	not-applicable
+00-backtracking-real-before-switch	real-solver-controlled-workers-api-ui	2	1	TSP / Backtracking	CONCLUIDO	5	5	3	true
+01-backtracking-to-dijkstra-workers-held	real-solver-controlled-workers-api-ui	2	1	Caminhos mínimos / Dijkstra clássico	VALIDANDO_EXECUCAO	0	0	3	true
+02-topology-done-presentation-held	real-solver-controlled-workers-api-ui	2	1	Caminhos mínimos / Dijkstra clássico	VALIDANDO_EXECUCAO	0	0	3	true
+03-cancel-preparation-ui-callback-held	real-solver-controlled-workers-api-ui	2	1	Caminhos mínimos / Dijkstra clássico	CANCELADO	0	0	3	true
+04-dijkstra-real-after-retry	real-solver-controlled-workers-api-ui	2	2	Caminhos mínimos / Dijkstra clássico	CONCLUIDO	1	1	3	true
+05-dijkstra-to-bruteforce-presentation-held	real-solver-controlled-workers-api-ui	2	2	TSP / Força Bruta	VALIDANDO_EXECUCAO	0	0	3	true
+06-new-config-old-presentation-queued	real-solver-controlled-workers-api-ui	2	2	Caminhos mínimos / Dijkstra clássico	VALIDANDO_EXECUCAO	0	0	3	true
+07-old-presentation-callback-rejected	real-solver-controlled-workers-api-ui	2	2	Caminhos mínimos / Dijkstra clássico	VALIDANDO_EXECUCAO	0	0	3	true
+08-bruteforce-real-before-rerun	real-solver-controlled-workers-api-ui	2	3	TSP / Força Bruta	CONCLUIDO	5	5	3	true
+09-rerun-workers-held	real-solver-controlled-workers-api-ui	2	4	TSP / Força Bruta	VALIDANDO_EXECUCAO	0	0	3	true
+10-completed-solver-presentation-held	real-solver-controlled-workers-api-ui	2	4	TSP / Força Bruta	CANCELAMENTO_SOLICITADO	0	0	3	true
+11-completed-result-after-late-cancel	real-solver-controlled-workers-api-ui	2	4	TSP / Força Bruta	CONCLUIDO	5	5	3	true
+12-new-destination-presentation-held	real-solver-controlled-workers-api-ui	2	5	Caminhos mínimos / Dijkstra clássico	CONCLUIDO	0	0	3	true
+13-new-destination-real-result	real-solver-controlled-workers-api-ui	2	5	Caminhos mínimos / Dijkstra clássico	CONCLUIDO	2	2	3	true
+14-old-fx-route-installation-held	real-solver-controlled-workers-api-ui	2	6	TSP / Força Bruta	VALIDANDO_EXECUCAO	0	0	3	true
+15-old-fx-route-installation-rejected	real-solver-controlled-workers-api-ui	2	6	TSP / Força Bruta	VALIDANDO_EXECUCAO	0	0	3	true

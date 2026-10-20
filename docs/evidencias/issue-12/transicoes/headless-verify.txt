@@ -47,65 +47,65 @@
 [INFO] Running io.github.nathan1227n.nodewalker.core.generator.GenerationOptionsTest
 [INFO] Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.053 s -- in io.github.nathan1227n.nodewalker.core.generator.GenerationOptionsTest
 [INFO] Running io.github.nathan1227n.nodewalker.core.generator.TspBoundedGeneratorTest
-[INFO] Tests run: 46, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.129 s -- in io.github.nathan1227n.nodewalker.core.generator.TspBoundedGeneratorTest
+[INFO] Tests run: 46, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.135 s -- in io.github.nathan1227n.nodewalker.core.generator.TspBoundedGeneratorTest
 [INFO] Running io.github.nathan1227n.nodewalker.core.generator.TspGenerationCancellationTest
 [INFO] Tests run: 12, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.021 s -- in io.github.nathan1227n.nodewalker.core.generator.TspGenerationCancellationTest
 [INFO] Running io.github.nathan1227n.nodewalker.core.generator.TspGeneratorTest
-[INFO] Tests run: 89, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.102 s -- in io.github.nathan1227n.nodewalker.core.generator.TspGeneratorTest
+[INFO] Tests run: 89, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.113 s -- in io.github.nathan1227n.nodewalker.core.generator.TspGeneratorTest
 [INFO] Running io.github.nathan1227n.nodewalker.core.graph.RefugeTopologyTest
-[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.021 s -- in io.github.nathan1227n.nodewalker.core.graph.RefugeTopologyTest
+[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.020 s -- in io.github.nathan1227n.nodewalker.core.graph.RefugeTopologyTest
 [INFO] Running io.github.nathan1227n.nodewalker.core.model.CityTest
-[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 s -- in io.github.nathan1227n.nodewalker.core.model.CityTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in io.github.nathan1227n.nodewalker.core.model.CityTest
 [INFO] Running io.github.nathan1227n.nodewalker.core.model.CostMathTest
-[INFO] Tests run: 12, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.015 s -- in io.github.nathan1227n.nodewalker.core.model.CostMathTest
+[INFO] Tests run: 12, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.016 s -- in io.github.nathan1227n.nodewalker.core.model.CostMathTest
 [INFO] Running io.github.nathan1227n.nodewalker.core.model.TspProblemCheckpointTest
 [INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.009 s -- in io.github.nathan1227n.nodewalker.core.model.TspProblemCheckpointTest
 [INFO] Running io.github.nathan1227n.nodewalker.core.model.TspProblemTest
 [INFO] Tests run: 54, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.041 s -- in io.github.nathan1227n.nodewalker.core.model.TspProblemTest
 [INFO] Running io.github.nathan1227n.nodewalker.core.model.TspRouteTest
-[INFO] Tests run: 31, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.023 s -- in io.github.nathan1227n.nodewalker.core.model.TspRouteTest
+[INFO] Tests run: 31, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.022 s -- in io.github.nathan1227n.nodewalker.core.model.TspRouteTest
 [INFO] Running io.github.nathan1227n.nodewalker.core.shortestpath.DijkstraShortestPathSolverTest
-[INFO] Tests run: 322, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.159 s -- in io.github.nathan1227n.nodewalker.core.shortestpath.DijkstraShortestPathSolverTest
+[INFO] Tests run: 322, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.152 s -- in io.github.nathan1227n.nodewalker.core.shortestpath.DijkstraShortestPathSolverTest
 [INFO] Running io.github.nathan1227n.nodewalker.core.shortestpath.FloydWarshallOracleTest
 [INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s -- in io.github.nathan1227n.nodewalker.core.shortestpath.FloydWarshallOracleTest
 [INFO] Running io.github.nathan1227n.nodewalker.core.shortestpath.IndexedVertexHeapTest
 [INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.006 s -- in io.github.nathan1227n.nodewalker.core.shortestpath.IndexedVertexHeapTest
 [INFO] Running io.github.nathan1227n.nodewalker.core.shortestpath.ShortestPathContractsTest
-[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.014 s -- in io.github.nathan1227n.nodewalker.core.shortestpath.ShortestPathContractsTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.012 s -- in io.github.nathan1227n.nodewalker.core.shortestpath.ShortestPathContractsTest
 [INFO] Running io.github.nathan1227n.nodewalker.core.shortestpath.ShortestPathExecutionTest
 [INFO] Tests run: 29, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.021 s -- in io.github.nathan1227n.nodewalker.core.shortestpath.ShortestPathExecutionTest
 [INFO] Running io.github.nathan1227n.nodewalker.core.shortestpath.ShortestPathResultValidationTest
-[INFO] Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.008 s -- in io.github.nathan1227n.nodewalker.core.shortestpath.ShortestPathResultValidationTest
+[INFO] Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.009 s -- in io.github.nathan1227n.nodewalker.core.shortestpath.ShortestPathResultValidationTest
 [INFO] Running io.github.nathan1227n.nodewalker.core.solver.BacktrackingSolverTest
-[INFO] Tests run: 1062, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.348 s -- in io.github.nathan1227n.nodewalker.core.solver.BacktrackingSolverTest
+[INFO] Tests run: 1062, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.332 s -- in io.github.nathan1227n.nodewalker.core.solver.BacktrackingSolverTest
 [INFO] Running io.github.nathan1227n.nodewalker.core.solver.BruteForceSolverTest
-[INFO] Tests run: 49, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.019 s -- in io.github.nathan1227n.nodewalker.core.solver.BruteForceSolverTest
+[INFO] Tests run: 49, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.018 s -- in io.github.nathan1227n.nodewalker.core.solver.BruteForceSolverTest
 [INFO] Running io.github.nathan1227n.nodewalker.core.solver.HeldKarpOracleTest
-[INFO] Tests run: 14, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.013 s -- in io.github.nathan1227n.nodewalker.core.solver.HeldKarpOracleTest
+[INFO] Tests run: 14, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.010 s -- in io.github.nathan1227n.nodewalker.core.solver.HeldKarpOracleTest
 [INFO] Running io.github.nathan1227n.nodewalker.core.solver.IndependentOptimalityAuditTest
-[INFO] Tests run: 18, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.022 s -- in io.github.nathan1227n.nodewalker.core.solver.IndependentOptimalityAuditTest
+[INFO] Tests run: 18, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.020 s -- in io.github.nathan1227n.nodewalker.core.solver.IndependentOptimalityAuditTest
 [INFO] Running io.github.nathan1227n.nodewalker.core.solver.PruningHistogramTest
-[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.009 s -- in io.github.nathan1227n.nodewalker.core.solver.PruningHistogramTest
+[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.008 s -- in io.github.nathan1227n.nodewalker.core.solver.PruningHistogramTest
 [INFO] Running io.github.nathan1227n.nodewalker.core.solver.SolverExecutionControlsTest
-[INFO] Tests run: 102, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.069 s -- in io.github.nathan1227n.nodewalker.core.solver.SolverExecutionControlsTest
+[INFO] Tests run: 102, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.056 s -- in io.github.nathan1227n.nodewalker.core.solver.SolverExecutionControlsTest
 [INFO] Running io.github.nathan1227n.nodewalker.core.solver.SolverExecutionOptionsTest
-[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 s -- in io.github.nathan1227n.nodewalker.core.solver.SolverExecutionOptionsTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in io.github.nathan1227n.nodewalker.core.solver.SolverExecutionOptionsTest
 [INFO] Running io.github.nathan1227n.nodewalker.core.solver.SolverInstrumentationTest
-[INFO] Tests run: 16, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.008 s -- in io.github.nathan1227n.nodewalker.core.solver.SolverInstrumentationTest
+[INFO] Tests run: 16, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.006 s -- in io.github.nathan1227n.nodewalker.core.solver.SolverInstrumentationTest
 [INFO] Running io.github.nathan1227n.nodewalker.core.solver.SolverMetricsTest
 [INFO] Tests run: 20, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.008 s -- in io.github.nathan1227n.nodewalker.core.solver.SolverMetricsTest
 [INFO] Running io.github.nathan1227n.nodewalker.core.solver.SolverPreflightTest
-[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.006 s -- in io.github.nathan1227n.nodewalker.core.solver.SolverPreflightTest
+[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.005 s -- in io.github.nathan1227n.nodewalker.core.solver.SolverPreflightTest
 [INFO] Running io.github.nathan1227n.nodewalker.core.solver.SolverRunMetricsTest
-[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 s -- in io.github.nathan1227n.nodewalker.core.solver.SolverRunMetricsTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in io.github.nathan1227n.nodewalker.core.solver.SolverRunMetricsTest
 [INFO] Running io.github.nathan1227n.nodewalker.core.solver.SolverStatusTest
-[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 s -- in io.github.nathan1227n.nodewalker.core.solver.SolverStatusTest
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in io.github.nathan1227n.nodewalker.core.solver.SolverStatusTest
 [INFO] Running io.github.nathan1227n.nodewalker.core.solver.TspResultTest
-[INFO] Tests run: 49, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.024 s -- in io.github.nathan1227n.nodewalker.core.solver.TspResultTest
+[INFO] Tests run: 49, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.019 s -- in io.github.nathan1227n.nodewalker.core.solver.TspResultTest
 [INFO] Running io.github.nathan1227n.nodewalker.core.solver.TspSolverTest
 [INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s -- in io.github.nathan1227n.nodewalker.core.solver.TspSolverTest
 [INFO] Running io.github.nathan1227n.nodewalker.core.validation.RouteValidatorTest
-[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 s -- in io.github.nathan1227n.nodewalker.core.validation.RouteValidatorTest
+[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.005 s -- in io.github.nathan1227n.nodewalker.core.validation.RouteValidatorTest
 [INFO]
 [INFO] Results:
 [INFO]
@@ -144,15 +144,15 @@
 [INFO]  T E S T S
 [INFO] -------------------------------------------------------
 [INFO] Running io.github.nathan1227n.nodewalker.cli.BenchmarkRunnerTest
-[INFO] Tests run: 27, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.137 s -- in io.github.nathan1227n.nodewalker.cli.BenchmarkRunnerTest
+[INFO] Tests run: 27, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.143 s -- in io.github.nathan1227n.nodewalker.cli.BenchmarkRunnerTest
 [INFO] Running io.github.nathan1227n.nodewalker.cli.CliOptionsTest
-[INFO] Tests run: 48, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.055 s -- in io.github.nathan1227n.nodewalker.cli.CliOptionsTest
+[INFO] Tests run: 48, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.045 s -- in io.github.nathan1227n.nodewalker.cli.CliOptionsTest
 [INFO] Running io.github.nathan1227n.nodewalker.cli.MedianTest
-[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.009 s -- in io.github.nathan1227n.nodewalker.cli.MedianTest
+[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.010 s -- in io.github.nathan1227n.nodewalker.cli.MedianTest
 [INFO] Running io.github.nathan1227n.nodewalker.cli.NodeWalkerCliTest
-[INFO] Tests run: 21, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.037 s -- in io.github.nathan1227n.nodewalker.cli.NodeWalkerCliTest
+[INFO] Tests run: 21, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.041 s -- in io.github.nathan1227n.nodewalker.cli.NodeWalkerCliTest
 [INFO] Running io.github.nathan1227n.nodewalker.cli.PreflightTest
-[INFO] Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.010 s -- in io.github.nathan1227n.nodewalker.cli.PreflightTest
+[INFO] Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.013 s -- in io.github.nathan1227n.nodewalker.cli.PreflightTest
 [INFO]
 [INFO] Results:
 [INFO]
@@ -181,7 +181,7 @@
 [INFO]  T E S T S
 [INFO] -------------------------------------------------------
 [INFO] Running io.github.nathan1227n.nodewalker.cli.CliJarIT
-[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.277 s -- in io.github.nathan1227n.nodewalker.cli.CliJarIT
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.265 s -- in io.github.nathan1227n.nodewalker.cli.CliJarIT
 [INFO]
 [INFO] Results:
 [INFO]
@@ -219,35 +219,35 @@
 [INFO]  T E S T S
 [INFO] -------------------------------------------------------
 [INFO] Running io.github.nathan1227n.nodewalker.app.PreviewModeSelectorTest
-[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.026 s -- in io.github.nathan1227n.nodewalker.app.PreviewModeSelectorTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.023 s -- in io.github.nathan1227n.nodewalker.app.PreviewModeSelectorTest
 [INFO] Running io.github.nathan1227n.nodewalker.app.demo.DemoLoaderTest
-[INFO] Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.541 s -- in io.github.nathan1227n.nodewalker.app.demo.DemoLoaderTest
+[INFO] Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.500 s -- in io.github.nathan1227n.nodewalker.app.demo.DemoLoaderTest
 [INFO] Running io.github.nathan1227n.nodewalker.app.operation.HudPresentationTest
-[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.027 s -- in io.github.nathan1227n.nodewalker.app.operation.HudPresentationTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.024 s -- in io.github.nathan1227n.nodewalker.app.operation.HudPresentationTest
 [INFO] Running io.github.nathan1227n.nodewalker.app.operation.OperationalControllerTest
-[INFO] Tests run: 32, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.162 s -- in io.github.nathan1227n.nodewalker.app.operation.OperationalControllerTest
+[INFO] Tests run: 32, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.147 s -- in io.github.nathan1227n.nodewalker.app.operation.OperationalControllerTest
 [INFO] Running io.github.nathan1227n.nodewalker.app.operation.OperationalTransitionsTest
-[INFO] Tests run: 30, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.807 s -- in io.github.nathan1227n.nodewalker.app.operation.OperationalTransitionsTest
+[INFO] Tests run: 30, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.815 s -- in io.github.nathan1227n.nodewalker.app.operation.OperationalTransitionsTest
 [INFO] Running io.github.nathan1227n.nodewalker.app.operation.ResultReportsTest
-[INFO] Tests run: 14, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.020 s -- in io.github.nathan1227n.nodewalker.app.operation.ResultReportsTest
+[INFO] Tests run: 14, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.015 s -- in io.github.nathan1227n.nodewalker.app.operation.ResultReportsTest
 [INFO] Running io.github.nathan1227n.nodewalker.app.world.LabelLayoutTest
-[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.010 s -- in io.github.nathan1227n.nodewalker.app.world.LabelLayoutTest
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.009 s -- in io.github.nathan1227n.nodewalker.app.world.LabelLayoutTest
 [INFO] Running io.github.nathan1227n.nodewalker.app.world.ResultPresentationTest
-[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.036 s -- in io.github.nathan1227n.nodewalker.app.world.ResultPresentationTest
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.034 s -- in io.github.nathan1227n.nodewalker.app.world.ResultPresentationTest
 [INFO] Running io.github.nathan1227n.nodewalker.app.world.ShortestPathSceneModelTest
-[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.270 s -- in io.github.nathan1227n.nodewalker.app.world.ShortestPathSceneModelTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.273 s -- in io.github.nathan1227n.nodewalker.app.world.ShortestPathSceneModelTest
 [INFO] Running io.github.nathan1227n.nodewalker.app.world.SurfaceMappingTest
-[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.190 s -- in io.github.nathan1227n.nodewalker.app.world.SurfaceMappingTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.183 s -- in io.github.nathan1227n.nodewalker.app.world.SurfaceMappingTest
 [INFO] Running io.github.nathan1227n.nodewalker.app.world.VisualBudgetTest
-[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.386 s -- in io.github.nathan1227n.nodewalker.app.world.VisualBudgetTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.387 s -- in io.github.nathan1227n.nodewalker.app.world.VisualBudgetTest
 [INFO] Running io.github.nathan1227n.nodewalker.app.world.WorldContractsTest
-[INFO] Tests run: 27, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.049 s -- in io.github.nathan1227n.nodewalker.app.world.WorldContractsTest
+[INFO] Tests run: 27, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.050 s -- in io.github.nathan1227n.nodewalker.app.world.WorldContractsTest
 [INFO] Running io.github.nathan1227n.nodewalker.app.world.WorldGeometryTest
-[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.340 s -- in io.github.nathan1227n.nodewalker.app.world.WorldGeometryTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.344 s -- in io.github.nathan1227n.nodewalker.app.world.WorldGeometryTest
 [INFO] Running io.github.nathan1227n.nodewalker.app.world.WorldPlaybackTest
-[INFO] Tests run: 14, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.063 s -- in io.github.nathan1227n.nodewalker.app.world.WorldPlaybackTest
+[INFO] Tests run: 14, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.064 s -- in io.github.nathan1227n.nodewalker.app.world.WorldPlaybackTest
 [INFO] Running io.github.nathan1227n.nodewalker.app.world.WorldViewStateTest
-[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.058 s -- in io.github.nathan1227n.nodewalker.app.world.WorldViewStateTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.059 s -- in io.github.nathan1227n.nodewalker.app.world.WorldViewStateTest
 [INFO]
 [INFO] Results:
 [INFO]
@@ -259,13 +259,13 @@
 [INFO] ------------------------------------------------------------------------
 [INFO] Reactor Summary for NodeWalker (parent) 0.1.0-SNAPSHOT:
 [INFO]
-[INFO] NodeWalker (parent) ................................ SUCCESS [  0.083 s]
-[INFO] NodeWalker | TSP Core .............................. SUCCESS [  3.903 s]
-[INFO] NodeWalker | CLI ................................... SUCCESS [  1.515 s]
-[INFO] NodeWalker | Desktop App ........................... SUCCESS [  6.633 s]
+[INFO] NodeWalker (parent) ................................ SUCCESS [  0.081 s]
+[INFO] NodeWalker | TSP Core .............................. SUCCESS [  4.009 s]
+[INFO] NodeWalker | CLI ................................... SUCCESS [  1.566 s]
+[INFO] NodeWalker | Desktop App ........................... SUCCESS [  6.488 s]
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESS
 [INFO] ------------------------------------------------------------------------
-[INFO] Total time:  12.197 s
-[INFO] Finished at: 2026-10-20T10:28:42-03:00
+[INFO] Total time:  12.209 s
+[INFO] Finished at: 2026-10-20T10:35:13-03:00
 [INFO] ------------------------------------------------------------------------

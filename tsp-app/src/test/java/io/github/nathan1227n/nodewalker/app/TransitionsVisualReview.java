@@ -46,7 +46,13 @@ public final class TransitionsVisualReview {
         Platform.startup(()->Platform.runLater(()->guard(()->{
             app=new NodeWalkerApp();stage=new Stage();app.start(stage,Arrays.asList(args).contains("--2d-only")?List.of("--2d"):List.of(),Map.of(),
                     listener->new OperationalController(compute,visual,ui::add,new OperationalServices(){},listener));
-            view=(TspWorldView)node("tsp-world"); click("generate"); pump(()->{
+            view=(TspWorldView)node("tsp-world"); click("generate"); click("cancel");
+            check(s().phase()==CANCELADO && s().problem()==null && s().scene()==null && s().result()==null,"cancel generation publishes no instance or solver result");
+            check(view.sceneModelProperty().get()==null,"no stale view during generation cancellation");
+            var loading=(Label)view.lookup(".loading-message");
+            check(loading!=null && loading.getText().contains("cancelada"),"map stops claiming generation is still running");
+            capture("00-generation-cancelled-before-start");
+            click("generate"); pump(()->{
                 view.finishPlayback();matrix=s().problem();world=s().scene().preparedWorld();view.select(3);view.focusSelection();
                 subScene=findSubScene(view);camera=subScene==null?null:subScene.getCamera();
                 cameraTransform=camera==null?null:transform(camera); terrain=subScene==null?node("map-terrain-backdrop"):terrain(subScene.getRoot());
@@ -152,6 +158,7 @@ public final class TransitionsVisualReview {
     private static void capture(String name){try{
         stage.getScene().getRoot().applyCss();stage.getScene().getRoot().layout();var shot=stage.getScene().snapshot(null);int w=(int)shot.getWidth(),h=(int)shot.getHeight();
         var image=new BufferedImage(w,h,BufferedImage.TYPE_INT_ARGB);image.setRGB(0,0,w,h,pixels(shot),0,w);ImageIO.write(image,"png",output.resolve(name+".png").toFile());
+        if(s().scene()==null){rows.add(name+"\treal-generation-api-ui\t"+s().instanceId()+"\t"+s().runId()+"\t"+s().request().algorithm()+"\t"+s().phase()+"\t0\tno-renderer\t"+view.selectedIndex()+"\tnot-applicable");return;}
         rows.add(name+"\treal-solver-controlled-workers-api-ui\t"+s().instanceId()+"\t"+s().runId()+"\t"+s().request().algorithm()+"\t"+s().phase()+"\t"+s().scene().segments().size()+"\t"+(subScene==null?"canvas-pixel-equality":routeLayer().getChildren().size())+"\t"+view.selectedIndex()+"\t"+(world==s().scene().preparedWorld()));
     }catch(Exception e){throw new IllegalStateException(e);}}
     private static void check(boolean condition,String message){if(!condition)throw new AssertionError(message);}
