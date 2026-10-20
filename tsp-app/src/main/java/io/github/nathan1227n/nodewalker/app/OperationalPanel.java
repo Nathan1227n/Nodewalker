@@ -27,10 +27,13 @@ final class OperationalPanel extends VBox {
     private final Label phase = label("Gere seus refúgios para começar"), identity = label(""), error = label("");
     private final Label status = label(""), kind = label(""), certification = label(""), cost = label(""), route = label("");
     private final Label internalTime = label(""), summary = label(""), identifiers = label("");
-    private final TextArea preflight = area(5), metrics = area(6), history = area(7), allDistances = area(5);
+    private final TextArea preflight = area(5), metrics = area(6), allDistances = area(5);
+    private final Button present = new Button("Apresentar resultado"), compare = new Button("Comparar TSP");
+    private final Label comparisonSummary = label("");
+    private ResultsWindow resultsWindow;
     private final Button generate = new Button("Gerar"), execute = new Button("EXECUTAR"), cancel = new Button("Cancelar busca");
     private final Button apply = new Button("Aplicar ajustes");
-    private final VBox pathConfiguration, pathAdvanced, tspAdvanced, resultBox;
+    private final VBox pathConfiguration, pathAdvanced, tspAdvanced, resultBox, reportActions;
     private final TitledPane details;
     private OperationalController controller;
     private OperationalSnapshot snapshot;
@@ -63,7 +66,7 @@ final class OperationalPanel extends VBox {
         preflight.setId("preflight-details");
         var limits = new VBox(8, row("Tempo máx. (ms)", millis), tspAdvanced, pathAdvanced, apply, preflight, identifiers);
         var data = new VBox(8, metrics, allDistances);
-        var tabs = new TabPane(tab("Ajustes", limits), tab("Dados", data), tab("Comparar", history), tab("Mapa", exploration), tab("Refúgio", inspection));
+        var tabs = new TabPane(tab("Ajustes", limits), tab("Dados", data), tab("Mapa", exploration), tab("Refúgio", inspection));
         tabs.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE); tabs.setPrefHeight(330); tabs.setMinWidth(0);
         details = new TitledPane("Detalhes e ajustes", tabs); details.setId("operational-details"); details.setExpanded(false); details.setAnimated(false);
         status.setId("solver-status"); kind.setId("route-kind"); certification.setId("certification"); cost.setId("result-cost"); route.setId("result-route");
@@ -86,8 +89,15 @@ final class OperationalPanel extends VBox {
         error.visibleProperty().bind(error.textProperty().isNotEmpty()); error.managedProperty().bind(error.visibleProperty());
         HBox.setHgrow(phase, Priority.ALWAYS);
         var heading = new HBox(8, phase, presets); heading.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+        present.setId("present-results"); compare.setId("compare-results");
+        present.setMaxWidth(Double.MAX_VALUE); compare.setMaxWidth(Double.MAX_VALUE);
+        HBox.setHgrow(present, Priority.ALWAYS); HBox.setHgrow(compare, Priority.ALWAYS);
+        present.setOnAction(e -> openResults(false)); compare.setOnAction(e -> openResults(true));
+        comparisonSummary.getStyleClass().add("muted-small"); comparisonSummary.setId("comparison-summary");
+        reportActions = new VBox(8, new HBox(8, present, compare), comparisonSummary);
+        reportActions.setId("report-actions"); show(reportActions, false);
         var content = new VBox(10, heading, identity, instanceRow, new Separator(), column("Algoritmo", algorithm), pathConfiguration,
-                summary, acknowledge, actions, error, resultBox);
+                summary, acknowledge, actions, error, resultBox, reportActions);
         content.setMinHeight(Region.USE_PREF_SIZE);
         var scroll = new ScrollPane(content); scroll.setFitToWidth(true); scroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER); scroll.getStyleClass().add("simple-controls-scroll");
         VBox.setVgrow(scroll, Priority.ALWAYS); getChildren().addAll(scroll, details);
@@ -101,6 +111,14 @@ final class OperationalPanel extends VBox {
         destination.setOnAction(e -> { if (!updating && destination.getValue() != null) safe(() -> controller.destination(destination.getValue())); });
         for (var field : new TextField[]{nodes, millis, vertices, entries, topologySeed, extras}) field.setOnAction(e -> apply());
         execute.setDisable(true); cancel.setDisable(true);
+    }
+    private void openResults(boolean comparison) {
+        if (snapshot == null || getScene() == null) return;
+        if (resultsWindow == null) resultsWindow = new ResultsWindow(getScene().getWindow(), value -> {
+            if (snapshot == null || snapshot.phase().busy()) return;
+            algorithm.setValue(value); execute();
+        }, () -> { actionRevision++; pendingExecute = false; controller.cancel(); });
+        resultsWindow.show(snapshot, comparison);
     }
     void bind(OperationalController value) { controller = Objects.requireNonNull(value); }
     void load(DemoCatalog demo) { presets.setValue(demo); }
@@ -127,6 +145,7 @@ final class OperationalPanel extends VBox {
         if (configured.algorithm().tsp() && snapshot.n() > configured.tspOptions().policy().recommendedMaxCities(configured.algorithm().coreAlgorithm()) && !acknowledge.isSelected())
             throw new IllegalArgumentException("Esta busca pode ser longa. Confirme a execução limitada abaixo do algoritmo.");
         if (!configured.equals(snapshot.request())) { pendingExecute = true; controller.configure(configured); }
+        else if (snapshot.phase() == OperationalSnapshot.Phase.VALIDANDO_EXECUCAO) pendingExecute = true;
         else controller.execute();
     }); }
     void accept(OperationalSnapshot next) {
@@ -171,7 +190,13 @@ final class OperationalPanel extends VBox {
             java.util.OptionalLong measured = next.result() instanceof ExecutionRecord.Tsp t ? t.result().metrics().elapsedNanos()
                     : next.result() instanceof ExecutionRecord.Paths p ? p.result().metrics().elapsedNanos() : java.util.OptionalLong.empty();
             internalTime.setText("Cálculo: " + HudPresentation.elapsed(measured));
-            metrics.setText(hud.metrics() + "\n" + hud.reason() + (next.diagnostic().isEmpty() ? "" : "\n" + next.diagnostic())); history.setText(HudPresentation.history(next.history()));
+            metrics.setText(hud.metrics() + "\n" + hud.reason() + (next.diagnostic().isEmpty() ? "" : "\n" + next.diagnostic()));
+            present.setDisable(next.result() == null); compare.setDisable(next.problem() == null);
+            show(reportActions, !next.history().isEmpty());
+            var comparison = TspComparison.of(next.instanceId(), next.history());
+            comparisonSummary.setText(comparison.headline());
+            show(comparisonSummary, next.history().stream().anyMatch(ExecutionRecord.Tsp.class::isInstance));
+            if (resultsWindow != null) resultsWindow.update(next);
             show(allDistances, next.result() instanceof ExecutionRecord.Paths);
             if (next.result() instanceof ExecutionRecord.Paths paths) {
                 var text = new StringBuilder();

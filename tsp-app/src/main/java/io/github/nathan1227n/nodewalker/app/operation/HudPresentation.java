@@ -50,13 +50,11 @@ public record HudPresentation(String status, String headline, String certificati
             } else if (run instanceof ExecutionRecord.Paths r) text.append("Origem ").append(r.result().origin())
                     .append(" · ").append(r.result().graph().topology().kind()).append(" · tempo interno: ").append(elapsed(r.result().metrics().elapsedNanos())).append('\n');
         }
-        var completed = entries.stream().filter(e -> e instanceof ExecutionRecord.Tsp t && t.result().optimalityGuaranteed()
-                && t.result().status() == io.github.nathan1227n.nodewalker.core.solver.SolverStatus.CONCLUIDO).map(e -> (ExecutionRecord.Tsp) e).toList();
-        if (completed.stream().map(e -> e.request().algorithm()).distinct().count() > 1) {
-            boolean sameCost = completed.stream().map(e -> e.result().cost()).distinct().count() == 1;
-            boolean sameRoute = completed.stream().map(e -> e.result().route().orElseThrow().indices()).distinct().count() == 1;
-            text.append(sameCost && sameRoute ? "COMPARAÇÃO TSP: mesmo custo ótimo e rota canônica."
-                    : "INCONSISTÊNCIA TSP: resultados concluídos divergem em custo ou desempate.");
+        var instances = entries.stream().map(ExecutionRecord::instanceId).distinct().toList();
+        if (instances.size() == 1) {
+            var comparison = TspComparison.of(instances.getFirst(), entries);
+            if (comparison.bruteForce().isPresent() || comparison.backtracking().isPresent())
+                text.append("COMPARAÇÃO TSP: ").append(comparison.headline()).append('.');
         }
         return text.isEmpty() ? "Nenhuma execução nesta instância." : text.toString();
     }

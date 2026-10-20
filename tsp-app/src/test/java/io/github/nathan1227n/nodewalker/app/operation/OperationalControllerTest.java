@@ -61,7 +61,7 @@ class OperationalControllerTest {
             var ar = ((ExecutionRecord.Tsp)a.result()).result(); var br = ((ExecutionRecord.Tsp)b.result()).result();
             assertEquals(ar.cost(), br.cost()); assertEquals(ar.route().orElseThrow().indices(), br.route().orElseThrow().indices());
             assertEquals(CONCLUIDO, a.phase()); assertEquals(CONCLUIDO, b.phase());
-            assertTrue(HudPresentation.history(b.history()).contains("mesmo custo ótimo e rota canônica"));
+            assertTrue(HudPresentation.history(b.history()).contains("Mesmo custo ótimo e mesmo ciclo"));
         }
     }
     @Test void destinationReusesDijkstraAndGeometryOriginAndTopologyInvalidate() {

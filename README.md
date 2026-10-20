@@ -22,7 +22,7 @@ Na raiz do repositório:
 mvn clean verify
 ```
 
-A suíte contém 2287 execuções de testes, incluindo casos parametrizados: 2032 do núcleo, 125 da CLI (120 unitários e cinco de integração do JAR) e 130 do aplicativo. Os 380 casos de caminhos mínimos preservam os 1844 anteriores. Todos são executados sem abrir janela JavaFX. `verify` inclui os testes do JAR após o empacotamento; `test` executa somente os testes unitários. A spike possui outros 20 testes, em reactor separado.
+A suíte contém 2301 execuções de testes, incluindo casos parametrizados: 2032 do núcleo, 125 da CLI (120 unitários e cinco de integração do JAR) e 144 do aplicativo. Os 380 casos de caminhos mínimos preservam os 1844 anteriores. Todos são executados sem abrir janela JavaFX. `verify` inclui os testes do JAR após o empacotamento; `test` executa somente os testes unitários. A spike possui outros 20 testes, em reactor separado.
 
 Para reproduzir uma instância no núcleo, use `TspGenerator.generate(4, 657L)`. As coordenadas, a matriz de referência e a tentativa rejeitada estão documentadas em [REVISAO_TECNICA.md](docs/REVISAO_TECNICA.md#gerador-determinístico-g1--issue-3-12102026).
 

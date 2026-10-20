@@ -1,3 +1,5 @@
+[Apresentação dos resultados e comparação lado a lado — 20/10/2026](resultados/README.md).
+
 # Evidências — painel operacional / issue #12
 
 **Versão atual:** [HUD simplificado e animação gradual](simplificacao/README.md).

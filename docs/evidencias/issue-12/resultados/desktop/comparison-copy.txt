@@ -1,0 +1,28 @@
+5 refúgios  ·  seed 23  ·  instância #1
+
+Mesmo custo ótimo e mesmo ciclo
+As duas buscas concluíram e concordam no ótimo e no desempate canônico desta instância.
+
+Força Bruta · execução #2
+Estado: Concluído
+Custo: 2875
+ÓTIMO CERTIFICADO
+Ciclo: 0 → 1 → 4 → 2 → 3 → 0
+Nós visitados: 24
+Rotas completas avaliadas: 24
+Folhas descartadas: 0
+Tempo interno: 0.236 ms
+Orçamento: 1000000 nós · 2000 ms
+
+Backtracking · execução #1
+Estado: Concluído
+Custo: 2875
+ÓTIMO CERTIFICADO
+Ciclo: 0 → 1 → 4 → 2 → 3 → 0
+Nós visitados: 65
+Rotas completas avaliadas: 19
+Folhas descartadas: 5
+Tempo interno: 1.489 ms
+Orçamento: 1000000 nós · 2000 ms
+
+Tempos internos desta execução; não constituem um benchmark. Contadores têm semânticas próprias de cada algoritmo.

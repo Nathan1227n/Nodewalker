@@ -17,7 +17,7 @@ Os algoritmos e contratos matemáticos do `tsp-core` não foram alterados nesta 
    antes da busca. Fora da faixa TSP recomendada, confirme explicitamente a busca limitada.
 5. **CANCELAR** solicita o token cooperativo e aguarda o resultado do núcleo.
    **EXECUTAR NOVAMENTE** cria outro identificador de execução sobre a mesma matriz.
-6. O resultado principal fica sempre à vista após a busca; métricas e histórico ficam em **Detalhes e ajustes**. O histórico mantém até oito execuções
+6. O resultado principal fica sempre à vista após a busca; métricas ficam em **Detalhes e ajustes**; a comparação fica em **Comparar TSP**. O histórico mantém até oito execuções
    da instância atual. Geração substitui a instância e limpa seu histórico.
 
 Ações incompatíveis ficam desabilitadas durante trabalho. Campos N/seed podem ser editados
@@ -157,8 +157,8 @@ a entrada humana, benchmark de FPS ou homologação completa da issue #13.
 Após revisão de usabilidade, o fluxo principal reúne N/seed, exemplos, algoritmo e executar,
 sem a pilha de seções/caixas vazias. Origem/destino e topologia aparecem somente no Dijkstra.
 O botão **EXECUTAR NOVAMENTE** reutiliza a instância; **Cancelar busca** aparece durante
-o trabalho. Uma única área **Detalhes e ajustes** contém as abas Ajustes, Dados, Comparar,
-Mapa e Refúgio. Os IDs de instância/execução continuam disponíveis em Ajustes.
+o trabalho. Uma única área **Detalhes e ajustes** contém as abas Ajustes, Dados,
+Mapa e Refúgio; a comparação passou à janela dedicada na revisão de 20/10. Os IDs de instância/execução continuam disponíveis em Ajustes.
 
 Ao gerar uma instância, seus refúgios são revelados gradualmente em ordem de índice.
 Ao receber o resultado, o mapa desenha cada ligação da sequência retornada e um marcador
@@ -192,3 +192,48 @@ python3 tools/review_world.py --playback --software-auto --output tsp-app/target
 O roteiro verifica pausa, cilindro parcial real na SubScene, continuidade 3D/2D, velocidade,
 repetição sem nova busca e descarte da reprodução ao gerar outra instância.
 [Capturas do HUD simplificado e da animação](evidencias/issue-12/simplificacao/README.md).
+
+## Resultados para apresentação e comparação — 20/10/2026
+
+Após uma execução, **Apresentar resultado** abre uma janela redimensionável com custo ou
+distância em destaque, tempo interno, ciclo/caminho completo e conclusão em linguagem clara.
+Métricas adicionais são recolhíveis. **Copiar resumo** inclui N, seed, identificação da
+instância/execução, valores exatos e razão de interrupção quando presente. **Voltar ao mapa**
+ou Esc fecha essa apresentação; câmera, geometria, seleção e animação permanecem no mapa.
+
+**Comparar TSP** abre dois cartões lado a lado, Força Bruta e Backtracking. Cada cartão
+mostra a tentativa mais recente do algoritmo retida no histórico da instância atual,
+identificada pelo runId, com custo, certificação, tempo, métricas reais e ciclo.
+Uma tentativa cancelada/limitada nova não é substituída silenciosamente por uma conclusão
+antiga. O histórico continua limitado a oito respostas; a ausência de uma coluna significa
+que não existe resultado desse algoritmo no histórico retido.
+
+Os botões dos cartões executam/reexecutam o respectivo algoritmo pelo fluxo assíncrono
+existente, sem regenerar cidades, usando os limites TSP atuais. Durante trabalho, novas execuções
+ficam indisponíveis e **Cancelar busca** solicita o token cooperativo sem descartar a resposta. Fora da faixa recomendada, a execução deve ser confirmada no painel
+principal: a janela de comparação não contorna a proteção para TSP grande.
+
+A conclusão distingue espera por resultados, comparação parcial, concordância certificada
+e divergência de custo/desempate. Somente duas conclusões certificadas podem produzir a
+mensagem **Mesmo custo ótimo e mesmo ciclo**. Resultados de outra instância e resultados
+Dijkstra não entram nas colunas. Custos não são classificados como ótimos por coincidirem.
+Tempos são de uma única execução, não um benchmark nem uma classificação universal de
+velocidade. A seção **Como ler esta comparação** explica os contadores diferentes.
+
+Dijkstra tem apresentação própria: origem/destino, topologia, distância confirmada e caminho.
+A janela acompanha mudanças de destino sem nova busca e remove resultados obsoletos ao
+substituir/configurar a instância. Distâncias BigInteger e Long.MAX_VALUE são preservados;
+um destino não resolvido/inalcançável não recebe distância numérica inventada.
+
+Os modelos `ResultReport` e `TspComparison` são Java puro, testáveis sem JavaFX. A janela
+opcional apenas lê snapshots; os solvers e o controlador de execução permanecem intactos.
+O antigo texto de comparação deixa a área de ajustes, conservando a simplicidade do HUD.
+
+Roteiros de validação com janela real, controles por API e algoritmos de produção:
+
+```bash
+python3 tools/review_world.py --results --output tsp-app/target/review-results
+python3 tools/review_world.py --results --software-2d --output tsp-app/target/review-results-2d
+```
+
+[Capturas e resultados reais da comparação](evidencias/issue-12/resultados/README.md).
