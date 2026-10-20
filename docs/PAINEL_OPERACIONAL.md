@@ -60,11 +60,12 @@ substituídas; uma revisão adicional invalida apresentações antigas de destin
 são verificadas novamente **dentro** do callback despachado para a UI. Configuração pronta
 só é publicada junto com a apresentação correspondente.
 
-**Cancelar** não incrementa epoch, não cancela o Future do solver e não descarta a resposta.
-**Substituir/fechar** aciona tokens e invalida callbacks anteriores, inclusive os já enfileirados.
-Geração/preparação têm sinal independente dos tokens TSP/Dijkstra. Cancelamento de geração
-não fabrica um resultado de solver. O status terminal devolvido pelo núcleo é preservado,
-inclusive quando a conclusão precede um pedido tardio de cancelamento.
+**Cancelar uma busca** não incrementa epoch, não cancela o Future do solver e não descarta
+sua resposta. **Cancelar preparação** aciona o token de geração/preparação, incrementa epoch
+e revisão e invalida callbacks anteriores, inclusive os já enfileirados, publicando CANCELADO.
+**Substituir/fechar** também invalida as entregas. Geração/preparação têm sinal independente
+dos tokens TSP/Dijkstra e não fabricam um resultado de solver. O status terminal devolvido
+pelo núcleo é preservado, inclusive quando a conclusão precede um cancelamento tardio.
 
 A UI não espera `awaitTermination`. O controlador publica mudanças de fase e resultados,
 sem callbacks por estado explorado. Não há nova instrumentação por nó nos solvers.
@@ -237,3 +238,56 @@ python3 tools/review_world.py --results --software-2d --output tsp-app/target/re
 ```
 
 [Capturas e resultados reais da comparação](evidencias/issue-12/resultados/README.md).
+
+
+## Revisão da PR #36: transições e cancelamento — 20/10/2026
+
+Ao trocar algoritmo/configuração, reexecutar ou trocar o destino, o controlador publica
+imediatamente `PendingSceneModel`, sem segmentos, conexões antigas ou resultado matemático
+embutido. Esse adaptador é O(1) e referencia o mesmo `PreparedWorld`; não prepara terreno,
+valida rota nem reconstrói coordenadas. O resultado de solver anterior é removido na troca de
+configuração/reexecução; na troca apenas de destino, a busca Dijkstra permanece em cache.
+
+A publicação passa pelo mesmo `NodeWalkerApp.accept` dos outros estados. A view substitui
+a camada de rota imediatamente, remove cursor/reprodução anteriores e mantém instância,
+terreno, câmera e seleção. O mapa identifica **SEM RESPOSTA ATIVA** enquanto aguarda a
+apresentação. Tarefas JavaFX de instalação antigas conservam suas revisões e não restauram
+arestas. As preparações e validações custosas continuam nos workers. A transição neutra não
+altera a preferência de conexões secundárias como se fosse uma nova escolha de problema.
+
+A configuração só fica executável depois de sua apresentação aceita. A política de
+cancelamento distingue explicitamente o dono do trabalho:
+
+| Etapa cancelada | Política de estado e entrega |
+| --- | --- |
+| Geração | CANCELAMENTO SOLICITADO → CANCELADO; token cooperativo e invalidação de epoch/revisão. A instância ainda não admitida não é publicada. |
+| Construção de topologia | Mesma transição explícita; descarta callbacks antigos, conserva mundo/instância já admitidos e remove grafo incompleto. |
+| Preparação do mundo ou da configuração visual | Mesma transição; callbacks de prontidão já na UI não podem publicar INSTÂNCIA PRONTA depois do cancelamento. Conserva o mundo quando ele já existe; nenhuma resposta de solver é criada. |
+| Busca TSP | Solicita o token TSP e mantém epoch/entrega. O núcleo devolve seu status real, incluindo ciclo incumbente válido quando encontrado. |
+| Dijkstra | Solicita o token de caminhos mínimos e mantém epoch/entrega. Publica somente distâncias confirmadas devolvidas pelo núcleo. |
+| Solver já terminou, apresentação/entrega ainda pendente | O cancelamento tardio não reescreve CONCLUIDO ou LIMITE_ATINGIDO já calculado. A resposta válida e seus dados são preservados. |
+
+CANCELADO na preparação significa que a admissão/publicação foi encerrada; não significa
+que a UI tenha esperado a thread terminar. Workers em andamento saem cooperativamente e
+suas entregas ficam inválidas. **EXECUTAR** após preparação cancelada refaz apenas o que
+falta, antes da busca; o runId só avança quando a busca realmente é iniciada. Cancelar essa
+nova preparação também invalida a execução automática pendente. **Aplicar ajustes** pode
+preparar novamente a mesma configuração, sem obrigar o usuário a mudar o algoritmo.
+
+A apresentação de outro destino de uma busca já concluída usa apenas o cache e revisão
+visual; não inicia solver nem altera seu status terminal. O histórico TSP é identificado
+como histórico durante novas execuções. O ajuste opcional de retenção permanente por
+algoritmo não foi incluído: permanece o histórico cronológico limitado a oito respostas.
+
+A auditoria adiciona 30 casos headless, com executores manuais, callbacks retidos e barreiras
+para geração/topologia/mundo em andamento. Inclui cancelamentos tardios, dados parciais,
+reexecução, revisão de destino, retry cancelado e validação da identidade do mundo/grafo.
+O roteiro `--transitions` verifica a árvore 3D real e o Canvas 2D, além dos snapshots:
+
+```bash
+python3 tools/review_world.py --transitions --output tsp-app/target/review-transitions
+python3 tools/review_world.py --transitions --software-2d --output tsp-app/target/review-transitions-2d
+```
+
+[Política, manifestos e capturas das duas correções](evidencias/issue-12/transicoes/README.md).
+Entrada humana com mouse/teclado continua pendente; essa automação não substitui a issue #13.

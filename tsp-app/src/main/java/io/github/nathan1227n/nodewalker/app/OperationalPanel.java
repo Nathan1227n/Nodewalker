@@ -161,7 +161,7 @@ final class OperationalPanel extends VBox {
                 case EXECUTANDO_ALGORITMO -> "Calculando…";
                 case CANCELAMENTO_SOLICITADO -> "Cancelando…";
                 case CONCLUIDO -> "Cálculo concluído";
-                case CANCELADO -> "Busca cancelada";
+                case CANCELADO -> next.result() == null ? "Preparação cancelada" : "Busca cancelada";
                 case LIMITE_ATINGIDO -> "Limite de busca atingido";
                 case ERRO -> "Não foi possível concluir";
             });
@@ -194,7 +194,7 @@ final class OperationalPanel extends VBox {
             present.setDisable(next.result() == null); compare.setDisable(next.problem() == null);
             show(reportActions, !next.history().isEmpty());
             var comparison = TspComparison.of(next.instanceId(), next.history());
-            comparisonSummary.setText(comparison.headline());
+            comparisonSummary.setText("Histórico TSP: " + comparison.headline());
             show(comparisonSummary, next.history().stream().anyMatch(ExecutionRecord.Tsp.class::isInstance));
             if (resultsWindow != null) resultsWindow.update(next);
             show(allDistances, next.result() instanceof ExecutionRecord.Paths);

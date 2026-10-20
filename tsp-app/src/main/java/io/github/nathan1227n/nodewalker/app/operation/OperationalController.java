@@ -15,7 +15,7 @@ import static io.github.nathan1227n.nodewalker.app.operation.OperationalSnapshot
 /**
  * No FX dependency. Commands and publications are serialized by the owner/dispatcher.
  * Workers never touch UI. Every queued completion rechecks its epoch; view jobs also check revision.
- * User cancellation does NOT change the epoch or cancel the solver Future.
+ * Solver cancellation keeps the epoch/Future; preparation cancellation invalidates even queued deliveries.
  */
 public final class OperationalController implements AutoCloseable {
     private final ExecutorService compute, presentation;
@@ -23,7 +23,9 @@ public final class OperationalController implements AutoCloseable {
     private final OperationalServices services;
     private final Consumer<OperationalSnapshot> listener;
     private long epoch, instanceId, runId, revision;
-    private boolean closed;
+    private boolean closed, configurationReady, executeWhenReady;
+    private enum Work { IDLE, PREPARATION, SOLVER }
+    private Work work = Work.IDLE;
     private GenerationCancellationToken generation = new GenerationCancellationToken();
     private SolverCancellationToken tspToken = new SolverCancellationToken();
     private ShortestPathCancellationToken pathToken = new ShortestPathCancellationToken();
@@ -61,7 +63,7 @@ public final class OperationalController implements AutoCloseable {
     private void publish() { listener.accept(snapshot()); }
     private void open() { if (closed) throw new IllegalStateException("Controller closed"); }
     private void invalidate() {
-        epoch++; revision++; presentationPhase = null;
+        epoch++; revision++; presentationPhase = null; executeWhenReady = false; work = Work.IDLE;
         generation.cancel(); tspToken.cancel(); pathToken.cancel();
         generation = new GenerationCancellationToken();
         tspToken = new SolverCancellationToken(); pathToken = new ShortestPathCancellationToken();
@@ -81,6 +83,7 @@ public final class OperationalController implements AutoCloseable {
     private void failed(long expected, String source, RuntimeException failure) {
         post(expected, () -> {
             phase = failure instanceof GenerationCancelledException || failure instanceof CancellationException ? CANCELADO : ERRO;
+            work = Work.IDLE; presentationPhase = null;
             stage = source; diagnostic = source + ": " + failure.getClass().getSimpleName() + ": " + failure.getMessage(); publish();
         });
     }
@@ -93,6 +96,7 @@ public final class OperationalController implements AutoCloseable {
                 request.topologySeed(), Math.min(request.extraConnections(), count - 2), request.tspOptions(), request.pathOptions());
         instanceId++; n = count; seed = instanceSeed; destination = Math.min(destination, count - 1);
         problem = null; world = null; scene = null; graph = null; result = null; history.clear();
+        configurationReady = false; work = Work.PREPARATION;
         phase = GERANDO_INSTANCIA; stage = "GERAÇÃO"; diagnostic = ""; preflight = estimate; publish();
         long current = epoch;
         var token = generation;
@@ -102,12 +106,15 @@ public final class OperationalController implements AutoCloseable {
                 checkpoint(token);
                 var generated = services.generate(count, instanceSeed,
                         new GenerationOptions(DemoCatalog.GENERATION_CANDIDATES, DemoCatalog.GENERATION_BYTES, token));
+                checkpoint(token);
                 post(current, () -> {
                     stage = "PREPARAÇÃO VISUAL"; publish();
                     submit(presentation, () -> {
                         if (!current(current)) return;
                         try {
-                            var prepared = PreparedWorld.prepare(generated, () -> checkpoint(token));
+                            var prepared = services.prepareWorld(generated, () -> checkpoint(token));
+                            checkpoint(token);
+                            if (prepared.problem() != generated) throw new IllegalStateException("World prepared for a different instance");
                             post(current, () -> {
                                 problem = generated; world = prepared;
                                 phase = INSTANCIA_PRONTA; stage = "";
@@ -126,12 +133,19 @@ public final class OperationalController implements AutoCloseable {
     public synchronized void configure(ExecutionRequest next) {
         open(); Objects.requireNonNull(next);
         if (problem != null) next.validateFor(problem.size());
-        if (request.equals(next)) return;
-        invalidate(); request = next; graph = null; result = null; diagnostic = "";
+        if (request.equals(next)) {
+            if (world != null && !configurationReady && !phase.busy()) prepareConfiguration();
+            return;
+        }
+        invalidate(); request = next; graph = null; result = null; diagnostic = ""; configurationReady = false;
         if (world != null) { phase = INSTANCIA_PRONTA; prepareConfiguration(); }
         else { phase = SEM_INSTANCIA; publish(); }
     }
+    private void invalidateScene() {
+        scene = world == null ? null : new PendingSceneModel(world);
+    }
     private void prepareConfiguration() {
+        work = Work.PREPARATION; diagnostic = ""; invalidateScene();
         if (request.algorithm().tsp()) {
             preflight = OperationalPreflight.tsp(n, request); phase = VALIDANDO_EXECUCAO; stage = "APRESENTAÇÃO";
             presentationPhase = INSTANCIA_PRONTA; publish(); prepareScene();
@@ -142,10 +156,9 @@ public final class OperationalController implements AutoCloseable {
                 if (!current(current)) return;
                 try {
                     configured.validateFor(input.size()); checkpoint(token);
-                    var topology = configured.topology() == RefugeTopology.Kind.COMPLETE ? RefugeTopology.complete(input.size())
-                            : RefugeTopologyGenerator.connectedSparse(input.size(), configured.topologySeed(), configured.extraConnections(),
-                            RefugeTopology.DEFAULT_MAX_ESTIMATED_BYTES, token);
-                    var prepared = new RefugeGraph(input, topology);
+                    var prepared = services.prepareGraph(input, configured, token);
+                    checkpoint(token);
+                    if (prepared.problem() != input) throw new IllegalStateException("Topology prepared for a different instance");
                     String report = OperationalPreflight.paths(prepared, configured);
                     post(current, () -> { graph = prepared; preflight = report; presentationPhase = INSTANCIA_PRONTA; stage = "APRESENTAÇÃO"; prepareScene(); });
                 } catch (RuntimeException failure) { failed(current, "TOPOLOGIA / PREFLIGHT", failure); }
@@ -157,7 +170,9 @@ public final class OperationalController implements AutoCloseable {
         Objects.checkIndex(next, problem.size());
         if (destination == next) return;
         destination = next;
-        if (!request.algorithm().tsp() && graph != null) prepareScene(); else publish();
+        if (!request.algorithm().tsp() && graph != null) {
+            invalidateScene(); publish(); prepareScene();
+        } else publish();
     }
     private void prepareScene() {
         long current = epoch, view = ++revision;
@@ -174,19 +189,28 @@ public final class OperationalController implements AutoCloseable {
                         active instanceof ExecutionRecord.Paths r ? Optional.of(r.result()) : Optional.empty());
                 post(current, () -> { if (view == revision) {
                     scene = next;
-                    if (presentationPhase != null) { phase = presentationPhase; presentationPhase = null; stage = phase == INSTANCIA_PRONTA ? "" : "SOLVER"; }
+                    if (presentationPhase != null) {
+                        phase = presentationPhase; presentationPhase = null;
+                        if (phase == INSTANCIA_PRONTA) configurationReady = true;
+                        work = Work.IDLE; stage = phase == INSTANCIA_PRONTA ? "" : "SOLVER";
+                    }
                     publish();
+                    if (executeWhenReady && phase == INSTANCIA_PRONTA) { executeWhenReady = false; execute(); }
                 } });
-            } catch (RuntimeException failure) { post(current, () -> { if (view == revision) { phase = ERRO; stage = "APRESENTAÇÃO"; diagnostic = failure.toString(); publish(); } }); }
+            } catch (RuntimeException failure) { post(current, () -> { if (view == revision) { phase = ERRO; work = Work.IDLE; presentationPhase = null; stage = "APRESENTAÇÃO"; diagnostic = failure.toString(); publish(); } }); }
         });
     }
     public synchronized void execute() {
         open();
         if (world == null || phase.busy()) throw new IllegalStateException("Instância/configuração ainda não está pronta");
         request.validateFor(n);
+        if (!configurationReady) {
+            executeWhenReady = true; prepareConfiguration(); return;
+        }
         if (!request.algorithm().tsp() && graph == null) throw new IllegalStateException("Topologia ainda não está pronta");
         // Every run gets a new identity, including reruns on the same matrix.
-        invalidate(); runId++; result = null; diagnostic = "";
+        invalidate(); runId++; result = null; diagnostic = ""; work = Work.SOLVER;
+        invalidateScene();
         phase = VALIDANDO_EXECUCAO; stage = "PREFLIGHT"; publish();
         long current = epoch, instance = instanceId, run = runId;
         var input = problem; var preparedWorld = world; var available = graph; var configured = request; var tsp = tspToken; var paths = pathToken;
@@ -215,8 +239,19 @@ public final class OperationalController implements AutoCloseable {
     }
     public synchronized void cancel() {
         open(); if (!phase.busy()) return;
-        generation.cancel(); tspToken.cancel(); pathToken.cancel();
-        phase = CANCELAMENTO_SOLICITADO; publish();
+        if (work == Work.PREPARATION) {
+            String cancelledStage = stage;
+            phase = CANCELAMENTO_SOLICITADO; publish();
+            // Preparation has no solver response to preserve. Invalidate even callbacks already queued for UI.
+            invalidate(); configurationReady = false; graph = null;
+            phase = CANCELADO; stage = cancelledStage;
+            diagnostic = cancelledStage + ": preparação cancelada; nenhuma busca iniciada.";
+            publish();
+        } else if (work == Work.SOLVER) {
+            // Keep epoch/revision: the solver owns the terminal status, including a completed late response.
+            tspToken.cancel(); pathToken.cancel();
+            phase = CANCELAMENTO_SOLICITADO; publish();
+        }
     }
     @Override public synchronized void close() {
         if (closed) return;

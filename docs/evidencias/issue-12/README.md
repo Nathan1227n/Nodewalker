@@ -1,3 +1,5 @@
+[Correções da revisão da PR #36: transições e cancelamento — 20/10/2026](transicoes/README.md).
+
 [Apresentação dos resultados e comparação lado a lado — 20/10/2026](resultados/README.md).
 
 # Evidências — painel operacional / issue #12

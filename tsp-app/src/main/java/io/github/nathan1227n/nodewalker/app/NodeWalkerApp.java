@@ -23,10 +23,15 @@ public final class NodeWalkerApp extends Application {
     private final Label coordinates = new Label("Selecione um refúgio"), mode = new Label(), mapTitle = new Label("ÚLTIMOS REFÚGIOS"), mapSubtitle = new Label("Configure N e seed; clique GERAR.");
     private CheckBox decoration, simplified, connections;
     private Button button3d;
-    private boolean updatingSelection;
+    private boolean updatingSelection, pathModeActive;
 
     @Override public void start(Stage stage) { start(stage, getParameters().getRaw(), getParameters().getNamed()); }
     void start(Stage stage, java.util.List<String> raw, java.util.Map<String, String> named) {
+        start(stage, raw, named, listener -> OperationalController.create(Platform::runLater, listener));
+    }
+    // Test seam for deterministic worker/UI barriers; production uses the bounded default controller above.
+    void start(Stage stage, java.util.List<String> raw, java.util.Map<String, String> named,
+               java.util.function.Function<java.util.function.Consumer<OperationalSnapshot>, OperationalController> factory) {
         boolean supports3d = Platform.isSupported(ConditionalFeature.SCENE3D);
         world = new TspWorldView(supports3d, raw.contains("--2d")); world.setId("tsp-world");
         world.setOnSelection(this::selected);
@@ -76,7 +81,7 @@ public final class NodeWalkerApp extends Application {
         mode.setWrapText(true); mode.getStyleClass().add("muted-small");
         var exploration = new VBox(9, new HBox(8, reset, top), decoration, simplified, connections, reduced, mode);
         panel = new OperationalPanel(inspection, exploration);
-        controller = OperationalController.create(Platform::runLater, this::accept); panel.bind(controller); panel.accept(controller.snapshot());
+        controller = factory.apply(this::accept); panel.bind(controller); panel.accept(controller.snapshot());
         var split = new SplitPane(mapCard, panel); split.setDividerPositions(.75); SplitPane.setResizableWithParent(panel, false);
         var root = new BorderPane(split, header, null, label("ARRASTE / ORBITAR · RODA / ZOOM · CLIQUE / INSPECIONAR · M / 3D–2D", "footer"), null); root.setPadding(new Insets(18));
         scene = new Scene(root, 1380, 870); scene.getStylesheets().add(getClass().getResource("/styles/app.css").toExternalForm());
@@ -104,11 +109,17 @@ public final class NodeWalkerApp extends Application {
             return;
         }
         if (next.scene() != null && next.scene() != model) show(next.scene());
+        if (next.scene() instanceof PendingSceneModel)
+            mapSubtitle.setText((next.phase() == OperationalSnapshot.Phase.CANCELADO ? "PREPARAÇÃO CANCELADA" :
+                    next.phase() == OperationalSnapshot.Phase.ERRO ? "PREPARAÇÃO INTERROMPIDA" : "APRESENTAÇÃO PENDENTE")
+                    + " · SEM RESPOSTA ATIVA");
     }
     private void show(WorldSceneModel prepared) {
         boolean newInstance = model == null || model.problem() != prepared.problem();
         boolean pathMode = prepared instanceof ShortestPathSceneModel;
-        if (pathMode != (model instanceof ShortestPathSceneModel)) { connections.setSelected(pathMode); world.setConnections(pathMode); }
+        if (!(prepared instanceof PendingSceneModel) && pathMode != pathModeActive) {
+            pathModeActive = pathMode; connections.setSelected(pathMode); world.setConnections(pathMode);
+        }
         model = prepared;
         if (newInstance) {
             updatingSelection = true;
@@ -116,7 +127,7 @@ public final class NodeWalkerApp extends Application {
             updatingSelection = false;
         }
         mapTitle.setText("SETOR " + String.format("%02d", prepared.problem().size()) + " / ÚLTIMOS REFÚGIOS");
-        mapSubtitle.setText(prepared instanceof ShortestPathSceneModel paths ? "CAMINHOS MÍNIMOS · " + paths.connectionLabel() : "TSP · CICLO HAMILTONIANO · ORIGEM 0");
+        mapSubtitle.setText(prepared instanceof PendingSceneModel ? "APRESENTAÇÃO PENDENTE · SEM RESPOSTA ATIVA" : prepared instanceof ShortestPathSceneModel paths ? "CAMINHOS MÍNIMOS · " + paths.connectionLabel() : "TSP · CICLO HAMILTONIANO · ORIGEM 0");
         world.setModel(prepared);
     }
     // Explicit presentation fixture adapter retained for the opt-in graphical regression runner.

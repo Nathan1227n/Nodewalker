@@ -82,6 +82,7 @@ final class World3DRenderer extends Region implements WorldRenderer {
         for (var mesh : geometry.vegetation().meshes()) installation.add(() -> decoration.getChildren().add(mesh(mesh)));
         decoration.setMouseTransparent(true);
         buildRoute();
+        routeGeometry.setId("active-route-layer"); cursor.setId("path-playback-cursor");
         routeGeometry.setMouseTransparent(true);
         secondaryEdges.setMouseTransparent(true);
         selectionRing.setMouseTransparent(true);

@@ -33,6 +33,7 @@ final class Map2DRenderer extends Region implements WorldRenderer {
     Map2DRenderer(WorldViewState state, IntConsumer selection) {
         this.state = state;
         this.selection = selection;
+        backdrop.setId("map-terrain-backdrop"); overlay.setId("map-path-overlay");
         getChildren().addAll(backdrop, overlay);
         // A thick dashed outline must not close its own gaps with projecting square caps.
         overlay.getGraphicsContext2D().setLineCap(StrokeLineCap.BUTT);
