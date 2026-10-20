@@ -36,3 +36,52 @@
 .loading-message { -fx-text-fill: #b6cac6; -fx-font-size: 13px; }
 .scroll-bar { -fx-background-color: #11212a; -fx-pref-width: 8; }
 .scroll-bar .thumb { -fx-background-color: #3b555d; -fx-background-radius: 3; }
+
+/* Operational controls retain the existing amber/cyan world palette. */
+.split-pane { -fx-background-color: transparent; -fx-padding: 0; }
+.split-pane-divider { -fx-background-color: #17282f; -fx-padding: 0 3 0 3; }
+.titled-pane > .title { -fx-background-color: #14242d; -fx-padding: 10; }
+.titled-pane > .title > .text { -fx-fill: #9fccc8; }
+.titled-pane > .content { -fx-background-color: #0c1921; -fx-border-color: #23373e; -fx-padding: 10; }
+.text-field, .text-area { -fx-text-fill: #d5e5df; -fx-control-inner-background: #0b151d; -fx-background-color: #0b151d; -fx-border-color: #31484f; }
+.text-area .content { -fx-background-color: #0b151d; }
+.text-field:focused, .text-area:focused, .combo-box:focused, .button:focused { -fx-border-color: #77e2df; }
+.text-area { -fx-font-family: "Monospaced"; -fx-font-size: 11px; }
+
+/* Simple operating surface: advanced data is opt-in; playback stays on the map. */
+.simple-controls-scroll, .simple-controls-scroll > .viewport, .route-scroll, .route-scroll > .viewport {
+    -fx-background-color: transparent; -fx-background-insets: 0; -fx-padding: 0; -fx-border-width: 0;
+}
+.primary-action { -fx-background-color: #285158; -fx-border-color: #68b8b3; -fx-font-weight: bold; }
+.primary-action:hover { -fx-background-color: #376b70; }
+.quiet-button { -fx-font-size: 10px; -fx-padding: 5 9; }
+.playback-bar { -fx-background-color: rgba(8, 22, 29, .95); -fx-border-color: #3f646b; -fx-border-radius: 5; -fx-background-radius: 5; -fx-padding: 9 12; }
+.playback-caption { -fx-text-fill: #c5ece5; -fx-font-size: 11px; }
+.playback-bar .button { -fx-font-size: 11px; -fx-padding: 6 9; }
+.tab-pane > .tab-header-area > .tab-header-background { -fx-background-color: #101e27; }
+.tab { -fx-background-color: #172b34; -fx-padding: 6 8; }
+.tab:selected { -fx-background-color: #2b4650; }
+.tab .tab-label { -fx-text-fill: #b9d6d3; -fx-font-size: 10px; }
+.tab-content-area { -fx-padding: 8 0 0 0; }
+
+/* Presentation is opt-in, leaving the map and compact operating HUD in place. */
+.report-root { -fx-background-color: #0e1c25; -fx-font-size: 14px; }
+.report-title { -fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #edf0df; }
+.report-section-title { -fx-font-size: 21px; -fx-font-weight: bold; -fx-text-fill: #e3ece1; }
+.report-context { -fx-font-size: 13px; -fx-text-fill: #a3bfc4; }
+.report-note { -fx-font-size: 12px; -fx-text-fill: #93abb0; -fx-line-spacing: 3; }
+.report-badge { -fx-font-size: 12px; -fx-text-fill: #d0e6d6; -fx-background-color: #263f44; -fx-padding: 6 10; -fx-background-radius: 4; }
+.report-conclusion { -fx-font-size: 17px; -fx-text-fill: #a8e0cc; -fx-font-weight: bold; -fx-line-spacing: 4; }
+.report-stat { -fx-background-color: #142a34; -fx-background-radius: 6; -fx-padding: 16; }
+.report-value { -fx-font-family: "Monospaced"; -fx-font-size: 30px; -fx-font-weight: bold; -fx-text-fill: #f2dbad; }
+.comparison-card { -fx-background-color: #142832; -fx-border-color: #34545c; -fx-border-radius: 7; -fx-background-radius: 7; -fx-padding: 18; }
+.report-route-card { -fx-padding: 8 0; }
+.report-route-card .text-area { -fx-font-size: 15px; }
+.report-metric { -fx-font-family: "Monospaced"; -fx-font-size: 16px; -fx-text-fill: #e5e9dc; }
+.report-metric-row { -fx-border-color: #2b424b; -fx-border-width: 0 0 1 0; -fx-padding: 0 0 8 0; }
+.report-scroll, .report-scroll > .viewport { -fx-background-color: transparent; -fx-border-width: 0; -fx-padding: 0; }
+.comparison-card .report-stat { -fx-padding: 10; }
+.comparison-card .report-metric-row { -fx-padding: 3 0 5 0; }
+.comparison-card .report-badge { -fx-font-size: 11px; }
+.comparison-card .report-section-title { -fx-font-size: 20px; }
+.report-root { -fx-text-base-color: #c8d7d8; -fx-text-inner-color: #d5e5df; -fx-text-background-color: #c8d7d8; }

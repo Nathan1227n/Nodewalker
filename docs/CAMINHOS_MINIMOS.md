@@ -161,3 +161,10 @@ Exemplo reproduzível observado: N=32, seed da instância/topologia=657, extras=
 PR B (#12): selecionar TSP/força bruta, TSP/backtracking ou caminhos mínimos/Dijkstra; origem/destino/topologia explícitos; geração e busca em worker, fases/tokens separados, proteção contra resultados obsoletos e HUD consolidado. Adaptador próprio mostrará conexões disponíveis e somente o caminho selecionado em destaque no 3D/2D. O texto será “caminho mínimo”, sem certificação TSP. Comparações devem respeitar problema/grafo/origem.
 
 PR C (#13): clone limpo, demonstração dos dois problemas, fluxos completos, CI Ubuntu/Windows e evidências gráficas. O painel e a demonstração visual de Dijkstra continuam pendentes nesta PR A.
+
+
+## Integração no painel — 19/10/2026
+
+A entrega da issue #12 utiliza estes contratos sem alterá-los. Origem/destino, topologias completa/esparsa,
+execução assíncrona, cancelamento e destaque do caminho estão descritos em [PAINEL_OPERACIONAL.md](PAINEL_OPERACIONAL.md).
+O painel não oferece editor manual e não trata caminhos mínimos como solução TSP.

@@ -1,0 +1,10 @@
+capture	method	instance	run	N	seed	algorithm	status	origin	destination	topology	cost	path
+01-n3-bruteforce-real	real-algorithm-api-controls	1	1	3	23	TSP / Força Bruta	CONCLUIDO	0	1	não se aplica	1828	0 → 1 → 2 → 0
+02-n3-backtracking-real	real-algorithm-api-controls	1	2	3	23	TSP / Backtracking	CONCLUIDO	0	1	não se aplica	1828	0 → 1 → 2 → 0
+03-n5-backtracking-real	real-algorithm-api-controls	2	3	5	23	TSP / Backtracking	CONCLUIDO	0	1	não se aplica	2875	0 → 1 → 4 → 2 → 3 → 0
+04-n8-dijkstra-sparse-intermediate-real	real-algorithm-api-controls	3	4	8	657	Caminhos mínimos / Dijkstra clássico	CONCLUIDO	0	1	SPARSE_CONNECTED	1387	0 → 6 → 4 → 1
+05-n8-dijkstra-sparse-2d-real	real-algorithm-api-controls	3	4	8	657	Caminhos mínimos / Dijkstra clássico	CONCLUIDO	0	1	SPARSE_CONNECTED	1387	0 → 6 → 4 → 1
+06-n8-dijkstra-complete-real	real-algorithm-api-controls	3	5	8	657	Caminhos mínimos / Dijkstra clássico	CONCLUIDO	0	1	COMPLETE	992	0 → 1
+07-n8-dijkstra-origin2-real	real-algorithm-api-controls	3	6	8	657	Caminhos mínimos / Dijkstra clássico	CONCLUIDO	2	1	COMPLETE	125	2 → 1
+08-n12-cancelled-incumbent-real	real-algorithm-api-controls	4	7	12	23	TSP / Força Bruta	CANCELADO	0	1	não se aplica	5788	0 → 1 → 2 → 8 → 9 → 3 → 7 → 4 → 6 → 11 → 10 → 5 → 0
+09-n12-small-window-simplified-real	real-algorithm-api-controls	4	7	12	23	TSP / Força Bruta	CANCELADO	0	1	não se aplica	5788	0 → 1 → 2 → 8 → 9 → 3 → 7 → 4 → 6 → 11 → 10 → 5 → 0

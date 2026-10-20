@@ -12,7 +12,7 @@ import io.github.nathan1227n.nodewalker.app.world.TspSceneModel;
 import java.util.Arrays;
 import java.util.Optional;
 
-/** Fixed reproducible examples, not the operational configuration UI planned for #12. */
+/** Legacy reproducible examples. The operational panel reuses metadata and separates generation from search. */
 public enum DemoCatalog {
     TRIANGLE(3, 23, 10_000),
     OUTPOSTS(5, 23, 50_000),

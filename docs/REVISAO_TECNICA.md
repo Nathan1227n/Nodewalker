@@ -298,3 +298,11 @@ O limite N<=12 é verificado antes da alocação exponencial. A fronteira N=12 e
 Casos dirigidos separam ótimo matemático, representabilidade em long e execução concreta: dois ERRO não provam ótimo, um ótimo representável pode coexistir com overflow observado, e o backtracking pode concluir ao podar antes de uma soma que falha na força bruta. Incumbentes interrompidos são validados independentemente, inclusive um custo 20 quando o ótimo é 4. Descartes são confrontados com folhas disjuntas de prefixos conhecidos e, em N=25, fórmula parcial telescópica dependente do orçamento, sem Held–Karp ou força bruta. Ambas as execuções N=25 dos testes de solver usam agora backtracking controlado.
 
 Detalhes, prova do desempate, rastreabilidade TSP-01..13, custo computacional e reprodução estão em [AUDITORIA_OTIMO.md](AUDITORIA_OTIMO.md). `mvn -pl tsp-core test`: **1652 testes**; `mvn clean verify`: **1781 testes**, sem falhas, erros ou ignorados. São 32 casos novos, mantendo os 1749 anteriores. Não houve divergência de custo/rota em resultados concluídos. Os tempos locais são da ordem de poucos segundos; os testes não usam desempenho real como condição de aprovação. Entrega em PR exclusiva `Refs #10`, para revisão sem merge nem encerramento automático.
+
+
+## Integração operacional — issue #12 — 19/10/2026
+
+O fluxo operacional substitui a execução automática do catálogo por geração e busca explícitas.
+Força bruta/backtracking permanecem TSP; Dijkstra clássico mantém contratos próprios de caminhos mínimos.
+As seções anteriores ficam preservadas como histórico. Arquitetura, uso, limites e validação desta entrega:
+[PAINEL_OPERACIONAL.md](PAINEL_OPERACIONAL.md). A homologação completa da #13 continua separada.

@@ -179,3 +179,11 @@ A [issue #15](https://github.com/Nathan1227n/Nodewalker/issues/15) fica reservad
 4. Fechar #13 e entregar até 19/10/2026; se necessário, reduzir detalhes do terreno/ruínas/efeitos, **nunca** correção do TSP, legibilidade, cancelamento ou fallback.
 
 **Controle de mudanças:** a presente direção artística é evolução de apresentação, não alteração das especificações normativas DOC 01–03. Custos por caminhos topográficos ou jogabilidade exigiriam especificação futura própria.
+
+
+## Integração operacional — issue #12 — 19/10/2026
+
+O fluxo operacional substitui a execução automática do catálogo por geração e busca explícitas.
+Força bruta/backtracking permanecem TSP; Dijkstra clássico mantém contratos próprios de caminhos mínimos.
+As seções anteriores ficam preservadas como histórico. Arquitetura, uso, limites e validação desta entrega:
+[PAINEL_OPERACIONAL.md](PAINEL_OPERACIONAL.md). A homologação completa da #13 continua separada.

@@ -33,6 +33,7 @@ final class Map2DRenderer extends Region implements WorldRenderer {
     Map2DRenderer(WorldViewState state, IntConsumer selection) {
         this.state = state;
         this.selection = selection;
+        backdrop.setId("map-terrain-backdrop"); overlay.setId("map-path-overlay");
         getChildren().addAll(backdrop, overlay);
         // A thick dashed outline must not close its own gaps with projecting square caps.
         overlay.getGraphicsContext2D().setLineCap(StrokeLineCap.BUTT);
@@ -46,7 +47,7 @@ final class Map2DRenderer extends Region implements WorldRenderer {
             List<Integer> hits = new ArrayList<>();
             for (int i = 0; i < projected.size(); i++) {
                 Vec3 p = projected.get(i);
-                if (Math.hypot(event.getX() - p.x(), event.getY() - p.y()) < 23) hits.add(i);
+                if (state.cityFraction(i) > 0 && Math.hypot(event.getX() - p.x(), event.getY() - p.y()) < 23) hits.add(i);
             }
             if (!hits.isEmpty()) {
                 int current = hits.indexOf(state.selected());
@@ -129,16 +130,16 @@ final class Map2DRenderer extends Region implements WorldRenderer {
             g.setLineDashes(3, 7);
             for (var edge : state.model().secondaryConnections(state.selected())) line(g, edge);
         }
-        boolean certified = state.model().certified();
+        boolean certified = state.model().solidPath();
         Color route = Color.web(certified ? "#8ff6ed" : "#ffbe64");
         if (certified) g.setLineDashes();
         else g.setLineDashes(9, 6);
         g.setLineWidth(10);
         g.setStroke(Color.web(certified ? "#123f47" : "#493a24", .9));
-        for (var edge : state.model().segments()) line(g, edge);
+        for (int i = 0; i < state.model().segments().size(); i++) line(g, state.model().segments().get(i), state.edgeFraction(i));
         g.setLineWidth(2.5);
         g.setStroke(route);
-        for (var edge : state.model().segments()) line(g, edge);
+        for (int i = 0; i < state.model().segments().size(); i++) line(g, state.model().segments().get(i), state.edgeFraction(i));
         g.setLineDashes();
         g.setFont(Font.font("Monospaced", 12));
         g.setTextBaseline(VPos.CENTER);
@@ -146,6 +147,8 @@ final class Map2DRenderer extends Region implements WorldRenderer {
         var requests = new ArrayList<LabelLayout.Request>();
         for (int i = 0; i < projected.size(); i++) {
             Vec3 p = projected.get(i);
+            double fraction = state.cityFraction(i);
+            if (fraction == 0) continue;
             Color color = Color.web(i == 0 ? "#ffbe64" : "#58dae5");
             if (i == state.selected()) {
                 g.setStroke(Color.web("#edf6e8"));
@@ -158,13 +161,13 @@ final class Map2DRenderer extends Region implements WorldRenderer {
             g.setLineWidth(i == 0 ? 3 : 1.5);
             g.strokeOval(p.x() - 10, p.y() - 10, 20, 20);
             g.setFill(color);
-            g.fillOval(p.x() - 4, p.y() - 4, 8, 8);
-            if (i % stride == 0 || i == state.selected()) {
-                requests.add(new LabelLayout.Request(i, p, i == 0 ? 82 : i == state.selected() ? 134 : 34, 24, true));
+            g.fillOval(p.x() - 4 * fraction, p.y() - 4 * fraction, 8 * fraction, 8 * fraction);
+            if (i % stride == 0 || i == state.selected() || state.model().priorityVertex(i)) {
+                requests.add(new LabelLayout.Request(i, p, state.model().priorityVertex(i) ? 150 : i == state.selected() ? 134 : 34, 24, true));
             }
         }
         placements = LabelLayout.arrange(requests, state.selected(),
-                new LabelLayout.Rect(8, 68, Math.max(0, getWidth() - 16), Math.max(0, getHeight() - 132)), state.reducedLabels());
+                new LabelLayout.Rect(8, 68, Math.max(0, getWidth() - 16), Math.max(0, getHeight() - 132)), state.reducedLabels(), state.model().labelPriorities());
         for (var placement : placements) {
             int index = placement.index();
             var area = placement.bounds();
@@ -175,9 +178,15 @@ final class Map2DRenderer extends Region implements WorldRenderer {
             g.setFill(Color.web("#0b161b", .96));
             g.fillRoundRect(area.x(), area.y(), area.width(), area.height(), 3, 3);
             g.setFill(Color.web(index == 0 ? "#ffbe64" : "#94d5d3"));
-            String text = index == 0 ? "BASE 0" : index == state.selected() ? String.format("%02d · Y=%d", index, state.model().refuges().get(index).logical().y()) : String.format("%02d", index);
+            String tag = state.model().vertexTag(index).trim();
+            String text = !tag.isEmpty() ? (tag + (index == 0 ? "" : " " + index)) : index == state.selected() ? String.format("%02d · Y=%d", index, state.model().refuges().get(index).logical().y()) : String.format("%02d", index);
             g.fillText(text, area.x() + 6, area.y() + 12);
         }
+        state.playbackCursor().ifPresent(at -> {
+            Vec3 p = project(at);
+            g.setFill(Color.web("#e5fff6")); g.fillOval(p.x() - 5, p.y() - 5, 10, 10);
+            g.setStroke(Color.web("#8ff6ed", .7)); g.setLineWidth(1.5); g.strokeOval(p.x() - 10, p.y() - 10, 20, 20);
+        });
         long duplicates = projected.stream().distinct().count();
         if (duplicates != projected.size()) {
             g.setFill(Color.web("#ffce88"));
@@ -185,8 +194,15 @@ final class Map2DRenderer extends Region implements WorldRenderer {
         }
     }
 
-    private void line(GraphicsContext g, TspSceneModel.RouteSegment edge) {
-        Vec3 a = projected.get(edge.from()), b = projected.get(edge.to());
+    private void line(GraphicsContext g, WorldSceneModel.Edge edge) {
+        if (state.cityFraction(edge.from()) == 0 || state.cityFraction(edge.to()) == 0) return;
+        line(g, edge, 1);
+    }
+
+    private void line(GraphicsContext g, WorldSceneModel.Edge edge, double fraction) {
+        if (fraction <= 0) return;
+        Vec3 a = projected.get(edge.from()), end = projected.get(edge.to());
+        Vec3 b = new SegmentGeometry(a, end).pointAt(fraction);
         if (a.equals(b)) g.strokeOval(a.x() - 7, a.y() - 7, 14, 14);
         else g.strokeLine(a.x(), a.y(), b.x(), b.y());
     }

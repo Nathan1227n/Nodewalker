@@ -4,7 +4,8 @@ package io.github.nathan1227n.nodewalker.app.world;
  * Renderer-independent navigation/selection/settings. Owned by the presentation thread.
  */
 public final class WorldViewState {
-    private TspSceneModel model;
+    private WorldSceneModel model;
+    private final WorldPlayback playback = new WorldPlayback();
     private OrbitCamera camera;
     private int selected;
     private boolean simplified;
@@ -12,22 +13,38 @@ public final class WorldViewState {
     private boolean connections;
     private boolean reducedLabels;
 
-    public void setModel(TspSceneModel next) {
+    public void setModel(WorldSceneModel next) {
         if (model == null || model.problem() != next.problem()) {
+            playback.newWorld(next.problem().size());
             camera = new OrbitCamera(next.positions(), next.terrain(false).extent());
             selected = 0;
         }
         model = next;
+        playback.path(next.segments().size());
     }
 
-    public TspSceneModel model() {
+    public WorldSceneModel model() {
         return model;
     }
 
     public void clear() {
         model = null;
+        playback.clear();
         camera = null;
         selected = 0;
+    }
+
+    public WorldPlayback playback() { return playback; }
+
+    /** Pure interpolation used by both renderers; original edge endpoints remain authoritative. */
+    public double edgeFraction(int index) { return playback.edgeFraction(index); }
+    public double cityFraction(int index) { return playback.cityFraction(index); }
+    public java.util.Optional<Vec3> playbackCursor() {
+        if (playback.stage() != WorldPlayback.Stage.PATH) return java.util.Optional.empty();
+        int edge = playback.completedEdges();
+        if (edge >= model.segments().size()) return java.util.Optional.empty();
+        var segment = model.segments().get(edge).geometry();
+        return java.util.Optional.of(segment.pointAt(playback.edgeFraction(edge)));
     }
 
     public OrbitCamera camera() {

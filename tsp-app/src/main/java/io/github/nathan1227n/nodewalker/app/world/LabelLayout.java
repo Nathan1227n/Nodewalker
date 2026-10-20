@@ -33,9 +33,13 @@ public final class LabelLayout {
     }
 
     public static List<Placement> arrange(List<Request> requests, int selected, Rect viewport, boolean reduced) {
+        return arrange(requests, selected, viewport, reduced, java.util.Set.of(0));
+    }
+
+    public static List<Placement> arrange(List<Request> requests, int selected, Rect viewport, boolean reduced, java.util.Set<Integer> priority) {
         var ordered = requests.stream().filter(Request::visible)
-                .filter(r -> !reduced || r.index == selected || r.index == 0)
-                .sorted(Comparator.comparingInt((Request r) -> r.index == selected ? 0 : r.index == 0 ? 1 : 2)
+                .filter(r -> !reduced || r.index == selected || priority.contains(r.index))
+                .sorted(Comparator.comparingInt((Request r) -> r.index == selected ? 0 : priority.contains(r.index) ? 1 : 2)
                         .thenComparingInt(Request::index)).toList();
         var placed = new ArrayList<Placement>();
         for (Request r : ordered) {
@@ -51,7 +55,7 @@ public final class LabelLayout {
                     break;
                 }
             }
-            if (slot == null && (r.index == selected || r.index == 0)) {
+            if (slot == null && (r.index == selected || priority.contains(r.index))) {
                 // Priority labels can occupy a free edge slot, with a leader to the unchanged point.
                 for (double y = viewport.y; y <= viewport.y + viewport.height - r.height && slot == null; y += r.height + 5) {
                     for (double x : new double[]{viewport.x, viewport.x + viewport.width - r.width}) {

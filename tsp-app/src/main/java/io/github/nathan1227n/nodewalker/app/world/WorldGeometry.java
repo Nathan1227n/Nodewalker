@@ -14,8 +14,13 @@ public record WorldGeometry(TerrainData terrain, TerrainData horizon,
     }
 
     public static WorldGeometry prepare(List<Vec3> anchors, boolean simple) {
-        return new WorldGeometry(TerrainFactory.build(anchors, simple), TerrainFactory.horizon(anchors, simple),
-                IntStream.range(0, anchors.size()).mapToObj(i -> RefugeGeometryFactory.build(i, anchors.get(i),
+        return prepare(anchors, simple, () -> { });
+    }
+
+    public static WorldGeometry prepare(List<Vec3> anchors, boolean simple, Runnable checkpoint) {
+        checkpoint.run();
+        return new WorldGeometry(TerrainFactory.build(anchors, simple, checkpoint), TerrainFactory.horizon(anchors, simple, checkpoint),
+                IntStream.range(0, anchors.size()).peek(i -> checkpoint.run()).mapToObj(i -> RefugeGeometryFactory.build(i, anchors.get(i),
                         -TerrainFactory.heightAt(anchors, anchors.get(i).x(), anchors.get(i).z()), simple)).toList(),
                 PropGeometryFactory.build(anchors, simple), VegetationFactory.prepare(anchors, simple));
     }
