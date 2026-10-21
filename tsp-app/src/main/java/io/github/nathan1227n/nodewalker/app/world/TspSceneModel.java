@@ -17,6 +17,7 @@ import java.util.OptionalLong;
  */
 public final class TspSceneModel implements WorldSceneModel {
     private final PreparedWorld preparedWorld;
+    private final CostBreakdown costBreakdown;
     private final TspProblem problem;
     private final Optional<TspResult> result;
     private final WorldTransform transform;
@@ -32,6 +33,7 @@ public final class TspSceneModel implements WorldSceneModel {
         this.preparedWorld = Objects.requireNonNull(world);
         this.problem = world.problem();
         this.result = Objects.requireNonNull(result);
+        this.costBreakdown = CostBreakdown.tsp(problem,result);
         this.transform = world.transform();
         this.refuges = world.refuges();
         this.positions = world.positions();
@@ -68,6 +70,7 @@ public final class TspSceneModel implements WorldSceneModel {
     public TspSceneModel withResult(Optional<TspResult> result) {
         return new TspSceneModel(preparedWorld, result);
     }
+    public CostBreakdown costBreakdown() { return costBreakdown; }
     @Override public PreparedWorld preparedWorld() { return preparedWorld; }
     @Override public boolean solidPath() { return certified(); }
 

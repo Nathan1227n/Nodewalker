@@ -1,0 +1,1 @@
+PLAYBACK PASS: gradual points/edges, pause/resume/speed/replay, 3D/2D, no recomputation, new instance invalidation.

@@ -25,6 +25,7 @@ def main():
     software = parser.add_mutually_exclusive_group()
     software.add_argument("--software-2d", action="store_true", help="Force Prism software + --2d; never create Scene3D")
     software.add_argument("--software-auto", action="store_true", help="Force Prism software without --2d; assert automatic fallback and disabled 3D button")
+    parser.add_argument("--weights", action="store_true", help="Audit real weighted overlays, full decomposition and replay in N=5/8/12")
     parser.add_argument("--transitions", action="store_true", help="Hold worker/UI deliveries and verify actual stale-route removal and preparation cancellation")
     parser.add_argument("--results", action="store_true", help="Capture result presentation and same-instance TSP comparison using real solvers")
     parser.add_argument("--playback", action="store_true", help="Capture gradual refuge/path drawing with pause, speed, replay and mode-switch assertions")
@@ -32,8 +33,8 @@ def main():
     parser.add_argument("--native-input", action="store_true", help="Use Robot to drag, scroll, click and test T/R in the visible 3D window")
     parser.add_argument("--maven-repo", type=pathlib.Path, default=pathlib.Path.home() / ".m2/repository")
     args = parser.parse_args()
-    if sum((args.playback, args.operational, args.results, args.transitions)) > 1:
-        parser.error("Choose only one of --playback, --operational or --results or --transitions")
+    if sum((args.playback, args.operational, args.results, args.transitions, args.weights)) > 1:
+        parser.error("Choose only one of --playback, --operational or --results or --transitions or --weights")
     subprocess.run(["mvn", "--batch-mode", "--no-transfer-progress", "-pl", "tsp-app", "-am", "test-compile"], cwd=ROOT, check=True)
     version = ET.parse(ROOT / "pom.xml").findtext("{*}properties/{*}javafx.version")
     classifier = "linux-aarch64" if platform.machine() in ("aarch64", "arm64") else "linux"
@@ -46,13 +47,13 @@ def main():
     metadata = {"system": platform.system(), "release": platform.release(), "architecture": platform.machine(),
                 "session": os.environ.get("XDG_SESSION_TYPE", "unknown"), "java": run_metadata(["java", "-version"]),
                 "graphics": run_metadata(["glxinfo", "-B"]), "software2d": args.software_2d,
-                "playback": args.playback, "operational": args.operational, "results": args.results, "transitions": args.transitions, "automaticFallback": args.software_auto, "nativeInput": args.native_input,
+                "playback": args.playback, "operational": args.operational, "results": args.results, "transitions": args.transitions, "weights": args.weights, "automaticFallback": args.software_auto, "nativeInput": args.native_input,
                 "method": "Real visible window; JavaFX Scene.snapshot after pulse barriers. API-driven controls. No presented FPS measurement."}
     (args.output / "environment.json").write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8")
     classpath = os.pathsep.join(str(ROOT / p) for p in ("tsp-core/target/classes", "tsp-app/target/classes", "tsp-app/target/test-classes"))
     command = ["java"] + (["-Dprism.order=sw"] if args.software_2d or args.software_auto else [])
     command += ["--module-path", os.pathsep.join(map(str, jars)), "--add-modules", "javafx.controls", "-cp", classpath,
-                "io.github.nathan1227n.nodewalker.app." + ("TransitionsVisualReview" if args.transitions else "ResultsVisualReview" if args.results else "PlaybackVisualReview" if args.playback else "OperationalVisualReview" if args.operational else "VisualReview"), str(args.output.resolve())]
+                "io.github.nathan1227n.nodewalker.app." + ("WeightsVisualReview" if args.weights else "TransitionsVisualReview" if args.transitions else "ResultsVisualReview" if args.results else "PlaybackVisualReview" if args.playback else "OperationalVisualReview" if args.operational else "VisualReview"), str(args.output.resolve())]
     if args.software_2d:
         command.append("--2d-only")
     if args.software_auto:

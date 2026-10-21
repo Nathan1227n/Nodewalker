@@ -12,6 +12,22 @@ public final class WorldViewState {
     private boolean decoration = true;
     private boolean connections;
     private boolean reducedLabels;
+    private EdgeWeightMode weightMode=EdgeWeightMode.NONE;
+    private EdgeWeightPolicy.Scope weightScope=EdgeWeightPolicy.Scope.AVAILABLE;
+    private java.util.List<? extends WorldSceneModel.Edge> secondary=java.util.List.of();
+    private EdgeWeightPolicy.Selection weightSelection=new EdgeWeightPolicy.Selection(java.util.OptionalLong.empty(),0,java.util.List.of());
+    private long weightRevision;
+    public EdgeWeightMode weightMode(){return weightMode;}
+    public EdgeWeightPolicy.Scope weightScope(){return weightScope;}
+    public void setWeightMode(EdgeWeightMode mode){weightMode=java.util.Objects.requireNonNull(mode);if(mode==EdgeWeightMode.CONNECTIONS)connections=true;refreshWeights();}
+    public void setWeightScope(EdgeWeightPolicy.Scope scope){weightScope=java.util.Objects.requireNonNull(scope);refreshWeights();}
+    public java.util.List<? extends WorldSceneModel.Edge> secondaryConnections(){return secondary;}
+    public EdgeWeightPolicy.Selection weightSelection(){return weightSelection;}
+    public long weightRevision(){return weightRevision;}
+    private void refreshWeights(){
+        secondary=model==null?java.util.List.of():EdgeWeightPolicy.secondaryConnections(model,selected,weightScope);
+        weightSelection=EdgeWeightPolicy.select(model,weightMode,connections,secondary);weightRevision++;
+    }
 
     public void setModel(WorldSceneModel next) {
         if (model == null || model.problem() != next.problem()) {
@@ -21,6 +37,7 @@ public final class WorldViewState {
         }
         model = next;
         playback.path(next.segments().size());
+        refreshWeights();
     }
 
     public WorldSceneModel model() {
@@ -32,6 +49,7 @@ public final class WorldViewState {
         playback.clear();
         camera = null;
         selected = 0;
+        refreshWeights();
     }
 
     public WorldPlayback playback() { return playback; }
@@ -58,6 +76,7 @@ public final class WorldViewState {
     public void select(int index) {
         if (index < 0 || index >= model.refuges().size()) throw new IllegalArgumentException("Invalid refuge");
         selected = index;
+        refreshWeights();
     }
 
     public boolean simplified() {
@@ -82,6 +101,7 @@ public final class WorldViewState {
 
     public void setConnections(boolean value) {
         connections = value;
+        refreshWeights();
     }
 
     public boolean reducedLabels() {

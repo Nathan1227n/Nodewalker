@@ -9,6 +9,7 @@ public final class ShortestPathSceneModel implements WorldSceneModel {
     public static final int MAX_SECONDARY_EDGES = 256;
     public record PathSegment(int from, int to, long matrixCost, SegmentGeometry geometry) implements Edge { }
     private final PreparedWorld world;
+    private final CostBreakdown costBreakdown;
     private final RefugeGraph graph;
     private final int origin, destination;
     private final Optional<ShortestPathResult> result;
@@ -25,6 +26,7 @@ public final class ShortestPathSceneModel implements WorldSceneModel {
         result.ifPresent(r -> {
             if (r.graph() != graph || r.origin() != origin) throw new IllegalArgumentException("Different graph/origin");
         });
+        this.costBreakdown = CostBreakdown.shortestPath(graph,origin,destination,result);
         var path = result.flatMap(r -> r.pathTo(destination)).orElse(List.of());
         var edges = new ArrayList<PathSegment>();
         for (int i = 1; i < path.size(); i++) edges.add(edge(path.get(i - 1), path.get(i)));
@@ -55,6 +57,7 @@ public final class ShortestPathSceneModel implements WorldSceneModel {
         for (int j = 0; j < graph.topology().degree(from) && edges.size() < MAX_SECONDARY_EDGES; j++)
             put(edges, from, graph.topology().neighborAt(from, j));
     }
+    public CostBreakdown costBreakdown() { return costBreakdown; }
     @Override public PreparedWorld preparedWorld() { return world; }
     public RefugeGraph graph() { return graph; }
     public int origin() { return origin; }

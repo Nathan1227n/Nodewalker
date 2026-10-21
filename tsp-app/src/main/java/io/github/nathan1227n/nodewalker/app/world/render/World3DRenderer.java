@@ -32,6 +32,8 @@ final class World3DRenderer extends Region implements WorldRenderer {
     private final Group world = new Group(), secondaryEdges = new Group(), routeGeometry = new Group();
     private final Group selectionRing = new Group(), decoration = new Group();
     private final Pane labels = new Pane();
+    private final EdgeWeightCanvas weights = new EdgeWeightCanvas();
+    private List<? extends WorldSceneModel.Edge> secondarySource;
     private final Map<Integer, Label> refugeLabels = new HashMap<>();
     private final Map<Integer, Line> leaderLines = new HashMap<>();
     private final EnumMap<ScenePalette, PhongMaterial> materials = new EnumMap<>(ScenePalette.class);
@@ -100,7 +102,7 @@ final class World3DRenderer extends Region implements WorldRenderer {
         camera.setVerticalFieldOfView(true);
         subScene.setCamera(camera);
         labels.setPickOnBounds(false);
-        getChildren().addAll(subScene, labels);
+        getChildren().addAll(subScene, weights, labels);
         setStyle("-fx-background-color: linear-gradient(to bottom, #050910 0%, #1b2935 60%, #101b25 100%);");
         setPickOnBounds(true);
         setOnMousePressed(e -> {
@@ -355,8 +357,10 @@ final class World3DRenderer extends Region implements WorldRenderer {
             label.setVisible(false);
             leaderLines.get(refuge.index()).setVisible(false);
         }
-        var viewport = new LabelLayout.Rect(8, 68, Math.max(0, getWidth() - 16), Math.max(0, getHeight() - 113));
-        for (var placement : LabelLayout.arrange(requests, state.selected(), viewport, state.reducedLabels(), state.model().labelPriorities())) {
+        double top = state.weightMode()==EdgeWeightMode.NONE?68:134;
+        var viewport = new LabelLayout.Rect(8, top, Math.max(0, getWidth() - 16), Math.max(0, getHeight() - top - 45));
+        var placements = LabelLayout.arrange(requests, state.selected(), viewport, state.reducedLabels(), state.model().labelPriorities());
+        for (var placement : placements) {
             var area = placement.bounds();
             Label label = refugeLabels.get(placement.index());
             label.setVisible(true);
@@ -368,6 +372,8 @@ final class World3DRenderer extends Region implements WorldRenderer {
             line.setEndX(area.x() + area.width() / 2);
             line.setEndY(area.y() + area.height());
         }
+        weights.update(state,p -> pose.project(p,getWidth(),getHeight()),pose,getWidth(),getHeight(),
+                placements.stream().map(LabelLayout.Placement::bounds).toList(),pose.nearClip(),pose.farClip(),true);
     }
 
     @Override
@@ -384,11 +390,11 @@ final class World3DRenderer extends Region implements WorldRenderer {
         position(selectionRing, state.model().refuges().get(state.selected()).position());
         decoration.setVisible(state.decoration());
         secondaryEdges.setVisible(state.connections());
-        if (state.connections() && (secondaryModel != state.model() || secondarySelection != state.selected())) {
-            secondaryModel = state.model(); secondarySelection = state.selected();
+        if (state.connections() && (secondarySource != state.secondaryConnections() || secondaryModel != state.model() || secondarySelection != state.selected())) {
+            secondaryModel = state.model(); secondarySelection = state.selected(); secondarySource = state.secondaryConnections();
             secondaryEdges.getChildren().clear(); secondaryStrokes.clear();
             long current = ++secondaryRevision;
-            for (var edge : state.model().secondaryConnections(state.selected())) installation.add(() -> {
+            for (var edge : state.secondaryConnections()) installation.add(() -> {
                 if (current == secondaryRevision && edge.geometry().length() > 0) {
                     var tube = tube(edge.geometry(), .5, ScenePalette.STEEL); tube.setVisible(false);
                     secondaryEdges.getChildren().add(tube); secondaryStrokes.add(new SecondaryStroke(tube, edge.from(), edge.to()));

@@ -1,0 +1,16 @@
+mvn --batch-mode --no-transfer-progress clean verify
+2032 core + 125 CLI + 216 app = 2373 testes; falhas=0; erros=0; ignorados=0.
+Baseline: 2331. Novos: 42.
+
+[INFO] Reactor Summary for NodeWalker (parent) 0.1.0-SNAPSHOT:
+[INFO]
+[INFO] NodeWalker (parent) ................................ SUCCESS [  0.085 s]
+[INFO] NodeWalker | TSP Core .............................. SUCCESS [  3.842 s]
+[INFO] NodeWalker | CLI ................................... SUCCESS [  1.560 s]
+[INFO] NodeWalker | Desktop App ........................... SUCCESS [  7.718 s]
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  13.265 s
+[INFO] Finished at: 2026-10-20T23:47:26-03:00
+[INFO] ------------------------------------------------------------------------

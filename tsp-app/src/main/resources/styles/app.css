@@ -85,3 +85,12 @@
 .comparison-card .report-badge { -fx-font-size: 11px; }
 .comparison-card .report-section-title { -fx-font-size: 20px; }
 .report-root { -fx-text-base-color: #c8d7d8; -fx-text-inner-color: #d5e5df; -fx-text-background-color: #c8d7d8; }
+
+/* Full integer costs remain selectable/copyable; the map filters only its own labels. */
+.table-view { -fx-background-color: #0b1922; -fx-border-color: #35515a; -fx-control-inner-background: #10232d; -fx-table-cell-border-color: #2c4149; }
+.table-view .column-header, .table-view .filler { -fx-background-color: #203944; -fx-size: 30; }
+.table-view .column-header .label { -fx-text-fill: #d5e9e1; -fx-font-size: 12px; }
+.table-row-cell { -fx-background-color: #10232d; }
+.table-row-cell:odd { -fx-background-color: #152a34; }
+.table-row-cell:selected { -fx-background-color: #31565d; }
+.table-cell { -fx-text-fill: #d5e9e1; -fx-font-family: "Monospaced"; -fx-font-size: 12px; -fx-alignment: CENTER_LEFT; -fx-padding: 6; }
