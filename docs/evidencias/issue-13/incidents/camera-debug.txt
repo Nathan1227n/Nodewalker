@@ -1,0 +1,8 @@
+IntelliJ debugger, TransitionsVisualReview.empty, phase 06-new-config-old-presentation-queued.
+Paused at check:164; condition=false; message=camera pose preserved.
+Viewport unchanged: 1003x738. Focus initializes zoom=0.22.
+Read-only evaluation of view.state.camera.zoom returned 0.23360404023997913.
+Call stack: check:164 -> empty:120 -> lambda$switchToBruteForce$13:81 -> JavaFX Application Thread.
+The test does not issue zoom in this phase. Only the automation now filters external InputEvent; production handlers unchanged.
+All temporary breakpoints removed; user breakpoints preserved.
+ClassPath incident: NoClassDefFoundError for PathSegment in workspace target; exact external cause not established. All isolated runs and remote clean clone passed.

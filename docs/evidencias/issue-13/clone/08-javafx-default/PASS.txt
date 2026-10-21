@@ -1,0 +1,4 @@
+mainClass=NodeWalkerApp; interaction=API Button.fire/ComboBox; initial3d=true; SCENE3D=true
+N=5; seed=23; algorithm=BRUTE_FORCE; status=CONCLUIDO; cost=2875; route=[0, 1, 4, 2, 3, 0]
+resultTableTerms=5; returnIncluded=true; modeSwitchPreservedResult=true
+close=WINDOW_CLOSE_REQUEST; normal JavaFX application lifecycle; no System.exit

@@ -1,0 +1,12 @@
+{
+  "command": [
+    "java",
+    "--class-path",
+    "tsp-core/target/classes",
+    "tools/validation/MvpBenchmark.java"
+  ],
+  "exitCode": 0,
+  "execToolWallSeconds": 3.465,
+  "productSha": "9c23bb6bc914b6be563a16e1ad0b2ae1cfe0d80c",
+  "notes": "Run before graphical battery; internal solver durations stored separately. Source launcher compilation/startup outside internal times."
+}

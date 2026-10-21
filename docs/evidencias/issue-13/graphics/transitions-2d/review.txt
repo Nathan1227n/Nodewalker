@@ -1,0 +1,1 @@
+TRANSITIONS PASS: actual graph/canvas cleared immediately, worker/UI barriers, rerun/switch/destination revisions, preparation cancellation and late solver delivery; same world/camera/selection in 3D/2D.

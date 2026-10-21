@@ -1,0 +1,466 @@
+[
+  {
+    "module": "tsp-core",
+    "class": "io.github.nathan1227n.nodewalker.core.SearchSpaceTest",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "module": "tsp-core",
+    "class": "io.github.nathan1227n.nodewalker.core.generator.GenerationOptionsTest",
+    "tests": 10,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "module": "tsp-core",
+    "class": "io.github.nathan1227n.nodewalker.core.generator.TspBoundedGeneratorTest",
+    "tests": 46,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "module": "tsp-core",
+    "class": "io.github.nathan1227n.nodewalker.core.generator.TspGenerationCancellationTest",
+    "tests": 12,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "module": "tsp-core",
+    "class": "io.github.nathan1227n.nodewalker.core.generator.TspGeneratorTest",
+    "tests": 89,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "module": "tsp-core",
+    "class": "io.github.nathan1227n.nodewalker.core.graph.RefugeTopologyTest",
+    "tests": 11,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "module": "tsp-core",
+    "class": "io.github.nathan1227n.nodewalker.core.model.CityTest",
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "module": "tsp-core",
+    "class": "io.github.nathan1227n.nodewalker.core.model.CostMathTest",
+    "tests": 12,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "module": "tsp-core",
+    "class": "io.github.nathan1227n.nodewalker.core.model.TspProblemCheckpointTest",
+    "tests": 7,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "module": "tsp-core",
+    "class": "io.github.nathan1227n.nodewalker.core.model.TspProblemTest",
+    "tests": 54,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "module": "tsp-core",
+    "class": "io.github.nathan1227n.nodewalker.core.model.TspRouteTest",
+    "tests": 31,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "module": "tsp-core",
+    "class": "io.github.nathan1227n.nodewalker.core.shortestpath.DijkstraShortestPathSolverTest",
+    "tests": 322,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "module": "tsp-core",
+    "class": "io.github.nathan1227n.nodewalker.core.shortestpath.FloydWarshallOracleTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "module": "tsp-core",
+    "class": "io.github.nathan1227n.nodewalker.core.shortestpath.IndexedVertexHeapTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "module": "tsp-core",
+    "class": "io.github.nathan1227n.nodewalker.core.shortestpath.ShortestPathContractsTest",
+    "tests": 6,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "module": "tsp-core",
+    "class": "io.github.nathan1227n.nodewalker.core.shortestpath.ShortestPathExecutionTest",
+    "tests": 29,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "module": "tsp-core",
+    "class": "io.github.nathan1227n.nodewalker.core.shortestpath.ShortestPathResultValidationTest",
+    "tests": 10,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "module": "tsp-core",
+    "class": "io.github.nathan1227n.nodewalker.core.solver.BacktrackingSolverTest",
+    "tests": 1062,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "module": "tsp-core",
+    "class": "io.github.nathan1227n.nodewalker.core.solver.BruteForceSolverTest",
+    "tests": 49,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "module": "tsp-core",
+    "class": "io.github.nathan1227n.nodewalker.core.solver.HeldKarpOracleTest",
+    "tests": 14,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "module": "tsp-core",
+    "class": "io.github.nathan1227n.nodewalker.core.solver.IndependentOptimalityAuditTest",
+    "tests": 18,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "module": "tsp-core",
+    "class": "io.github.nathan1227n.nodewalker.core.solver.PruningHistogramTest",
+    "tests": 11,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "module": "tsp-core",
+    "class": "io.github.nathan1227n.nodewalker.core.solver.SolverExecutionControlsTest",
+    "tests": 102,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "module": "tsp-core",
+    "class": "io.github.nathan1227n.nodewalker.core.solver.SolverExecutionOptionsTest",
+    "tests": 6,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "module": "tsp-core",
+    "class": "io.github.nathan1227n.nodewalker.core.solver.SolverInstrumentationTest",
+    "tests": 16,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "module": "tsp-core",
+    "class": "io.github.nathan1227n.nodewalker.core.solver.SolverMetricsTest",
+    "tests": 20,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "module": "tsp-core",
+    "class": "io.github.nathan1227n.nodewalker.core.solver.SolverPreflightTest",
+    "tests": 11,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "module": "tsp-core",
+    "class": "io.github.nathan1227n.nodewalker.core.solver.SolverRunMetricsTest",
+    "tests": 6,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "module": "tsp-core",
+    "class": "io.github.nathan1227n.nodewalker.core.solver.SolverStatusTest",
+    "tests": 7,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "module": "tsp-core",
+    "class": "io.github.nathan1227n.nodewalker.core.solver.TspResultTest",
+    "tests": 49,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "module": "tsp-core",
+    "class": "io.github.nathan1227n.nodewalker.core.solver.TspSolverTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "module": "tsp-core",
+    "class": "io.github.nathan1227n.nodewalker.core.validation.RouteValidatorTest",
+    "tests": 11,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "module": "tsp-cli",
+    "class": "io.github.nathan1227n.nodewalker.cli.BenchmarkRunnerTest",
+    "tests": 27,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "module": "tsp-cli",
+    "class": "io.github.nathan1227n.nodewalker.cli.CliOptionsTest",
+    "tests": 48,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "module": "tsp-cli",
+    "class": "io.github.nathan1227n.nodewalker.cli.MedianTest",
+    "tests": 11,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "module": "tsp-cli",
+    "class": "io.github.nathan1227n.nodewalker.cli.NodeWalkerCliTest",
+    "tests": 21,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "module": "tsp-cli",
+    "class": "io.github.nathan1227n.nodewalker.cli.PreflightTest",
+    "tests": 13,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "module": "tsp-cli",
+    "class": "io.github.nathan1227n.nodewalker.cli.CliJarIT",
+    "tests": 5,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "module": "tsp-app",
+    "class": "io.github.nathan1227n.nodewalker.app.PreviewModeSelectorTest",
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "module": "tsp-app",
+    "class": "io.github.nathan1227n.nodewalker.app.demo.DemoLoaderTest",
+    "tests": 9,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "module": "tsp-app",
+    "class": "io.github.nathan1227n.nodewalker.app.operation.HudPresentationTest",
+    "tests": 6,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "module": "tsp-app",
+    "class": "io.github.nathan1227n.nodewalker.app.operation.OperationalControllerTest",
+    "tests": 32,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "module": "tsp-app",
+    "class": "io.github.nathan1227n.nodewalker.app.operation.OperationalTransitionsTest",
+    "tests": 30,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "module": "tsp-app",
+    "class": "io.github.nathan1227n.nodewalker.app.operation.OperationalWeightsInvalidationTest",
+    "tests": 6,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "module": "tsp-app",
+    "class": "io.github.nathan1227n.nodewalker.app.operation.ResultReportsTest",
+    "tests": 14,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "module": "tsp-app",
+    "class": "io.github.nathan1227n.nodewalker.app.world.AcademicTspExampleTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "module": "tsp-app",
+    "class": "io.github.nathan1227n.nodewalker.app.world.CostBreakdownTest",
+    "tests": 15,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "module": "tsp-app",
+    "class": "io.github.nathan1227n.nodewalker.app.world.EdgeWeightLayoutTest",
+    "tests": 7,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "module": "tsp-app",
+    "class": "io.github.nathan1227n.nodewalker.app.world.EdgeWeightPresentationTest",
+    "tests": 12,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "module": "tsp-app",
+    "class": "io.github.nathan1227n.nodewalker.app.world.LabelLayoutTest",
+    "tests": 7,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "module": "tsp-app",
+    "class": "io.github.nathan1227n.nodewalker.app.world.ResultPresentationTest",
+    "tests": 8,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "module": "tsp-app",
+    "class": "io.github.nathan1227n.nodewalker.app.world.ShortestPathSceneModelTest",
+    "tests": 6,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "module": "tsp-app",
+    "class": "io.github.nathan1227n.nodewalker.app.world.SurfaceMappingTest",
+    "tests": 5,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "module": "tsp-app",
+    "class": "io.github.nathan1227n.nodewalker.app.world.VisualBudgetTest",
+    "tests": 5,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "module": "tsp-app",
+    "class": "io.github.nathan1227n.nodewalker.app.world.WorldContractsTest",
+    "tests": 27,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "module": "tsp-app",
+    "class": "io.github.nathan1227n.nodewalker.app.world.WorldGeometryTest",
+    "tests": 5,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "module": "tsp-app",
+    "class": "io.github.nathan1227n.nodewalker.app.world.WorldPlaybackTest",
+    "tests": 14,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "module": "tsp-app",
+    "class": "io.github.nathan1227n.nodewalker.app.world.WorldViewStateTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  }
+]

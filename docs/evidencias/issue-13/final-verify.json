@@ -1,0 +1,20 @@
+{
+  "command": [
+    "mvn",
+    "--batch-mode",
+    "--no-transfer-progress",
+    "clean",
+    "verify"
+  ],
+  "cwd": "/home/nathan/Projetos/Nodewalker",
+  "startedUtc": "2026-10-21T14:40:47.667688+00:00",
+  "durationSeconds": 13.983,
+  "exitCode": 0,
+  "environmentRemoved": [
+    "DISPLAY",
+    "WAYLAND_DISPLAY"
+  ],
+  "productSha": "9c23bb6bc914b6be563a16e1ad0b2ae1cfe0d80c",
+  "validationCodeSha": "bbf56d28151a6d7a8557e6a161fb90570db636d1",
+  "notes": "Documentation/evidence uncommitted at run time; production unchanged. Log trailing whitespace normalized."
+}

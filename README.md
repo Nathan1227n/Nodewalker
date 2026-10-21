@@ -6,7 +6,7 @@ Aplicação desktop Java para comparar **força bruta** e **backtracking com pod
 
 **Revisão acadêmica — 19/10/2026:** o núcleo também oferece **Dijkstra clássico para caminhos mínimos**, com topologias completa, esparsa reproduzível ou manual, distâncias `BigInteger`, predecessores e execução controlada. TSP continua sendo resolvido por força bruta/backtracking; um caminho de Dijkstra não é um ciclo do caixeiro-viajante. A integração ao painel/mapa da #12 está implementada nesta entrega; operação e limites em [PAINEL_OPERACIONAL.md](docs/PAINEL_OPERACIONAL.md). API, testes, complexidade e limites: [CAMINHOS_MINIMOS.md](docs/CAMINHOS_MINIMOS.md).
 
-> **Estado atual — G3 em andamento:** núcleo exato auditado, geração e busca controladas; mapa JavaFX 3D/2D ligado a `TspProblem` e resultados reais, com terreno/refúgios autorais, seleção e câmera. JavaFX 3D está aceito para o MVP; JME continua somente na spike. O painel operacional (#12) oferece geração por N/seed, três algoritmos, cancelamento cooperativo e histórico por instância. Homologação final (#13/#17) permanece pendente. Incumbentes interrompidas nunca aparecem como ótimo certificado.
+> **Estado atual — validação de G0–G3 em 21/10/2026:** PRs #34/#35/#36/#37 mescladas, com mapa, caminhos mínimos, painel operacional e pesos auditáveis. A nova coleta da main passou com 2373 testes, clone limpo funcional e 14 roteiros gráficos obrigatórios no Fedora. Homologação humana e janela Windows continuam **PENDENTES**; não se declara aceite integral de #13/#17. [Matriz de validação, comandos, evidências e checklist pessoal](docs/VALIDACAO_MVP.md) · [demonstração de sete minutos](docs/DEMONSTRACAO_ACADEMICA.md). A entrega originalmente planejada para 19/10/2026 é distinta desta coleta. Incumbentes interrompidas nunca aparecem como ótimo certificado.
 
 ## Requisitos
 
@@ -169,11 +169,11 @@ NodeWalker/
 
 ## Roadmap e aceite
 
-- **G0:** Maven multimódulo, Java 21, JavaFX 21.0.12, JUnit 5.14.3, hello 3D + fallback 2D. **Compilação corrigida e sete testes aprovados; demonstração original validada no Fedora. Evidências e pendências finais de CI/interface: [roadmap](docs/ROADMAP.md).**
+- **G0:** base Maven/Java 21/JavaFX 21, implementada. O registro inicial de sete testes é histórico; a nova suíte completa tem 2373. Clone limpo e fallback por pipeline software revalidados; Windows desktop permanece pendente.
 - **G1:** modelo do grafo completo, custos, geração por seed, força bruta, testes e CLI de benchmark.
 - **G2:** backtracking com poda exata, métricas, limites, cancelamento, teste diferencial.
-- **G3:** mapa real 3D/2D e demonstrações limitadas na #11; HUD e fluxo operacional #12 implementados nesta entrega; homologação #13/#17 pendente. JavaFX 3D aceito para o MVP após [spike #23](https://github.com/Nathan1227n/Nodewalker/issues/23), com fallback 2D obrigatório.
-- **G4/G5:** camada didática e efeitos, apenas após o MVP estar estável.
+- **G3:** mapa #11 (PR #34), Dijkstra separado do TSP (PR #35), painel #12 (PR #36) e camada de pesos/decomposição (PR #37) implementados. Validação automatizada consolidada na #13; aceite humano e Windows #17 pendentes. JavaFX 3D aceito após [spike #23](https://github.com/Nathan1227n/Nodewalker/issues/23), com fallback 2D obrigatório.
+- **G4/G5:** Modo Aula interno e efeitos posteriores. A camada de pesos já entregue não é rastreamento das tentativas dos algoritmos; grafo dirigido e novas funcionalidades ficam fora desta validação.
 
 Leia [docs/ROADMAP.md](docs/ROADMAP.md), [docs/REVISAO_TECNICA.md](docs/REVISAO_TECNICA.md), [docs/DIRECAO_VISUAL.md](docs/DIRECAO_VISUAL.md) e a [ADR do renderizador 3D](docs/ADR/0001-renderizador-3d.md) antes de expandir o escopo. A ADR está **ACEITA PARA O MVP** por integração, prazo, manutenção e fallback; não declara superioridade gráfica/FPS. JME não está integrado à produção.
 

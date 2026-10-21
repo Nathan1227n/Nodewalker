@@ -1,0 +1,88 @@
+[INFO] Scanning for projects...
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Build Order:
+[INFO]
+[INFO] NodeWalker (parent)                                                [pom]
+[INFO] NodeWalker | TSP Core                                              [jar]
+[INFO] NodeWalker | Desktop App                                           [jar]
+[INFO]
+[INFO] ------------------< io.github.nathan1227n:nodewalker >------------------
+[INFO] Building NodeWalker (parent) 0.1.0-SNAPSHOT                        [1/3]
+[INFO]   from pom.xml
+[INFO] --------------------------------[ pom ]---------------------------------
+[INFO]
+[INFO] -------------------< io.github.nathan1227n:tsp-core >-------------------
+[INFO] Building NodeWalker | TSP Core 0.1.0-SNAPSHOT                      [2/3]
+[INFO]   from tsp-core/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO]
+[INFO] --- resources:3.3.1:resources (default-resources) @ tsp-core ---
+[INFO] skip non existing resourceDirectory /home/nathan/Projetos/Nodewalker/tsp-core/src/main/resources
+[INFO]
+[INFO] --- compiler:3.14.0:compile (default-compile) @ tsp-core ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO]
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ tsp-core ---
+[INFO] skip non existing resourceDirectory /home/nathan/Projetos/Nodewalker/tsp-core/src/test/resources
+[INFO]
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ tsp-core ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO]
+[INFO] -------------------< io.github.nathan1227n:tsp-app >--------------------
+[INFO] Building NodeWalker | Desktop App 0.1.0-SNAPSHOT                   [3/3]
+[INFO]   from tsp-app/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO]
+[INFO] --- resources:3.3.1:resources (default-resources) @ tsp-app ---
+[INFO] Copying 3 resources from src/main/resources to target/classes
+[INFO]
+[INFO] --- compiler:3.14.0:compile (default-compile) @ tsp-app ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO]
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ tsp-app ---
+[INFO] skip non existing resourceDirectory /home/nathan/Projetos/Nodewalker/tsp-app/src/test/resources
+[INFO]
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ tsp-app ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Summary for NodeWalker (parent) 0.1.0-SNAPSHOT:
+[INFO]
+[INFO] NodeWalker (parent) ................................ SUCCESS [  0.002 s]
+[INFO] NodeWalker | TSP Core .............................. SUCCESS [  0.309 s]
+[INFO] NodeWalker | Desktop App ........................... SUCCESS [  0.055 s]
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  0.456 s
+[INFO] Finished at: 2026-10-21T10:53:50-03:00
+[INFO] ------------------------------------------------------------------------
+java.lang.NoClassDefFoundError: io/github/nathan1227n/nodewalker/app/world/ShortestPathSceneModel$PathSegment
+	at io.github.nathan1227n.nodewalker.app.world.ShortestPathSceneModel.put(ShortestPathSceneModel.java:53)
+	at io.github.nathan1227n.nodewalker.app.world.ShortestPathSceneModel.<init>(ShortestPathSceneModel.java:42)
+	at io.github.nathan1227n.nodewalker.app.operation.OperationalController.lambda$prepareScene$12(OperationalController.java:189)
+	at io.github.nathan1227n.nodewalker.app.TransitionsVisualReview$ManualExecutor.step(TransitionsVisualReview.java:31)
+	at io.github.nathan1227n.nodewalker.app.TransitionsVisualReview.lambda$step$25(TransitionsVisualReview.java:134)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+Caused by: java.lang.ClassNotFoundException: io.github.nathan1227n.nodewalker.app.world.ShortestPathSceneModel$PathSegment
+	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClass(BuiltinClassLoader.java:641)
+	at java.base/jdk.internal.loader.ClassLoaders$AppClassLoader.loadClass(ClassLoaders.java:188)
+	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:526)
+	... 8 more
+Exception in thread "main" java.lang.AssertionError: transition review failed
+	at io.github.nathan1227n.nodewalker.app.TransitionsVisualReview.main(TransitionsVisualReview.java:63)
+Caused by: java.lang.NoClassDefFoundError: io/github/nathan1227n/nodewalker/app/world/ShortestPathSceneModel$PathSegment
+	at io.github.nathan1227n.nodewalker.app.world.ShortestPathSceneModel.put(ShortestPathSceneModel.java:53)
+	at io.github.nathan1227n.nodewalker.app.world.ShortestPathSceneModel.<init>(ShortestPathSceneModel.java:42)
+	at io.github.nathan1227n.nodewalker.app.operation.OperationalController.lambda$prepareScene$12(OperationalController.java:189)
+	at io.github.nathan1227n.nodewalker.app.TransitionsVisualReview$ManualExecutor.step(TransitionsVisualReview.java:31)
+	at io.github.nathan1227n.nodewalker.app.TransitionsVisualReview.lambda$step$25(TransitionsVisualReview.java:134)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+Caused by: java.lang.ClassNotFoundException: io.github.nathan1227n.nodewalker.app.world.ShortestPathSceneModel$PathSegment
+	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClass(BuiltinClassLoader.java:641)
+	at java.base/jdk.internal.loader.ClassLoaders$AppClassLoader.loadClass(ClassLoaders.java:188)
+	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:526)
+	... 8 more

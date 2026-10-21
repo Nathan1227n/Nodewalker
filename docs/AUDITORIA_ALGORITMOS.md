@@ -60,3 +60,11 @@ Segundo os dados fornecidos para **“6-AlgDijkstra.pdf”, páginas 66–67**, 
 ## Evidência independente
 
 A suíte existente mantém comparações TSP com Held–Karp de teste em `BigInteger` e caminhos mínimos com Floyd–Warshall independente. Nenhum desses oráculos passa a algoritmo de produção. Os novos testes de apresentação conferem todos os termos, zero, `Long.MAX_VALUE`, distância 2·`Long.MAX_VALUE`, interrupções, ausência de incumbente, destinos não resolvidos/inalcançáveis, topologias, reprodução, cache de destino e invalidação sob filas controladas. Os testes não executam Força Bruta em N grande. Nenhum defeito que exigisse reescrita dos algoritmos foi encontrado nesta revisão.
+
+## Auditoria final da #13 — 21/10/2026
+
+Nova leitura dos três solvers, validadores e resultados na main 9c23bb6 e nova execução dos **2373 testes**, incluindo todos os oráculos independentes. Confirmados enumeração dos ciclos, retorno, poda não negativa, canonicidade TSP, heap mínimo Dijkstra, predecessores sem ciclos, confirmação versus rótulo provisório, limites, interrupções e política de overflow já descritos. Não se encontrou defeito matemático reproduzível; nenhum solver/contrato foi alterado.
+
+O exemplo acadêmico BF avalia seis ciclos e produz 11, ciclo 0–1–3–2–0, soma 1+3+3+4; BT conclui com o mesmo ótimo e quatro ciclos avaliados. [Saída atual, incluindo MAX/BigInteger e resultados limitados](evidencias/issue-13/academic-reference.txt). Os JARs core/CLI não contêm HeldKarpOracle/FloydWarshallOracle. [Stacks observadas no debugger](evidencias/issue-13/threads.json) confirmam geração/solvers no worker e preparação geométrica em outro worker, todos fora da FX Application Thread; esse ensaio não mede desempenho.
+
+[Matriz de aceite e pendências](VALIDACAO_MVP.md) · [benchmark com orçamento prévio](benchmarks/issue-13/README.md). CI headless, automação gráfica e interação humana são evidências distintas. O exercício Dijkstra dirigido não foi declarado suportado.

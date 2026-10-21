@@ -1,0 +1,200 @@
+[
+  {
+    "name": "01-clone",
+    "command": [
+      "git",
+      "-c",
+      "credential.helper=",
+      "-c",
+      "credential.helper=!gh auth git-credential",
+      "clone",
+      "https://github.com/Nathan1227n/Nodewalker.git",
+      "/tmp/nodewalker-issue13-qbtczis8/repo"
+    ],
+    "cwd": "/tmp/nodewalker-issue13-qbtczis8",
+    "startedUtc": "2026-10-21T13:46:04.063495+00:00",
+    "durationSeconds": 39.576,
+    "exitCode": 0,
+    "timeout": false
+  },
+  {
+    "name": "02-checkout",
+    "command": [
+      "git",
+      "checkout",
+      "--detach",
+      "9c23bb6bc914b6be563a16e1ad0b2ae1cfe0d80c"
+    ],
+    "cwd": "/tmp/nodewalker-issue13-qbtczis8/repo",
+    "startedUtc": "2026-10-21T13:46:43.639226+00:00",
+    "durationSeconds": 0.214,
+    "exitCode": 0,
+    "timeout": false
+  },
+  {
+    "name": "03-verify",
+    "command": [
+      "mvn",
+      "--batch-mode",
+      "--no-transfer-progress",
+      "-s",
+      "/tmp/nodewalker-issue13-qbtczis8/empty-settings.xml",
+      "-gs",
+      "/tmp/nodewalker-issue13-qbtczis8/empty-settings.xml",
+      "-Dmaven.repo.local=/tmp/nodewalker-issue13-qbtczis8/m2",
+      "clean",
+      "verify"
+    ],
+    "cwd": "/tmp/nodewalker-issue13-qbtczis8/repo",
+    "startedUtc": "2026-10-21T13:46:43.855375+00:00",
+    "durationSeconds": 22.351,
+    "exitCode": 0,
+    "timeout": false
+  },
+  {
+    "name": "04-install",
+    "command": [
+      "mvn",
+      "--batch-mode",
+      "--no-transfer-progress",
+      "-s",
+      "/tmp/nodewalker-issue13-qbtczis8/empty-settings.xml",
+      "-gs",
+      "/tmp/nodewalker-issue13-qbtczis8/empty-settings.xml",
+      "-Dmaven.repo.local=/tmp/nodewalker-issue13-qbtczis8/m2",
+      "clean",
+      "install"
+    ],
+    "cwd": "/tmp/nodewalker-issue13-qbtczis8/repo",
+    "startedUtc": "2026-10-21T13:47:06.206949+00:00",
+    "durationSeconds": 14.939,
+    "exitCode": 0,
+    "timeout": false
+  },
+  {
+    "name": "05-cli",
+    "command": [
+      "java",
+      "-jar",
+      "tsp-cli/target/nodewalker-cli.jar",
+      "--n",
+      "4",
+      "--seed",
+      "657",
+      "--solver",
+      "brute-force",
+      "--warmup",
+      "3",
+      "--runs",
+      "5"
+    ],
+    "cwd": "/tmp/nodewalker-issue13-qbtczis8/repo",
+    "startedUtc": "2026-10-21T13:47:21.146433+00:00",
+    "durationSeconds": 0.114,
+    "exitCode": 0,
+    "timeout": false
+  },
+  {
+    "name": "10-clean-status-build",
+    "command": [
+      "git",
+      "status",
+      "--porcelain=v1"
+    ],
+    "cwd": "/tmp/nodewalker-issue13-qbtczis8/repo",
+    "startedUtc": "2026-10-21T13:47:21.260605+00:00",
+    "durationSeconds": 0.214,
+    "exitCode": 0,
+    "timeout": false
+  },
+  {
+    "name": "06-driver-compile",
+    "command": [
+      "javac",
+      "-cp",
+      "/tmp/nodewalker-issue13-qbtczis8/repo/tsp-core/target/classes:/tmp/nodewalker-issue13-qbtczis8/repo/tsp-app/target/classes:/tmp/nodewalker-issue13-qbtczis8/m2/org/openjfx/javafx-base/21.0.12/javafx-base-21.0.12-linux.jar:/tmp/nodewalker-issue13-qbtczis8/m2/org/openjfx/javafx-controls/21.0.12/javafx-controls-21.0.12-linux.jar:/tmp/nodewalker-issue13-qbtczis8/m2/org/openjfx/javafx-graphics/21.0.12/javafx-graphics-21.0.12-linux.jar",
+      "-d",
+      "/tmp/nodewalker-issue13-qbtczis8/driver-classes",
+      "/home/nathan/Projetos/Nodewalker/tools/validation/CloneSmokeAgent.java",
+      "/home/nathan/Projetos/Nodewalker/tools/validation/CloneSmokeDriver.java"
+    ],
+    "cwd": "/tmp/nodewalker-issue13-qbtczis8",
+    "startedUtc": "2026-10-21T13:47:34.359807+00:00",
+    "durationSeconds": 0.565,
+    "exitCode": 0,
+    "timeout": false
+  },
+  {
+    "name": "07-driver-jar",
+    "command": [
+      "jar",
+      "cfm",
+      "/tmp/nodewalker-issue13-qbtczis8/clone-smoke-agent.jar",
+      "/tmp/nodewalker-issue13-qbtczis8/agent-manifest.mf",
+      "-C",
+      "/tmp/nodewalker-issue13-qbtczis8/driver-classes",
+      "."
+    ],
+    "cwd": "/tmp/nodewalker-issue13-qbtczis8",
+    "startedUtc": "2026-10-21T13:47:34.924597+00:00",
+    "durationSeconds": 0.114,
+    "exitCode": 0,
+    "timeout": false
+  },
+  {
+    "name": "08-javafx-default",
+    "command": [
+      "mvn",
+      "--batch-mode",
+      "--no-transfer-progress",
+      "-s",
+      "/tmp/nodewalker-issue13-qbtczis8/empty-settings.xml",
+      "-gs",
+      "/tmp/nodewalker-issue13-qbtczis8/empty-settings.xml",
+      "-Dmaven.repo.local=/tmp/nodewalker-issue13-qbtczis8/m2",
+      "-f",
+      "tsp-app/pom.xml",
+      "javafx:run"
+    ],
+    "cwd": "/tmp/nodewalker-issue13-qbtczis8/repo",
+    "startedUtc": "2026-10-21T13:47:35.039123+00:00",
+    "durationSeconds": 7.927,
+    "exitCode": 0,
+    "timeout": false
+  },
+  {
+    "name": "09-javafx-2d",
+    "command": [
+      "mvn",
+      "--batch-mode",
+      "--no-transfer-progress",
+      "-s",
+      "/tmp/nodewalker-issue13-qbtczis8/empty-settings.xml",
+      "-gs",
+      "/tmp/nodewalker-issue13-qbtczis8/empty-settings.xml",
+      "-Dmaven.repo.local=/tmp/nodewalker-issue13-qbtczis8/m2",
+      "-f",
+      "tsp-app/pom.xml",
+      "javafx:run",
+      "-Djavafx.args=--2d"
+    ],
+    "cwd": "/tmp/nodewalker-issue13-qbtczis8/repo",
+    "startedUtc": "2026-10-21T13:47:42.966151+00:00",
+    "durationSeconds": 3.319,
+    "exitCode": 0,
+    "timeout": false
+  },
+  {
+    "name": "10-clean-status-gui",
+    "command": [
+      "git",
+      "status",
+      "--porcelain=v1"
+    ],
+    "cwd": "/tmp/nodewalker-issue13-qbtczis8/repo",
+    "startedUtc": "2026-10-21T13:47:46.285675+00:00",
+    "durationSeconds": 0.008,
+    "exitCode": 0,
+    "timeout": false
+  }
+]
