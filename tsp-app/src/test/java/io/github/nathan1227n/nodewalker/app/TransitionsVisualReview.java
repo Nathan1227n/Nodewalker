@@ -46,6 +46,9 @@ public final class TransitionsVisualReview {
         Platform.startup(()->Platform.runLater(()->guard(()->{
             app=new NodeWalkerApp();stage=new Stage();app.start(stage,Arrays.asList(args).contains("--2d-only")?List.of("--2d"):List.of(),Map.of(),
                     listener->new OperationalController(compute,visual,ui::add,new OperationalServices(){},listener));
+            // This deterministic API-driven scenario must not receive unrelated desktop wheel/keyboard input.
+            // Camera input itself is exercised by VisualReview; no production event handler is changed.
+            stage.addEventFilter(javafx.scene.input.InputEvent.ANY, event -> event.consume());
             view=(TspWorldView)node("tsp-world"); click("generate"); click("cancel");
             check(s().phase()==CANCELADO && s().problem()==null && s().scene()==null && s().result()==null,"cancel generation publishes no instance or solver result");
             check(view.sceneModelProperty().get()==null,"no stale view during generation cancellation");
