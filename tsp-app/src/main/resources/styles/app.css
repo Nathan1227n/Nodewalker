@@ -94,3 +94,8 @@
 .table-row-cell:odd { -fx-background-color: #152a34; }
 .table-row-cell:selected { -fx-background-color: #31565d; }
 .table-cell { -fx-text-fill: #d5e9e1; -fx-font-family: "Monospaced"; -fx-font-size: 12px; -fx-alignment: CENTER_LEFT; -fx-padding: 6; }
+
+/* Nested detail tabs need their own viewport background; Modena otherwise paints white. */
+.details-scroll, .details-scroll > .viewport, .details-scroll > .corner {
+    -fx-background-color: #0c1921; -fx-background-insets: 0; -fx-border-width: 0; -fx-padding: 0;
+}

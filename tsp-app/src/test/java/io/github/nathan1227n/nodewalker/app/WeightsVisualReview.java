@@ -75,7 +75,22 @@ public final class WeightsVisualReview {
     }
     private static void closeReportAndConnections(){
         click(report,"close-results");view.setThreeD(false);mode(EdgeWeightMode.CONNECTIONS);after(()->{
-            auditFrame();capture(stage,"n"+s().n()+"-tsp-connections-2d");if(sizeIndex==0)replay();else paths();
+            auditFrame();capture(stage,"n"+s().n()+"-tsp-connections-2d");if(sizeIndex==0)reviewDetails(0);else paths();
+        });
+    }
+    private static void reviewDetails(int index){
+        var details=(TitledPane)node("operational-details");details.setExpanded(true);
+        var tabs=(TabPane)details.getContent();
+        if(index==tabs.getTabs().size()){closeDetails();after(WeightsVisualReview::replay);return;}
+        tabs.getSelectionModel().select(index);
+        after(()->{
+            var scroll=(ScrollPane)tabs.getTabs().get(index).getContent();
+            var viewport=(javafx.scene.layout.Region)Objects.requireNonNull(scroll.lookup(".viewport"));
+            check(scroll.getStyleClass().contains("details-scroll"),"details use scoped dark scroll style");
+            var fills=viewport.getBackground().getFills();check(!fills.isEmpty(),"details viewport has explicit background");
+            for(var fill:fills)check(fill.getFill() instanceof javafx.scene.paint.Color color && color.getBrightness()<.25,"no white viewport in any detail tab");
+            if(index==2){scroll.setVvalue(1);after(()->{capture(stage,"n5-dark-map-details-compact-legend");reviewDetails(index+1);});}
+            else reviewDetails(index+1);
         });
     }
     private static void compareTsp(){
@@ -166,6 +181,8 @@ public final class WeightsVisualReview {
             if(s().scene() instanceof ShortestPathSceneModel path)check(path.graph().topology().hasEdge(candidate.from(),candidate.to()),"actual topology");
         }
         var canvas=(Canvas)view.lookup("#edge-weight-overlay");var sub=subScene(view);
+        var legend=(LabelLayout.Rect)canvas.getProperties().get("legend-bounds");
+        check(legend!=null && legend.width()<400 && legend.width()<canvas.getWidth()*.7,"legend fits a compact corner, not the full map");
         for(int i=0;i<frame.labels().size();i++) {
             var p=frame.labels().get(i);check(p.bounds().x()>=0 && p.bounds().y()>=0 && p.bounds().x()+p.bounds().width()<=canvas.getWidth() && p.bounds().y()+p.bounds().height()<=canvas.getHeight(),"full cost text fits");
             for(int j=0;j<i;j++)check(!p.bounds().overlaps(frame.labels().get(j).bounds(),5),"no overlapping costs");

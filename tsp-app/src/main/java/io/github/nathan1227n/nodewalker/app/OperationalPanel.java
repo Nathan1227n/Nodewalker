@@ -228,6 +228,7 @@ final class OperationalPanel extends VBox {
     private static HBox row(String text, Node control) { var label = label(text); label.setMinWidth(120); HBox.setHgrow(control, Priority.ALWAYS); return new HBox(8, label, control); }
     private static Tab tab(String title, Node content) {
         var scroll = new ScrollPane(content); scroll.setFitToWidth(true); scroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scroll.getStyleClass().add("details-scroll");
         return new Tab(title, scroll);
     }
 }

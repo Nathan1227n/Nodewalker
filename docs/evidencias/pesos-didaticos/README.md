@@ -8,6 +8,12 @@ Coleta em **20/10/2026**, branch `feat/didactic-edge-weights`, baseada no merge 
 
 Após a revisão visual, as conexões secundárias receberam traço mais claro e espesso. Em 2D, contorno escuro, opacidade 90%, largura 1,8 px e tracejado 8/5 preservam leitura sobre o terreno; o caminho continua ciano/âmbar em primeiro plano. Em 3D, um material próprio com autoiluminação cinza e raio 1,1 substitui o aço escuro de raio 0,5, sem alterar os materiais dos refúgios. Capturas posteriores: [TSP 2D](contraste/n5-tsp-connections-2d.png), [Dijkstra completo 3D](contraste/n8-dijkstra-complete-connections-3d.png). [Manifesto](contraste/weights-manifest.tsv) e [log](contraste/review.txt). As capturas originais abaixo são preservadas como histórico.
 
+## Legenda compacta e abas escuras
+
+Revisão de 21/10/2026: a legenda mede o conteúdo e ocupa apenas o canto esquerdo, em vez de pintar uma faixa na largura do mapa. Distingue ciano (ótimo TSP/caminho confirmado), âmbar (incumbente TSP) e cinza (conexões secundárias), mantendo as contagens e o aviso de oclusão. As quatro abas de Detalhes usam fundo escuro explícito no ScrollPane e viewport; o fundo branco era o padrão Modena do viewport aninhado. [Painel expandido 2D](legenda-painel/n5-dark-map-details-compact-legend.png), [janela menor 3D](legenda-painel/n12-density-overlap-filter.png), [log](legenda-painel/review.txt), [software 2D](legenda-painel/software-2d-review.txt). O roteiro verifica a cor efetiva do viewport em todas as abas e o tamanho compacto da legenda.
+
+A reprodução continua revelando os segmentos do resultado já calculado; o acumulado só inclui segmentos inteiros. Mostrar tudo revela a solução completa sem refazer a busca. Ativar conexões disponíveis mostra secundárias cinza dentro do filtro visual; não transforma todas as arestas do grafo em parte do ciclo TSP. As etiquetas também respeitam colisões e câmera; todos os custos da solução permanecem na tabela.
+
 ## Cenas
 
 | Instância | TSP — pesos da solução 3D | TSP — conexões ponderadas 2D | Dijkstra — conexões esparsas 3D | Dijkstra — pesos do caminho 2D |

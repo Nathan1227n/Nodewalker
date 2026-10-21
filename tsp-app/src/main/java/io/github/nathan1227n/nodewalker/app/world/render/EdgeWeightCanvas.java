@@ -29,7 +29,7 @@ final class EdgeWeightCanvas extends Canvas {
         if(key.equals(last))return;last=key;
         if(measuredModel!=state.model()){measuredModel=state.model();widths.clear();}
         var g=getGraphicsContext2D();g.clearRect(0,0,width,height);
-        if(state.weightMode()==EdgeWeightMode.NONE){setUserData(new EdgeWeightLayout.Frame(state.weightSelection(),List.of()));return;}
+        if(state.weightMode()==EdgeWeightMode.NONE){getProperties().remove("legend-bounds");setUserData(new EdgeWeightLayout.Frame(state.weightSelection(),List.of()));return;}
         var requests=new ArrayList<EdgeWeightLayout.Request>();
         for(var edge:state.weightSelection().candidates()) {
             if(state.cityFraction(edge.from())==0 || state.cityFraction(edge.to())==0 || (edge.solution() && edge.solutionOrder()>=revealed))continue;
@@ -52,11 +52,24 @@ final class EdgeWeightCanvas extends Canvas {
             g.setStroke(color);g.strokeRoundRect(r.x(),r.y(),r.width(),r.height(),5,5);
             g.setFill(color);g.fillText(Long.toString(placed.edge().matrixCost()),r.x()+7,r.y()+17);
         }
-        g.setFill(Color.web("#07141b",.9));g.fillRoundRect(12,60,Math.max(0,width-24),58,4,4);
-        g.setFont(Font.font("Monospaced",11));g.setFill(Color.web("#bedbd6"));
         var selection=frame.selection();
-        g.fillText(state.weightMode()+" · grafo: "+(selection.graphEdges().isPresent()?selection.graphEdges().getAsLong():"aguardando")+" arestas · na camada: "+selection.renderedEdges(),20,76,Math.max(1,width-40));
-        g.fillText("Candidatas a peso: "+selection.candidates().size()+" · etiquetas: "+placements.size()+" (filtro visual)",20,92,Math.max(1,width-40));
-        g.setFill(Color.web("#94aaa9"));g.fillText(threeD?"Sobreposição 2D: oclusão pelo terreno não testada.":"Pesos da matriz; soma completa em Apresentar resultado.",20,108,Math.max(1,width-40));
+        String meaning=state.model().solidPath()?(state.model() instanceof ShortestPathSceneModel?"Ciano: caminho":"Ciano: ótimo"):"Âmbar: incumbente";
+        var lines=List.of(state.weightMode()+" · filtro visual",
+                "Grafo "+(selection.graphEdges().isPresent()?selection.graphEdges().getAsLong():"aguardando")
+                        +" · camada "+selection.renderedEdges()+" · candidatas "+selection.candidates().size()+" · etiquetas "+placements.size(),
+                meaning+" · cinza: conexões",
+                threeD?"Sem teste de oclusão pelo terreno.":"Soma completa em Apresentar resultado.");
+        var legendFont=Font.font("Monospaced",10);ruler.setFont(legendFont);
+        double legendWidth=0;
+        for(var line:lines){ruler.setText(line);legendWidth=Math.max(legendWidth,ruler.getLayoutBounds().getWidth()+16);}
+        ruler.setFont(font);
+        var legend=new LabelLayout.Rect(12,60,Math.min(Math.max(0,width-24),legendWidth),74);
+        getProperties().put("legend-bounds",legend);
+        g.setFill(Color.web("#07141b",.9));g.fillRoundRect(legend.x(),legend.y(),legend.width(),legend.height(),4,4);
+        g.setFont(legendFont);
+        for(int i=0;i<lines.size();i++){
+            g.setFill(Color.web(i==3?"#94aaa9":"#bedbd6"));
+            g.fillText(lines.get(i),20,76+i*16,Math.max(1,legend.width()-16));
+        }
     }
 }
