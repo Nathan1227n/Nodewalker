@@ -76,3 +76,9 @@ O refinamento da #11 mantém essa decisão: malhas autorais preparadas em backgr
 - Atualizar README e `docs/ROADMAP.md` com comandos de build/execução efetivos.
 - Validar manualmente Fedora; separar evidências gráficas do CI headless; registrar Windows/fallback em #17.
 - Guardar créditos/licenças de qualquer asset utilizado.
+
+## Revalidação sem mudança de decisão — 21/10/2026
+
+A PR #37 está mesclada; mapa/painel/custos utilizam JavaFX 3D e Canvas 2D. A [validação #13](../VALIDACAO_MVP.md) repetiu clone limpo funcional e 14 roteiros gráficos obrigatórios no Fedora. O pipeline software induziu indisponibilidade real da feature SCENE3D e acionou o fallback automático, separadamente do modo `--2d` explícito. Não foi exercitado outro hardware sem suporte nem falha real de criação do renderer.
+
+O aceite tecnológico desta ADR permanece. Ele não substitui homologação física humana nem Windows desktop (#17), ainda pendentes; não afirma FPS ou superioridade de engine. Datas, comparativo da spike e prazo original de 19/10 ficam preservados como registros históricos. A coleta de 21/10 é posterior ao planejamento, sem declaração de encerramento integral do MVP.

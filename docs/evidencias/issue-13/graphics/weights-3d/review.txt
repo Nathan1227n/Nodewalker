@@ -1,0 +1,1 @@
+WEIGHTS PASS: real N=5/8/12 TSP/Dijkstra, 3D camera-transform projection/2D Canvas, complete tables, filtered counts, collisions, whole-edge replay, mode/destination reuse and immediate invalidation.

@@ -64,3 +64,7 @@ O rodapé identifica **“Reprodução do resultado calculado”**. O acumulado 
 - [Capturas reais, manifestos e limites da homologação](evidencias/pesos-didaticos/README.md).
 
 A suíte conserva Held–Karp e Floyd–Warshall independentes, sem promovê-los a produção. O roteiro novo `python3 tools/review_world.py --weights` abre janelas reais; `--software-2d` e `--software-auto` verificam Canvas e fallback. Esses roteiros não participam do CI headless. A issue #13 não é iniciada por esta entrega; rastreamento interno de permutações, podas e relaxamentos permanece fora do escopo.
+
+## Revalidação após o merge da PR #37 — 21/10/2026
+
+O parágrafo anterior registra o escopo original da camada. A #13 agora reexecutou os roteiros de pesos N=5/8/12 em janela real, inclusive filtros, custos originais, tabela integral, retorno TSP, acumulado por segmento completo, destino sem busca, colisões, legenda compacta e fundo escuro. [Capturas e manifestos atuais](evidencias/issue-13/README.md), [matriz de aceite](VALIDACAO_MVP.md) e [demonstração](DEMONSTRACAO_ACADEMICA.md). Mantém-se a limitação de oclusão do overlay 3D; não se declarou medição de FPS ou memória estabilizada. A navegação física humana e Windows desktop ainda exigem confirmação.

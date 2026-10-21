@@ -168,3 +168,9 @@ PR C (#13): clone limpo, demonstração dos dois problemas, fluxos completos, CI
 A entrega da issue #12 utiliza estes contratos sem alterá-los. Origem/destino, topologias completa/esparsa,
 execução assíncrona, cancelamento e destaque do caminho estão descritos em [PAINEL_OPERACIONAL.md](PAINEL_OPERACIONAL.md).
 O painel não oferece editor manual e não trata caminhos mínimos como solução TSP.
+
+## Revalidação do MVP — 21/10/2026
+
+PRs #35/#36/#37 mescladas; a [coleta da #13](VALIDACAO_MVP.md) conserva os 380 testes de caminhos mínimos/topologia, a auditoria Floyd–Warshall e os casos de interrupção/validação. Nenhum defeito exigiu alterar o núcleo. As passagens acima que descrevem PR B/PR C futuras são o registro da PR A, não o estado atual.
+
+O [roteiro acadêmico](DEMONSTRACAO_ACADEMICA.md) usa N8/seed657, esparso seed23/extras0: origem0/destino5, caminho 0–2–3–7–5, distância 3463. Destino2 reutiliza a resposta e mostra 877. A cadeia manual confirma 2×MAX=18446744073709551614, sem sentinela de infinito. [Saída dos solvers reais](evidencias/issue-13/academic-reference.txt) e [benchmark controlado](benchmarks/issue-13/README.md). Grafos dirigidos, inclusive o exercício dos slides, continuam fora do modelo atual. Homologação gráfica Windows e interação humana permanecem pendentes.

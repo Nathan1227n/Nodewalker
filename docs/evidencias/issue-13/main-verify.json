@@ -1,0 +1,13 @@
+{
+  "command": [
+    "mvn",
+    "--batch-mode",
+    "--no-transfer-progress",
+    "clean",
+    "verify"
+  ],
+  "startedUtc": "2026-10-21T13:33:41.240447+00:00",
+  "durationSeconds": 13.961,
+  "exitCode": 0,
+  "sha": "9c23bb6bc914b6be563a16e1ad0b2ae1cfe0d80c"
+}

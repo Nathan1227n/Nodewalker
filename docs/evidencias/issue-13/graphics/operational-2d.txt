@@ -1,0 +1,59 @@
+[INFO] Scanning for projects...
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Build Order:
+[INFO]
+[INFO] NodeWalker (parent)                                                [pom]
+[INFO] NodeWalker | TSP Core                                              [jar]
+[INFO] NodeWalker | Desktop App                                           [jar]
+[INFO]
+[INFO] ------------------< io.github.nathan1227n:nodewalker >------------------
+[INFO] Building NodeWalker (parent) 0.1.0-SNAPSHOT                        [1/3]
+[INFO]   from pom.xml
+[INFO] --------------------------------[ pom ]---------------------------------
+[INFO]
+[INFO] -------------------< io.github.nathan1227n:tsp-core >-------------------
+[INFO] Building NodeWalker | TSP Core 0.1.0-SNAPSHOT                      [2/3]
+[INFO]   from tsp-core/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO]
+[INFO] --- resources:3.3.1:resources (default-resources) @ tsp-core ---
+[INFO] skip non existing resourceDirectory /tmp/nodewalker-issue13-qbtczis8/validation/tsp-core/src/main/resources
+[INFO]
+[INFO] --- compiler:3.14.0:compile (default-compile) @ tsp-core ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO]
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ tsp-core ---
+[INFO] skip non existing resourceDirectory /tmp/nodewalker-issue13-qbtczis8/validation/tsp-core/src/test/resources
+[INFO]
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ tsp-core ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO]
+[INFO] -------------------< io.github.nathan1227n:tsp-app >--------------------
+[INFO] Building NodeWalker | Desktop App 0.1.0-SNAPSHOT                   [3/3]
+[INFO]   from tsp-app/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO]
+[INFO] --- resources:3.3.1:resources (default-resources) @ tsp-app ---
+[INFO] Copying 3 resources from src/main/resources to target/classes
+[INFO]
+[INFO] --- compiler:3.14.0:compile (default-compile) @ tsp-app ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO]
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ tsp-app ---
+[INFO] skip non existing resourceDirectory /tmp/nodewalker-issue13-qbtczis8/validation/tsp-app/src/test/resources
+[INFO]
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ tsp-app ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Summary for NodeWalker (parent) 0.1.0-SNAPSHOT:
+[INFO]
+[INFO] NodeWalker (parent) ................................ SUCCESS [  0.001 s]
+[INFO] NodeWalker | TSP Core .............................. SUCCESS [  0.265 s]
+[INFO] NodeWalker | Desktop App ........................... SUCCESS [  0.040 s]
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  0.372 s
+[INFO] Finished at: 2026-10-21T11:04:09-03:00
+[INFO] ------------------------------------------------------------------------
+OPERATIONAL GRAPHICAL PASS: real generation/algorithms/cancellation; API-driven controls, not manual input.

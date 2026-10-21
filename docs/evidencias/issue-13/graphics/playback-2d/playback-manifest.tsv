@@ -1,0 +1,9 @@
+capture	method	instance	run	solverStatus	playbackStage	paused	completeCities	completeEdges	visible3DStrokes	cost	width	height
+00-simple-start	real-solver-presentation-playback	0	0	none	FINISHED	false	0	0	0	não informado	1380	870
+01-refuges-being-revealed	real-solver-presentation-playback	1	0	none	REFUGES	true	2	0	0	não informado	1380	870
+02-solver-done-path-still-forming	real-solver-presentation-playback	1	1	CONCLUIDO	PATH	true	5	0	0	2875	1380	870
+03-one-edge-drawn-paused	real-solver-presentation-playback	1	1	CONCLUIDO	PATH	true	5	1	0	2875	1380	870
+04-same-partial-path-2d	real-solver-presentation-playback	1	1	CONCLUIDO	PATH	true	5	1	0	2875	1380	870
+05-complete-path-simple-hud	real-solver-presentation-playback	1	1	CONCLUIDO	FINISHED	false	5	5	0	2875	1380	870
+06-small-window	real-solver-presentation-playback	1	1	CONCLUIDO	FINISHED	false	5	5	0	2875	960	643
+07-new-instance-no-old-route	real-solver-presentation-playback	2	1	none	FINISHED	false	5	0	0	não informado	960	643

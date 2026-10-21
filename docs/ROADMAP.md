@@ -2,6 +2,22 @@
 
 **Entrega planejada:** 19/10/2026. **Escopo do MVP oficial:** G0–G3. Não tratar G1 ou G2 isoladamente como MVP visual.
 
+## Estado atualizado — coleta de 21/10/2026
+
+Esta seção registra o produto após os merges reais; a tabela de 17/10 e os planos diários abaixo continuam como histórico. **19/10/2026 era a data planejada, não a data de homologação efetiva.** A coleta automatizada está concluída; aceite humano e Windows gráfico continuam pendentes. [Matriz completa](VALIDACAO_MVP.md), [evidências](evidencias/issue-13/README.md) e [roteiro acadêmico](DEMONSTRACAO_ACADEMICA.md).
+
+| Gate | Estado efetivo | Evidência / pendência |
+| --- | --- | --- |
+| G0 | Base implementada e revalidada | Clone remoto, Maven vazio, verify/install/CLI/JavaFX exit0; pipeline software sem Scene3D exercitado. Desktop Windows #17 pendente |
+| G1 | Modelo, geração por seed, Força Bruta e CLI implementados | Matriz preservada; mesma instância nas comparações; testes e referências independentes |
+| G2 | Backtracking, execução controlada e auditoria implementados | Held–Karp, fronteiras de limites, cancelamento e extremos; sem modificação dos solvers nesta validação |
+| G3 | Mapa PR #34, caminhos mínimos PR #35, painel PR #36 e pesos PR #37 mesclados | Main 9c23bb6: 2373 testes; 14 roteiros gráficos obrigatórios Fedora aprovados. #13 em revisão; mouse/teclado humano e Windows continuam PENDENTES |
+| G4/G5 | Fora do escopo desta entrega | Sem Modo Aula interno, grafo dirigido, novas engines ou efeitos. Reprodução de resposta pronta não é execução passo a passo |
+
+As issues #12/#13/#17 e a spike #23 permanecem abertas administrativamente na consulta de 21/10/2026; issue aberta não significa funcionalidade ausente. #11 está encerrada. Não se encerra issue nem se realiza merge automaticamente. Não há P0/P1 de produto demonstrado em aberto nesta coleta; incidentes do procedimento e limitações ficam no relatório, sem converter pendências externas em provas de defeito.
+
+## Registro histórico anterior
+
 **Revisão de escopo em 19/10/2026, após o merge da PR #34:** dois problemas separados. TSP permanece com força bruta/backtracking; caminhos mínimos passam a usar Dijkstra clássico sobre conexões completas, esparsas reproduzíveis ou manuais, com custos da matriz original. Sequência: PR A (núcleo/testes/documentação), PR B (#12: painel assíncrono e adaptação 3D/2D), PR C (#13: validação/demonstração). Isso não declara o painel concluído. A tabela e os registros históricos abaixo são preservados. Detalhes: [CAMINHOS_MINIMOS.md](CAMINHOS_MINIMOS.md).
 
 | Gate | Conteúdo | Critério de saída | Situação em 17/10/2026 (incluindo esta PR) |

@@ -1,0 +1,16 @@
+Professor TSP | BruteForceSolver | CONCLUIDO | route=[0, 1, 3, 2, 0] | cost=11 | evaluated=6
+  1 + 3 + 3 + 4 = 11
+Professor TSP | BacktrackingSolver | CONCLUIDO | route=[0, 1, 3, 2, 0] | cost=11 | evaluated=4
+  1 + 3 + 3 + 4 = 11
+N5 seed23 | BruteForceSolver | CONCLUIDO | route=[0, 1, 4, 2, 3, 0] | cost=2875
+  487 + 212 + 662 + 997 + 517 = 2875
+N5 seed23 | BacktrackingSolver | CONCLUIDO | route=[0, 1, 4, 2, 3, 0] | cost=2875
+  487 + 212 + 662 + 997 + 517 = 2875
+Dijkstra N8 seed657 topologySeed23 extras0 | origin=0 | destination=5 | CONCLUIDO | distance=3463 | path=[0, 2, 3, 7, 5]
+  877 + 936 + 764 + 886 = 3463
+Dijkstra N8 seed657 topologySeed23 extras0 | origin=0 | destination=2 | CONCLUIDO | distance=877 | path=[0, 2]
+  877 = 877
+BigInteger manual undirected chain | distanceTo2=18446744073709551614 | path=[0, 1, 2] | vertex3=INALCANCAVEL
+Dijkstra K=2 | LIMITE_ATINGIDO | vertex1=CONFIRMADO | distance1=Optional[9223372036854775807] | vertex2=NAO_RESOLVIDO | distance2=Optional.empty
+TSP K=1 | LIMITE_ATINGIDO | optimalityGuaranteed=false | cost=OptionalLong[3503] | route=[0, 1, 2, 3, 4, 0]
+Dijkstra directed slide 0-2-3 cost9: OUT OF SCOPE; current topology is undirected. No directed example was executed.

@@ -1,0 +1,248 @@
+[
+  {
+    "name": "world-3d",
+    "command": [
+      "python3",
+      "tools/review_world.py",
+      "--output",
+      "/tmp/nodewalker-issue13-qbtczis8/graphics/world-3d"
+    ],
+    "startedUtc": "2026-10-21T13:51:45.557538+00:00",
+    "durationSeconds": 5.974,
+    "exitCode": 0,
+    "timeout": false,
+    "method": "JavaFX API/synthetic events; real window",
+    "humanPhysicalValidation": "PENDENTE"
+  },
+  {
+    "name": "world-fallback",
+    "command": [
+      "python3",
+      "tools/review_world.py",
+      "--software-auto",
+      "--output",
+      "/tmp/nodewalker-issue13-qbtczis8/graphics/world-fallback"
+    ],
+    "startedUtc": "2026-10-21T13:51:51.531489+00:00",
+    "durationSeconds": 3.62,
+    "exitCode": 0,
+    "timeout": false,
+    "method": "JavaFX API/synthetic events; real window",
+    "humanPhysicalValidation": "PENDENTE"
+  },
+  {
+    "name": "operational-3d",
+    "command": [
+      "python3",
+      "tools/review_world.py",
+      "--operational",
+      "--output",
+      "/tmp/nodewalker-issue13-qbtczis8/graphics/operational-3d"
+    ],
+    "startedUtc": "2026-10-21T13:51:55.151609+00:00",
+    "durationSeconds": 37.775,
+    "exitCode": 0,
+    "timeout": false,
+    "method": "JavaFX API/synthetic events; real window",
+    "humanPhysicalValidation": "PENDENTE"
+  },
+  {
+    "name": "operational-2d",
+    "command": [
+      "python3",
+      "tools/review_world.py",
+      "--operational",
+      "--software-2d",
+      "--output",
+      "/tmp/nodewalker-issue13-qbtczis8/graphics/operational-2d"
+    ],
+    "startedUtc": "2026-10-21T13:52:32.927124+00:00",
+    "durationSeconds": 37.927,
+    "exitCode": 0,
+    "timeout": false,
+    "method": "JavaFX API/synthetic events; real window",
+    "humanPhysicalValidation": "PENDENTE"
+  },
+  {
+    "name": "operational-fallback",
+    "command": [
+      "python3",
+      "tools/review_world.py",
+      "--operational",
+      "--software-auto",
+      "--output",
+      "/tmp/nodewalker-issue13-qbtczis8/graphics/operational-fallback"
+    ],
+    "startedUtc": "2026-10-21T13:53:10.854143+00:00",
+    "durationSeconds": 37.978,
+    "exitCode": 0,
+    "timeout": false,
+    "method": "JavaFX API/synthetic events; real window",
+    "humanPhysicalValidation": "PENDENTE"
+  },
+  {
+    "name": "transitions-3d",
+    "command": [
+      "python3",
+      "tools/review_world.py",
+      "--transitions",
+      "--output",
+      "/tmp/nodewalker-issue13-qbtczis8/graphics/transitions-3d"
+    ],
+    "startedUtc": "2026-10-21T13:53:48.832780+00:00",
+    "durationSeconds": 4.125,
+    "exitCode": 1,
+    "timeout": false,
+    "method": "JavaFX API/synthetic events; real window",
+    "humanPhysicalValidation": "PENDENTE"
+  },
+  {
+    "name": "transitions-2d",
+    "command": [
+      "python3",
+      "tools/review_world.py",
+      "--transitions",
+      "--software-2d",
+      "--output",
+      "/tmp/nodewalker-issue13-qbtczis8/graphics/transitions-2d"
+    ],
+    "startedUtc": "2026-10-21T13:53:52.957992+00:00",
+    "durationSeconds": 5.227,
+    "exitCode": 0,
+    "timeout": false,
+    "method": "JavaFX API/synthetic events; real window",
+    "humanPhysicalValidation": "PENDENTE"
+  },
+  {
+    "name": "weights-3d",
+    "command": [
+      "python3",
+      "tools/review_world.py",
+      "--weights",
+      "--output",
+      "/tmp/nodewalker-issue13-qbtczis8/graphics/weights-3d"
+    ],
+    "startedUtc": "2026-10-21T13:53:58.185138+00:00",
+    "durationSeconds": 7.827,
+    "exitCode": 0,
+    "timeout": false,
+    "method": "JavaFX API/synthetic events; real window",
+    "humanPhysicalValidation": "PENDENTE"
+  },
+  {
+    "name": "weights-2d",
+    "command": [
+      "python3",
+      "tools/review_world.py",
+      "--weights",
+      "--software-2d",
+      "--output",
+      "/tmp/nodewalker-issue13-qbtczis8/graphics/weights-2d"
+    ],
+    "startedUtc": "2026-10-21T13:54:06.012607+00:00",
+    "durationSeconds": 7.577,
+    "exitCode": 0,
+    "timeout": false,
+    "method": "JavaFX API/synthetic events; real window",
+    "humanPhysicalValidation": "PENDENTE"
+  },
+  {
+    "name": "weights-fallback",
+    "command": [
+      "python3",
+      "tools/review_world.py",
+      "--weights",
+      "--software-auto",
+      "--output",
+      "/tmp/nodewalker-issue13-qbtczis8/graphics/weights-fallback"
+    ],
+    "startedUtc": "2026-10-21T13:54:13.589703+00:00",
+    "durationSeconds": 7.778,
+    "exitCode": 0,
+    "timeout": false,
+    "method": "JavaFX API/synthetic events; real window",
+    "humanPhysicalValidation": "PENDENTE"
+  },
+  {
+    "name": "playback-3d",
+    "command": [
+      "python3",
+      "tools/review_world.py",
+      "--playback",
+      "--output",
+      "/tmp/nodewalker-issue13-qbtczis8/graphics/playback-3d"
+    ],
+    "startedUtc": "2026-10-21T13:54:21.367723+00:00",
+    "durationSeconds": 6.124,
+    "exitCode": 0,
+    "timeout": false,
+    "method": "JavaFX API/synthetic events; real window",
+    "humanPhysicalValidation": "PENDENTE"
+  },
+  {
+    "name": "playback-2d",
+    "command": [
+      "python3",
+      "tools/review_world.py",
+      "--playback",
+      "--software-2d",
+      "--output",
+      "/tmp/nodewalker-issue13-qbtczis8/graphics/playback-2d"
+    ],
+    "startedUtc": "2026-10-21T13:54:27.491731+00:00",
+    "durationSeconds": 6.275,
+    "exitCode": 0,
+    "timeout": false,
+    "method": "JavaFX API/synthetic events; real window",
+    "humanPhysicalValidation": "PENDENTE"
+  },
+  {
+    "name": "results-3d",
+    "command": [
+      "python3",
+      "tools/review_world.py",
+      "--results",
+      "--output",
+      "/tmp/nodewalker-issue13-qbtczis8/graphics/results-3d"
+    ],
+    "startedUtc": "2026-10-21T13:54:33.766535+00:00",
+    "durationSeconds": 4.372,
+    "exitCode": 0,
+    "timeout": false,
+    "method": "JavaFX API/synthetic events; real window",
+    "humanPhysicalValidation": "PENDENTE"
+  },
+  {
+    "name": "results-2d",
+    "command": [
+      "python3",
+      "tools/review_world.py",
+      "--results",
+      "--software-2d",
+      "--output",
+      "/tmp/nodewalker-issue13-qbtczis8/graphics/results-2d"
+    ],
+    "startedUtc": "2026-10-21T13:54:38.138519+00:00",
+    "durationSeconds": 4.421,
+    "exitCode": 0,
+    "timeout": false,
+    "method": "JavaFX API/synthetic events; real window",
+    "humanPhysicalValidation": "PENDENTE"
+  },
+  {
+    "name": "robot-attempt",
+    "command": [
+      "python3",
+      "tools/review_world.py",
+      "--native-input",
+      "--output",
+      "/tmp/nodewalker-issue13-qbtczis8/graphics/robot-attempt"
+    ],
+    "startedUtc": "2026-10-21T13:54:42.560143+00:00",
+    "durationSeconds": 3.169,
+    "exitCode": 1,
+    "timeout": false,
+    "method": "Robot automation",
+    "humanPhysicalValidation": "PENDENTE"
+  }
+]

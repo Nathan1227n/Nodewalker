@@ -1,0 +1,199 @@
+{
+  "method": "IntelliJ debugger; production OperationalController.create; temporary breakpoints before costly work; read-only evaluation. Debug run stopped after fifth observation; no timing claims. All temporary breakpoints removed; user breakpoints preserved.",
+  "observations": [
+    {
+      "position": {
+        "filePath": "file:///home/nathan/Projetos/Nodewalker/tsp-core/src/main/java/io/github/nathan1227n/nodewalker/core/generator/TspGenerator.java",
+        "line": 54
+      },
+      "thread": "\"nodewalker-compute\"@4,001 in group \"main\": RUNNING",
+      "frames": [
+        {
+          "presentation": "generate:54, TspGenerator (io.github.nathan1227n.nodewalker.core.generator)",
+          "index": 0,
+          "file": "file:///home/nathan/Projetos/Nodewalker/tsp-core/src/main/java/io/github/nathan1227n/nodewalker/core/generator/TspGenerator.java",
+          "line": 54,
+          "isCurrent": true
+        },
+        {
+          "presentation": "generate:12, OperationalServices (io.github.nathan1227n.nodewalker.app.operation)",
+          "index": 1,
+          "file": "file:///home/nathan/Projetos/Nodewalker/tsp-app/src/main/java/io/github/nathan1227n/nodewalker/app/operation/OperationalServices.java",
+          "line": 12,
+          "isCurrent": false
+        },
+        {
+          "presentation": "lambda$generate$7:107, OperationalController (io.github.nathan1227n.nodewalker.app.operation)",
+          "index": 2,
+          "file": "file:///home/nathan/Projetos/Nodewalker/tsp-app/src/main/java/io/github/nathan1227n/nodewalker/app/operation/OperationalController.java",
+          "line": 107,
+          "isCurrent": false
+        },
+        {
+          "presentation": "5 hidden frames",
+          "index": 3,
+          "isCurrent": false
+        }
+      ],
+      "fxEvaluation": "javafx.application.Platform.isFxApplicationThread() = false"
+    },
+    {
+      "position": {
+        "filePath": "file:///home/nathan/Projetos/Nodewalker/tsp-app/src/main/java/io/github/nathan1227n/nodewalker/app/world/PreparedWorld.java",
+        "line": 40
+      },
+      "thread": "\"nodewalker-presentation\"@4,410 in group \"main\": RUNNING",
+      "frames": [
+        {
+          "presentation": "prepare:40, PreparedWorld (io.github.nathan1227n.nodewalker.app.world)",
+          "index": 0,
+          "file": "file:///home/nathan/Projetos/Nodewalker/tsp-app/src/main/java/io/github/nathan1227n/nodewalker/app/world/PreparedWorld.java",
+          "line": 40,
+          "isCurrent": true
+        },
+        {
+          "presentation": "prepareWorld:13, OperationalServices (io.github.nathan1227n.nodewalker.app.operation)",
+          "index": 1,
+          "file": "file:///home/nathan/Projetos/Nodewalker/tsp-app/src/main/java/io/github/nathan1227n/nodewalker/app/operation/OperationalServices.java",
+          "line": 13,
+          "isCurrent": false
+        },
+        {
+          "presentation": "lambda$generate$5:115, OperationalController (io.github.nathan1227n.nodewalker.app.operation)",
+          "index": 2,
+          "file": "file:///home/nathan/Projetos/Nodewalker/tsp-app/src/main/java/io/github/nathan1227n/nodewalker/app/operation/OperationalController.java",
+          "line": 115,
+          "isCurrent": false
+        },
+        {
+          "presentation": "5 hidden frames",
+          "index": 3,
+          "isCurrent": false
+        }
+      ],
+      "fxEvaluation": "javafx.application.Platform.isFxApplicationThread() = false"
+    },
+    {
+      "position": {
+        "filePath": "file:///home/nathan/Projetos/Nodewalker/tsp-core/src/main/java/io/github/nathan1227n/nodewalker/core/solver/BruteForceSolver.java",
+        "line": 68
+      },
+      "thread": "\"nodewalker-compute\"@4,001 in group \"main\": RUNNING",
+      "frames": [
+        {
+          "presentation": "solveInternal:68, BruteForceSolver (io.github.nathan1227n.nodewalker.core.solver)",
+          "index": 0,
+          "file": "file:///home/nathan/Projetos/Nodewalker/tsp-core/src/main/java/io/github/nathan1227n/nodewalker/core/solver/BruteForceSolver.java",
+          "line": 68,
+          "isCurrent": true
+        },
+        {
+          "presentation": "solve:57, BruteForceSolver (io.github.nathan1227n.nodewalker.core.solver)",
+          "index": 1,
+          "file": "file:///home/nathan/Projetos/Nodewalker/tsp-core/src/main/java/io/github/nathan1227n/nodewalker/core/solver/BruteForceSolver.java",
+          "line": 57,
+          "isCurrent": false
+        },
+        {
+          "presentation": "tsp:22, OperationalServices (io.github.nathan1227n.nodewalker.app.operation)",
+          "index": 2,
+          "file": "file:///home/nathan/Projetos/Nodewalker/tsp-app/src/main/java/io/github/nathan1227n/nodewalker/app/operation/OperationalServices.java",
+          "line": 22,
+          "isCurrent": false
+        },
+        {
+          "presentation": "lambda$execute$15:226, OperationalController (io.github.nathan1227n.nodewalker.app.operation)",
+          "index": 3,
+          "file": "file:///home/nathan/Projetos/Nodewalker/tsp-app/src/main/java/io/github/nathan1227n/nodewalker/app/operation/OperationalController.java",
+          "line": 226,
+          "isCurrent": false
+        },
+        {
+          "presentation": "5 hidden frames",
+          "index": 4,
+          "isCurrent": false
+        }
+      ],
+      "fxEvaluation": "javafx.application.Platform.isFxApplicationThread() = false"
+    },
+    {
+      "position": {
+        "filePath": "file:///home/nathan/Projetos/Nodewalker/tsp-core/src/main/java/io/github/nathan1227n/nodewalker/core/solver/BacktrackingSolver.java",
+        "line": 70
+      },
+      "thread": "\"nodewalker-compute\"@4,001 in group \"main\": RUNNING",
+      "frames": [
+        {
+          "presentation": "solveInternal:70, BacktrackingSolver (io.github.nathan1227n.nodewalker.core.solver)",
+          "index": 0,
+          "file": "file:///home/nathan/Projetos/Nodewalker/tsp-core/src/main/java/io/github/nathan1227n/nodewalker/core/solver/BacktrackingSolver.java",
+          "line": 70,
+          "isCurrent": true
+        },
+        {
+          "presentation": "solve:60, BacktrackingSolver (io.github.nathan1227n.nodewalker.core.solver)",
+          "index": 1,
+          "file": "file:///home/nathan/Projetos/Nodewalker/tsp-core/src/main/java/io/github/nathan1227n/nodewalker/core/solver/BacktrackingSolver.java",
+          "line": 60,
+          "isCurrent": false
+        },
+        {
+          "presentation": "tsp:22, OperationalServices (io.github.nathan1227n.nodewalker.app.operation)",
+          "index": 2,
+          "file": "file:///home/nathan/Projetos/Nodewalker/tsp-app/src/main/java/io/github/nathan1227n/nodewalker/app/operation/OperationalServices.java",
+          "line": 22,
+          "isCurrent": false
+        },
+        {
+          "presentation": "lambda$execute$15:226, OperationalController (io.github.nathan1227n.nodewalker.app.operation)",
+          "index": 3,
+          "file": "file:///home/nathan/Projetos/Nodewalker/tsp-app/src/main/java/io/github/nathan1227n/nodewalker/app/operation/OperationalController.java",
+          "line": 226,
+          "isCurrent": false
+        },
+        {
+          "presentation": "5 hidden frames",
+          "index": 4,
+          "isCurrent": false
+        }
+      ],
+      "fxEvaluation": "javafx.application.Platform.isFxApplicationThread() = false"
+    },
+    {
+      "position": {
+        "filePath": "file:///home/nathan/Projetos/Nodewalker/tsp-core/src/main/java/io/github/nathan1227n/nodewalker/core/shortestpath/DijkstraShortestPathSolver.java",
+        "line": 55
+      },
+      "thread": "\"nodewalker-compute\"@4,001 in group \"main\": RUNNING",
+      "frames": [
+        {
+          "presentation": "solve:55, DijkstraShortestPathSolver (io.github.nathan1227n.nodewalker.core.shortestpath)",
+          "index": 0,
+          "file": "file:///home/nathan/Projetos/Nodewalker/tsp-core/src/main/java/io/github/nathan1227n/nodewalker/core/shortestpath/DijkstraShortestPathSolver.java",
+          "line": 55,
+          "isCurrent": true
+        },
+        {
+          "presentation": "paths:25, OperationalServices (io.github.nathan1227n.nodewalker.app.operation)",
+          "index": 1,
+          "file": "file:///home/nathan/Projetos/Nodewalker/tsp-app/src/main/java/io/github/nathan1227n/nodewalker/app/operation/OperationalServices.java",
+          "line": 25,
+          "isCurrent": false
+        },
+        {
+          "presentation": "lambda$execute$15:227, OperationalController (io.github.nathan1227n.nodewalker.app.operation)",
+          "index": 2,
+          "file": "file:///home/nathan/Projetos/Nodewalker/tsp-app/src/main/java/io/github/nathan1227n/nodewalker/app/operation/OperationalController.java",
+          "line": 227,
+          "isCurrent": false
+        },
+        {
+          "presentation": "5 hidden frames",
+          "index": 3,
+          "isCurrent": false
+        }
+      ],
+      "fxEvaluation": "javafx.application.Platform.isFxApplicationThread() = false"
+    }
+  ]
+}

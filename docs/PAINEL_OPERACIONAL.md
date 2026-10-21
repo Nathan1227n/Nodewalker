@@ -1,5 +1,7 @@
 # Painel operacional — issue #12
 
+**Atualização de homologação — 21/10/2026:** painel mesclado pela PR #36, com pesos/decomposição da PR #37. A [validação #13](VALIDACAO_MVP.md) reexecutou os fluxos reais N=3/5/8/12 em 3D, 2D explícito e fallback software: geração, três algoritmos, destino sem nova busca, comparação, cancelamento, resultados, reexecução e fechamento durante trabalho. [Roteiro pessoal de mouse/teclado](VALIDACAO_MVP.md#checklist-humano-fedora) permanece PENDENTE; automação não o substitui. [Demonstração reproduzível](DEMONSTRACAO_ACADEMICA.md).
+
 Revisão de escopo/integração de 19/10/2026, após o merge da PR #35 (`8e1f0c7`).
 O aplicativo opera dois problemas distintos. Força bruta e backtracking resolvem o TSP,
 com ciclo hamiltoniano e retorno à origem 0. Dijkstra clássico resolve caminhos mínimos

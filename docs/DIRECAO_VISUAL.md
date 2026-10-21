@@ -130,3 +130,9 @@ docs/ADR/0001-renderizador-3d.md
 3. Arquitetura e props autorais entregues; pipeline externo só após benefício demonstrado e homologação de licença/importação.
 4. Homologar conforto, resize, leitura em notebook e janela Windows; medir frames apresentados/memória estabilizada separadamente se necessário.
 5. #12 implementará configuração e controle operacional; #13/#17 homologam o conjunto. Efeitos caros e refinamentos cinematográficos adicionais continuam na #15.
+
+## 12. Estado após PRs #34–#37 — 21/10/2026
+
+Os itens futuros da seção 11 preservam o planejamento da época. Mapa, painel assíncrono e pesos/decomposição estão mesclados. A [coleta #13](VALIDACAO_MVP.md) aprovou 14 roteiros obrigatórios de janela Fedora, com seleção/câmera por eventos/API, 3D/2D, custos, resultados, cancelamento e fechamento. [Evidências atuais](evidencias/issue-13/README.md). O checklist da seção 10 não foi marcado como homologação humana integral: conforto com mouse/teclado e Windows real seguem pendentes.
+
+Não houve remodelagem, importação de assets, efeitos novos ou medição de FPS apresentado nesta validação. Procedência e hashes dos dois PNGs locais foram conferidos; nenhum download ocorre em runtime. Oclusão do overlay pelo terreno continua sem teste de profundidade, com tabela completa disponível. A data 19/10 era o prazo planejado; 21/10 é a data desta coleta, ainda sem aceite humano final.

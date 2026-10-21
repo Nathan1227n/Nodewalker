@@ -1,0 +1,5 @@
+capture	nodes	materials	triangleUpperBound	numericBuffers	heapUsedMiB	rssKiB	elapsedSinceReviewStartMs	plants	trees	deadTrees	shrubs	grass	boulders
+01-n5-software2d	5	0	0	7811792	210	423716	1416	271	30	14	46	158	23
+02-n3-software2d	5	0	0	8076260	204	396684	1685	333	46	18	58	183	28
+03-n8-software2d	5	0	0	8074004	135	482292	1947	284	38	14	47	159	26
+04-n12-software2d	5	0	0	7980092	231	507620	2194	224	26	8	40	129	21

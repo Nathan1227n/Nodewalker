@@ -1,0 +1,85 @@
+[INFO] Scanning for projects...
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Build Order:
+[INFO]
+[INFO] NodeWalker (parent)                                                [pom]
+[INFO] NodeWalker | TSP Core                                              [jar]
+[INFO] NodeWalker | Desktop App                                           [jar]
+[INFO]
+[INFO] ------------------< io.github.nathan1227n:nodewalker >------------------
+[INFO] Building NodeWalker (parent) 0.1.0-SNAPSHOT                        [1/3]
+[INFO]   from pom.xml
+[INFO] --------------------------------[ pom ]---------------------------------
+[INFO]
+[INFO] -------------------< io.github.nathan1227n:tsp-core >-------------------
+[INFO] Building NodeWalker | TSP Core 0.1.0-SNAPSHOT                      [2/3]
+[INFO]   from tsp-core/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO]
+[INFO] --- resources:3.3.1:resources (default-resources) @ tsp-core ---
+[INFO] skip non existing resourceDirectory /tmp/nodewalker-issue13-qbtczis8/validation/tsp-core/src/main/resources
+[INFO]
+[INFO] --- compiler:3.14.0:compile (default-compile) @ tsp-core ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 37 source files with javac [debug release 21] to target/classes
+[INFO]
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ tsp-core ---
+[INFO] skip non existing resourceDirectory /tmp/nodewalker-issue13-qbtczis8/validation/tsp-core/src/test/resources
+[INFO]
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ tsp-core ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 37 source files with javac [debug release 21] to target/test-classes
+[INFO]
+[INFO] -------------------< io.github.nathan1227n:tsp-app >--------------------
+[INFO] Building NodeWalker | Desktop App 0.1.0-SNAPSHOT                   [3/3]
+[INFO]   from tsp-app/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO]
+[INFO] --- resources:3.3.1:resources (default-resources) @ tsp-app ---
+[INFO] Copying 3 resources from src/main/resources to target/classes
+[INFO]
+[INFO] --- compiler:3.14.0:compile (default-compile) @ tsp-app ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 51 source files with javac [debug release 21] to target/classes
+[INFO]
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ tsp-app ---
+[INFO] skip non existing resourceDirectory /tmp/nodewalker-issue13-qbtczis8/validation/tsp-app/src/test/resources
+[INFO]
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ tsp-app ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 28 source files with javac [debug release 21] to target/test-classes
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Summary for NodeWalker (parent) 0.1.0-SNAPSHOT:
+[INFO]
+[INFO] NodeWalker (parent) ................................ SUCCESS [  0.001 s]
+[INFO] NodeWalker | TSP Core .............................. SUCCESS [  1.877 s]
+[INFO] NodeWalker | Desktop App ........................... SUCCESS [  1.179 s]
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  3.114 s
+[INFO] Finished at: 2026-10-21T11:03:22-03:00
+[INFO] ------------------------------------------------------------------------
+CONTROL HANDLERS PASS (synthetic events): orbit, zoom, reset; result update retains SubScene
+01-n5-overview	5	23	CONCLUIDO	2875	65	[0, 1, 4, 2, 3, 0]	0	3D	1380	870
+02-n5-top-selection	5	23	CONCLUIDO	2875	65	[0, 1, 4, 2, 3, 0]	2	3D	1380	870
+03-n5-map2d	5	23	CONCLUIDO	2875	65	[0, 1, 4, 2, 3, 0]	2	2D	1380	870
+04-n5-simplified	5	23	CONCLUIDO	2875	65	[0, 1, 4, 2, 3, 0]	2	3D	1380	870
+05-n5-base-detail	5	23	CONCLUIDO	2875	65	[0, 1, 4, 2, 3, 0]	0	3D	1380	870
+06-n3	3	23	CONCLUIDO	1828	5	[0, 1, 2, 0]	0	3D	1380	870
+07-n8	8	657	CONCLUIDO	3574	7151	[0, 3, 5, 4, 1, 2, 7, 6, 0]	0	3D	1380	870
+08-n12-incumbent	12	23	LIMITE_ATINGIDO	6362	50000	[0, 1, 2, 3, 7, 9, 8, 5, 10, 11, 6, 4, 0]	0	3D	1380	870
+09-n12-clean-labels	12	23	LIMITE_ATINGIDO	6362	50000	[0, 1, 2, 3, 7, 9, 8, 5, 10, 11, 6, 4, 0]	0	3D	1380	870
+10-n5-before-state-check	5	23	CONCLUIDO	2875	65	[0, 1, 4, 2, 3, 0]	0	3D	1380	870
+11-state-fixture-CONCLUIDO-route	5	23	CONCLUIDO	2875	65	[0, 1, 4, 2, 3, 0]	0	3D	1380	870
+12-state-fixture-CANCELADO-route	5	23	CANCELADO	2875	-1	[0, 1, 4, 2, 3, 0]	0	3D	1380	870
+13-state-fixture-CANCELADO-none	5	23	CANCELADO	absent	-1	[]	0	3D	1380	870
+14-state-fixture-LIMITE_ATINGIDO-route	5	23	LIMITE_ATINGIDO	2875	-1	[0, 1, 4, 2, 3, 0]	0	3D	1380	870
+15-state-fixture-LIMITE_ATINGIDO-none	5	23	LIMITE_ATINGIDO	absent	-1	[]	0	3D	1380	870
+16-state-fixture-ERRO-route	5	23	ERRO	2875	-1	[0, 1, 4, 2, 3, 0]	0	3D	1380	870
+17-state-fixture-ERRO-none	5	23	ERRO	absent	-1	[]	0	3D	1380	870
+18-n5-reset-state	5	23	CONCLUIDO	2875	65	[0, 1, 4, 2, 3, 0]	0	3D	1380	870
+variant-1	5	23	CONCLUIDO	2875	65	[0, 1, 4, 2, 3, 0]	1	3D	1380	870
+variant-2	5	23	CONCLUIDO	2875	65	[0, 1, 4, 2, 3, 0]	2	3D	1380	870
+variant-3	5	23	CONCLUIDO	2875	65	[0, 1, 4, 2, 3, 0]	3	3D	1380	870
+Real-window captures and manifest: /tmp/nodewalker-issue13-qbtczis8/graphics-isolated/world-3d
