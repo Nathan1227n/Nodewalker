@@ -5,6 +5,9 @@ import io.github.nathan1227n.nodewalker.app.world.TspSceneModel;
 import io.github.nathan1227n.nodewalker.app.world.WorldSceneModel;
 import io.github.nathan1227n.nodewalker.app.world.WorldViewState;
 import io.github.nathan1227n.nodewalker.app.world.WorldPlayback;
+import io.github.nathan1227n.nodewalker.app.world.EdgeWeightMode;
+import io.github.nathan1227n.nodewalker.app.world.EdgeWeightPolicy;
+import io.github.nathan1227n.nodewalker.app.world.CostBreakdown;
 
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -88,6 +91,9 @@ public final class TspWorldView extends StackPane implements AutoCloseable {
     public void setOnPlayback(Consumer<String> consumer) { requireOpen(); onPlayback = Objects.requireNonNull(consumer); }
     private void announcePlayback() {
         String next = state.model() == null ? "" : state.playback().label();
+        var breakdown=CostBreakdown.ofScene(state.model());
+        if(breakdown.isPresent() && breakdown.orElseThrow().total().isPresent())
+            next += "\n" + breakdown.orElseThrow().replayText(state.playback().completedEdges());
         if (!next.equals(lastPlaybackLabel)) { lastPlaybackLabel = next; onPlayback.accept(next); }
     }
     private void startPlayback() {
@@ -170,6 +176,16 @@ public final class TspWorldView extends StackPane implements AutoCloseable {
         state.setDecoration(value);
         if (renderer != null) renderer.refresh();
     }
+
+    public void setWeightMode(EdgeWeightMode mode) {
+        requireOpen(); state.setWeightMode(mode); if(renderer!=null)renderer.refresh();
+    }
+    public void setWeightScope(EdgeWeightPolicy.Scope scope) {
+        requireOpen(); state.setWeightScope(scope); if(renderer!=null)renderer.refresh();
+    }
+    public int visualConnectionCount(){requireFx();return state.weightSelection().renderedEdges();}
+    public EdgeWeightMode weightMode(){requireFx();return state.weightMode();}
+    public EdgeWeightPolicy.Scope weightScope(){requireFx();return state.weightScope();}
 
     public void setConnections(boolean value) {
         requireOpen();

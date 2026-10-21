@@ -47,7 +47,7 @@ public final class NodeWalkerApp extends Application {
         var legend = label("BASE 0 · [O] ORIGEM · [D] DESTINO · CUSTOS DA MATRIZ", "map-legend");
         legend.setMouseTransparent(true); StackPane.setAlignment(legend, Pos.BOTTOM_LEFT); StackPane.setMargin(legend, new Insets(22));
         var mapCard = new StackPane(world, heading, legend); mapCard.getStyleClass().add("map-card");
-        var playbackText = label("", "playback-caption");
+        var playbackText = label("", "playback-caption"); playbackText.setWrapText(true); playbackText.setId("playback-caption");
         var pause = new Button("Pausar"); pause.setId("playback-pause"); pause.setOnAction(e -> world.pausePlayback());
         var replay = new Button("Repetir desenho"); replay.setId("playback-replay"); replay.setOnAction(e -> world.replayPath());
         var finish = new Button("Mostrar tudo"); finish.setId("playback-finish"); finish.setOnAction(e -> world.finishPlayback());
@@ -74,12 +74,21 @@ public final class NodeWalkerApp extends Application {
         var inspection = new VBox(9, refuges, coordinates, focus);
         decoration = new CheckBox("Vegetação, rochas e ruínas [D]"); decoration.setSelected(!raw.contains("--no-decoration")); decoration.setOnAction(e -> world.setDecoration(decoration.isSelected()));
         simplified = new CheckBox("Geometria simplificada [S]"); simplified.setSelected(raw.contains("--simplified")); simplified.setOnAction(e -> world.setSimplified(simplified.isSelected()));
-        connections = new CheckBox("Conexões disponíveis (filtro visual)"); connections.setSelected(false); connections.setOnAction(e -> world.setConnections(connections.isSelected()));
+        connections = new CheckBox("Conexões disponíveis (filtro visual)"); connections.setSelected(false); connections.setOnAction(e -> { world.setConnections(connections.isSelected()); updateMapSubtitle(); });
         var reduced = new CheckBox("Rótulos reduzidos"); reduced.setOnAction(e -> world.setReducedLabels(reduced.isSelected()));
         var reset = new Button("Reset [R]"); reset.setOnAction(e -> world.resetCamera());
         var top = new Button("Superior [T]"); top.setOnAction(e -> world.topView());
         mode.setWrapText(true); mode.getStyleClass().add("muted-small");
-        var exploration = new VBox(9, new HBox(8, reset, top), decoration, simplified, connections, reduced, mode);
+        var weights = new ComboBox<EdgeWeightMode>(); weights.setId("edge-weight-mode"); weights.getItems().setAll(EdgeWeightMode.values()); weights.setValue(EdgeWeightMode.NONE); weights.setMaxWidth(Double.MAX_VALUE);
+        var scope = new ComboBox<EdgeWeightPolicy.Scope>(); scope.setId("edge-weight-scope"); scope.getItems().setAll(EdgeWeightPolicy.Scope.values()); scope.setValue(EdgeWeightPolicy.Scope.AVAILABLE); scope.setMaxWidth(Double.MAX_VALUE);
+        scope.setVisible(false); scope.setManaged(false);
+        weights.setOnAction(e -> {
+            boolean all=weights.getValue()==EdgeWeightMode.CONNECTIONS;
+            if(all)connections.setSelected(true);
+            scope.setVisible(all);scope.setManaged(all);world.setWeightMode(weights.getValue());updateMapSubtitle();
+        });
+        scope.setOnAction(e -> {world.setWeightScope(scope.getValue());updateMapSubtitle();});
+        var exploration = new VBox(9, new HBox(8, reset, top), decoration, simplified, connections, label("Pesos reais das arestas", "muted-small"), weights, scope, reduced, mode);
         panel = new OperationalPanel(inspection, exploration);
         controller = factory.apply(this::accept); panel.bind(controller); panel.accept(controller.snapshot());
         var split = new SplitPane(mapCard, panel); split.setDividerPositions(.75); SplitPane.setResizableWithParent(panel, false);
@@ -133,8 +142,13 @@ public final class NodeWalkerApp extends Application {
             updatingSelection = false;
         }
         mapTitle.setText("SETOR " + String.format("%02d", prepared.problem().size()) + " / ÚLTIMOS REFÚGIOS");
-        mapSubtitle.setText(prepared instanceof PendingSceneModel ? "APRESENTAÇÃO PENDENTE · SEM RESPOSTA ATIVA" : prepared instanceof ShortestPathSceneModel paths ? "CAMINHOS MÍNIMOS · " + paths.connectionLabel() : "TSP · CICLO HAMILTONIANO · ORIGEM 0");
-        world.setModel(prepared);
+        world.setModel(prepared); updateMapSubtitle();
+    }
+    private void updateMapSubtitle() {
+        if(model instanceof PendingSceneModel) mapSubtitle.setText("APRESENTAÇÃO PENDENTE · SEM RESPOSTA ATIVA");
+        else if(model instanceof ShortestPathSceneModel paths) mapSubtitle.setText("CAMINHOS MÍNIMOS · "+(switch(paths.graph().topology().kind()){case COMPLETE -> "COMPLETA";case SPARSE_CONNECTED -> "ESPARSA";case MANUAL -> "MANUAL";})
+                +" · grafo: "+paths.graph().topology().edgeCount()+" · camada: "+world.visualConnectionCount()+" (filtro visual)");
+        else if(model!=null) mapSubtitle.setText("TSP · CICLO HAMILTONIANO · ORIGEM 0");
     }
     // Explicit presentation fixture adapter retained for the opt-in graphical regression runner.
     void present(TspSceneModel prepared) {
@@ -145,6 +159,7 @@ public final class NodeWalkerApp extends Application {
         if (model == null) return;
         var city = model.refuges().get(index).logical();
         String extra = model instanceof ShortestPathSceneModel paths ? paths.result().map(r -> "\n" + r.vertexState(index) + " · " + r.distanceTo(index).map(Object::toString).orElse("não informado")).orElse("") : "";
+        updateMapSubtitle();
         coordinates.setText("ÍNDICE " + index + (index == 0 ? " · BASE" : "") + "\nX " + city.x() + "\nY " + city.y() + " (altitude)\nZ " + city.z() + extra);
         updatingSelection = true; refuges.getSelectionModel().select(index); updatingSelection = false;
     }

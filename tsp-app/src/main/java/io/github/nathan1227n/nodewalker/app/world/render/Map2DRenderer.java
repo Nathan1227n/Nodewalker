@@ -21,6 +21,7 @@ import javafx.scene.text.Font;
 final class Map2DRenderer extends Region implements WorldRenderer {
     private final Canvas backdrop = new Canvas();
     private final Canvas overlay = new Canvas();
+    private final EdgeWeightCanvas weights = new EdgeWeightCanvas();
     private final WorldViewState state;
     private final IntConsumer selection;
     private final List<Vec3> projected = new ArrayList<>();
@@ -34,7 +35,7 @@ final class Map2DRenderer extends Region implements WorldRenderer {
         this.state = state;
         this.selection = selection;
         backdrop.setId("map-terrain-backdrop"); overlay.setId("map-path-overlay");
-        getChildren().addAll(backdrop, overlay);
+        getChildren().addAll(backdrop, overlay, weights);
         // A thick dashed outline must not close its own gaps with projecting square caps.
         overlay.getGraphicsContext2D().setLineCap(StrokeLineCap.BUTT);
         overlay.setOnMouseClicked(event -> {
@@ -125,10 +126,14 @@ final class Map2DRenderer extends Region implements WorldRenderer {
         projected.clear();
         state.model().positions().forEach(p -> projected.add(project(p)));
         if (state.connections()) {
-            g.setStroke(Color.web("#789594", .35));
-            g.setLineWidth(1);
-            g.setLineDashes(3, 7);
-            for (var edge : state.model().secondaryConnections(state.selected())) line(g, edge);
+            // Dark outline keeps connections readable over both rock and vegetation.
+            g.setLineDashes(8, 5);
+            g.setStroke(Color.web("#07141b", .9));
+            g.setLineWidth(4);
+            for (var edge : state.secondaryConnections()) line(g, edge);
+            g.setStroke(Color.web(ScenePalette.CONNECTION.color(), .9));
+            g.setLineWidth(1.8);
+            for (var edge : state.secondaryConnections()) line(g, edge);
         }
         boolean certified = state.model().solidPath();
         Color route = Color.web(certified ? "#8ff6ed" : "#ffbe64");
@@ -166,8 +171,9 @@ final class Map2DRenderer extends Region implements WorldRenderer {
                 requests.add(new LabelLayout.Request(i, p, state.model().priorityVertex(i) ? 150 : i == state.selected() ? 134 : 34, 24, true));
             }
         }
+        double top=state.weightMode()==EdgeWeightMode.NONE?68:134;
         placements = LabelLayout.arrange(requests, state.selected(),
-                new LabelLayout.Rect(8, 68, Math.max(0, getWidth() - 16), Math.max(0, getHeight() - 132)), state.reducedLabels(), state.model().labelPriorities());
+                new LabelLayout.Rect(8, top, Math.max(0, getWidth() - 16), Math.max(0, getHeight() - top - 64)), state.reducedLabels(), state.model().labelPriorities());
         for (var placement : placements) {
             int index = placement.index();
             var area = placement.bounds();
@@ -187,6 +193,8 @@ final class Map2DRenderer extends Region implements WorldRenderer {
             g.setFill(Color.web("#e5fff6")); g.fillOval(p.x() - 5, p.y() - 5, 10, 10);
             g.setStroke(Color.web("#8ff6ed", .7)); g.setLineWidth(1.5); g.strokeOval(p.x() - 10, p.y() - 10, 20, 20);
         });
+        weights.update(state,p->{var point=project(p);return new Vec3(point.x(),point.y(),1);},state.model().projection(),getWidth(),getHeight(),
+                placements.stream().map(LabelLayout.Placement::bounds).toList(),0,Double.POSITIVE_INFINITY,false);
         long duplicates = projected.stream().distinct().count();
         if (duplicates != projected.size()) {
             g.setFill(Color.web("#ffce88"));

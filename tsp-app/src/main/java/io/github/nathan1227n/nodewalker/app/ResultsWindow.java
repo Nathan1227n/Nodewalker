@@ -1,6 +1,8 @@
 package io.github.nathan1227n.nodewalker.app;
 
 import io.github.nathan1227n.nodewalker.app.operation.*;
+import io.github.nathan1227n.nodewalker.app.world.CostBreakdown;
+import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -33,6 +35,7 @@ final class ResultsWindow {
             if (snapshot == null) return;
             var content = new ClipboardContent();
             content.putString(tabs.getSelectionModel().getSelectedIndex() == 0 ? ResultReport.of(snapshot).copyText()
+                    + CostBreakdown.ofScene(snapshot.scene()).map(b -> "\n\n" + b.copyText()).orElse("\nDecomposição ainda em preparação.")
                     : context.getText() + "\n\n" + TspComparison.of(snapshot.instanceId(), snapshot.history()).copyText());
             Clipboard.getSystemClipboard().setContent(content); notice.setText("Resumo copiado com instância e métricas reais. Tempos desta execução não constituem benchmark.");
         });
@@ -72,6 +75,7 @@ final class ResultsWindow {
         var values = new HBox(16, cost, time); HBox.setHgrow(cost, Priority.ALWAYS); HBox.setHgrow(time, Priority.ALWAYS);
         cost.setMaxWidth(Double.MAX_VALUE); time.setMaxWidth(Double.MAX_VALUE);
         result.getChildren().addAll(values, text(report.conclusion(), "report-conclusion"), routeCard(report.routeLabel(), report.route()));
+        if(snapshot.result()!=null) result.getChildren().add(decomposition());
         if (!report.reason().isEmpty()) result.getChildren().add(text("Motivo: " + report.reason(), "report-note"));
         if (snapshot.result() != null) {
             var metrics = new TitledPane("Métricas e detalhes da execução", selectable(report.metrics()));
@@ -79,6 +83,30 @@ final class ResultsWindow {
         }
         if (snapshot.result() instanceof ExecutionRecord.Paths) result.getChildren().add(text(
                 "O destino pode ser alterado no painel sem recalcular Dijkstra. A distância vem da matriz de custos; o terreno é somente visual.", "report-note"));
+    }
+    private Node decomposition() {
+        var prepared=CostBreakdown.ofScene(snapshot.scene());
+        if(prepared.isEmpty())return text("Decomposição ainda em preparação. Nenhum termo anterior é reutilizado.","report-note");
+        var b=prepared.orElseThrow();
+        var title=text(b.kind()==CostBreakdown.Kind.TSP_CYCLE?"Decomposição completa · inclui retorno à origem":"Decomposição do caminho · origem "+b.origin()+" → destino "+b.destination(),"report-section-title");
+        var box=new VBox(10,title,text(b.conclusion(),"report-context")); box.setId("cost-breakdown");
+        if(b.total().isEmpty())return box;
+        var table=new TableView<CostBreakdown.Term>();table.setId("cost-breakdown-table");
+        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
+        table.getColumns().addAll(java.util.List.of(termColumn("#",t->Integer.toString(t.step()),45),
+                termColumn("Conexão",t->t.connection()+(b.kind()==CostBreakdown.Kind.TSP_CYCLE && t.step()==b.terms().size()?" (retorno)":""),160),
+                termColumn("Peso da matriz",t->Long.toString(t.weight()),210),termColumn("Acumulado",t->t.accumulated().toString(),230)));
+        table.getItems().setAll(b.terms());table.setFixedCellSize(30);table.setMinHeight(100);table.setPrefHeight(Math.min(310,36+30*b.terms().size()));
+        table.setPlaceholder(text("Origem = destino: nenhuma aresta; distância confirmada 0.","report-context"));
+        var sum=selectable(b.expression());sum.setId("cost-expression");
+        box.getChildren().addAll(table,sum,text("Todos os termos do resultado; a filtragem do mapa não altera esta tabela. Conferir a soma não é uma nova prova de ótimo.","report-note"));
+        return box;
+    }
+    private static TableColumn<CostBreakdown.Term,String> termColumn(String name,java.util.function.Function<CostBreakdown.Term,String> value,double width) {
+        var column=new TableColumn<CostBreakdown.Term,String>(name);column.setPrefWidth(width);column.setSortable(false);
+        column.setCellValueFactory(cell->new ReadOnlyStringWrapper(value.apply(cell.getValue())));
+        column.setCellFactory(c->new TableCell<>(){protected void updateItem(String item,boolean empty){super.updateItem(item,empty);setText(empty?null:item);setTooltip(empty?null:new Tooltip(item));}});
+        return column;
     }
     private void renderComparison() {
         var report = TspComparison.of(snapshot.instanceId(), snapshot.history());
