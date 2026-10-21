@@ -4,6 +4,10 @@ Coleta em **20/10/2026**, branch `feat/didactic-edge-weights`, baseada no merge 
 
 **Método:** controles JavaFX/API acionados por roteiro automatizado, `Scene.snapshot` após barreiras de pulsos; comparação com a árvore gráfica efetiva, Canvas e transformação da câmera. Geração e solvers reais, sem fixtures de resultado nesta coleta de pesos. Não houve homologação manual de entrada humana de mouse/teclado; essa pendência permanece explícita. Capturas não constituem benchmark de FPS ou memória, nem homologação completa da #13.
 
+## Ajuste de contraste das conexões
+
+Após a revisão visual, as conexões secundárias receberam traço mais claro e espesso. Em 2D, contorno escuro, opacidade 90%, largura 1,8 px e tracejado 8/5 preservam leitura sobre o terreno; o caminho continua ciano/âmbar em primeiro plano. Em 3D, um material próprio com autoiluminação cinza e raio 1,1 substitui o aço escuro de raio 0,5, sem alterar os materiais dos refúgios. Capturas posteriores: [TSP 2D](contraste/n5-tsp-connections-2d.png), [Dijkstra completo 3D](contraste/n8-dijkstra-complete-connections-3d.png). [Manifesto](contraste/weights-manifest.tsv) e [log](contraste/review.txt). As capturas originais abaixo são preservadas como histórico.
+
 ## Cenas
 
 | Instância | TSP — pesos da solução 3D | TSP — conexões ponderadas 2D | Dijkstra — conexões esparsas 3D | Dijkstra — pesos do caminho 2D |

@@ -9,7 +9,8 @@ public enum ScenePalette {
     HORIZON_NEAR("#586268"), HORIZON_FAR("#4b5963"), HORIZON_SKY("#40535f"),
     CONCRETE("#7c7d6d"), STEEL("#424b49"), METAL("#a0a696"), PANEL("#252f31"), RUST("#785e49"),
     AMBER("#ffbe64", true), CYAN("#58dae5", true), PROVEN("#b5fff0", true), SELECTED("#e5ead1", true),
-    BARK("#655b47"), NEEDLES("#243d35"), LEAVES("#4a6347"), GRASS("#7c8460"), MOSS("#354534");
+    BARK("#655b47"), NEEDLES("#243d35"), LEAVES("#4a6347"), GRASS("#7c8460"), MOSS("#354534"),
+    CONNECTION("#a9bfba", true);
 
     private final String color;
     private final boolean luminous;

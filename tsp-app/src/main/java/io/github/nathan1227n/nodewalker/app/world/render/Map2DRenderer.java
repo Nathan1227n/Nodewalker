@@ -126,9 +126,13 @@ final class Map2DRenderer extends Region implements WorldRenderer {
         projected.clear();
         state.model().positions().forEach(p -> projected.add(project(p)));
         if (state.connections()) {
-            g.setStroke(Color.web("#789594", .35));
-            g.setLineWidth(1);
-            g.setLineDashes(3, 7);
+            // Dark outline keeps connections readable over both rock and vegetation.
+            g.setLineDashes(8, 5);
+            g.setStroke(Color.web("#07141b", .9));
+            g.setLineWidth(4);
+            for (var edge : state.secondaryConnections()) line(g, edge);
+            g.setStroke(Color.web(ScenePalette.CONNECTION.color(), .9));
+            g.setLineWidth(1.8);
             for (var edge : state.secondaryConnections()) line(g, edge);
         }
         boolean certified = state.model().solidPath();

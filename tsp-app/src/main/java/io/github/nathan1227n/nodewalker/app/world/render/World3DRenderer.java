@@ -396,7 +396,7 @@ final class World3DRenderer extends Region implements WorldRenderer {
             long current = ++secondaryRevision;
             for (var edge : state.secondaryConnections()) installation.add(() -> {
                 if (current == secondaryRevision && edge.geometry().length() > 0) {
-                    var tube = tube(edge.geometry(), .5, ScenePalette.STEEL); tube.setVisible(false);
+                    var tube = tube(edge.geometry(), 1.1, ScenePalette.CONNECTION); tube.setVisible(false);
                     secondaryEdges.getChildren().add(tube); secondaryStrokes.add(new SecondaryStroke(tube, edge.from(), edge.to()));
                 }
             });
